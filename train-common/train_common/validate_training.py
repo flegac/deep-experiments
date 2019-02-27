@@ -5,7 +5,8 @@ import pandas as pd
 from hyper_search.train_parameters import TrainParameters
 from surili_core.pipeline_worker import PipelineWorker
 from surili_core.workspace import Workspace
-from train_common.ctx.dataset import Dataset, TrainingDataset
+from train_common.ctx.dataset import Dataset
+from train_common.ctx.train_dataset import TrainDataset
 from mydeep_lib.visualize.confusion_matrix import ConfusionMatrix
 from train_common.ctx.model import Model
 
@@ -19,10 +20,13 @@ class ValidateTraining(PipelineWorker):
 
     def apply(self, target_ws: Workspace):
         # dataset -------------------------------------
-        dataset = TrainingDataset.from_path(self.ctx.project_ws.get_ws('dataset')).test
+        dataset = TrainDataset.from_path(self.ctx.project_ws.get_ws('dataset')).test
         y_classes = list(dataset.df[dataset.y_col].unique())
 
         result = self.make_predictions(dataset, target_ws)
+
+        # FIXME: this is not generic !
+        result[self.target_y] = result[self.target_y].apply(lambda x: 'n' + str(x))
 
         cm = ConfusionMatrix(dataset.df[dataset.y_col], result[dataset.y_col])
         cm.show(classes=y_classes, normalize=True)
@@ -49,33 +53,18 @@ class ValidateTraining(PipelineWorker):
         df = df.sort_values(by=[dataset.x_col])
 
         batch_size = self.ctx.max_batch_size
-        steps_number = dataset.steps_number(batch_size)
+        input_shape = model.input_shape()
 
-        generator = self.augmentation.flow_from_dataframe(
-            dataframe=df,
-            directory=dataset.img_path,
-            x_col='_filename', y_col=dataset.y_col,
-            target_size=model.input_shape(),
-            batch_size=batch_size,
-            class_mode='categorical',
-            shuffle=False)
+        raw_predictions = model.keras_model.predict_generator(
+            generator=dataset.prepare_generator(batch_size, input_shape, self.augmentation, shuffle=False),
+            steps=dataset.steps_number(batch_size),
+            verbose=1)
 
-        x_values = df[dataset.x_col]
-        raw_predictions = model.keras_model.predict_generator(generator, steps=steps_number, verbose=1)
-        y_values = pd.DataFrame(raw_predictions) \
-            .apply(np.argmax, axis=1) \
-            .apply(lambda x: 'n' + str(x)) \
-            .values
-        self.write_to_disk(x_values, y_values, target_ws.path_to('predictions.csv'))
-
-        return pd.DataFrame({
-            self.target_x: x_values,
-            self.target_y: y_values
-        })
-
-    def write_to_disk(self, x_values, y_values: np.ndarray, path: str):
         predictions = pd.DataFrame({
-            self.target_x: x_values,
-            self.target_y: y_values
+            self.target_x: df[dataset.x_col],
+            self.target_y: pd.DataFrame(raw_predictions)
+                .apply(np.argmax, axis=1)
+                .values
         })
-        predictions.to_csv(path, index=False)
+        predictions.to_csv(target_ws.path_to('test_predictions.csv'), index=False)
+        return predictions

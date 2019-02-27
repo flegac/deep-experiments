@@ -3,7 +3,8 @@ from sklearn.utils import shuffle
 
 from surili_core.pipeline_worker import PipelineWorker
 from surili_core.workspace import Workspace
-from train_common.ctx.dataset import Dataset, TrainingDataset
+from train_common.ctx.dataset import Dataset
+from train_common.ctx.train_dataset import TrainDataset
 
 
 class PrepareTrainingDataset(PipelineWorker):
@@ -26,4 +27,4 @@ class PrepareTrainingDataset(PipelineWorker):
         train = Dataset(train.sort_values(dataset.x_col), dataset.img_path, dataset.img_ext)
         test = Dataset(test.sort_values(dataset.x_col), dataset.img_path, dataset.img_ext)
 
-        TrainingDataset(train, test).to_path(target_ws)
+        TrainDataset(train, test).to_path(target_ws)

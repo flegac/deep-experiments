@@ -1,8 +1,7 @@
 import json
 import numpy as np
 import pandas as pd
-
-from surili_core.workspace import Workspace
+from keras_preprocessing.image import ImageDataGenerator
 
 
 class Dataset(object):
@@ -26,13 +25,29 @@ class Dataset(object):
         self.y_col = y_col
 
     def filenames(self):
-        return self.df[self.x_col].apply(lambda x: '{}.{}'.format(x, self.img_ext))
+        image_path = '{}.' + self.img_ext
+        return self.df[self.x_col].apply(image_path.format)
 
     def size(self):
         return len(self.df)
 
     def steps_number(self, batch_size: int):
         return np.ceil(self.size() / batch_size)
+
+    def prepare_generator(self, batch_size, target_shape, augmentation: ImageDataGenerator, shuffle=True):
+        df = self.df
+        df['_filename'] = self.filenames()
+
+        return augmentation.flow_from_dataframe(
+            dataframe=df,
+            x_col='_filename', y_col=self.y_col,
+            classes=list(df[self.y_col].unique()),
+            directory=self.img_path,
+            target_size=target_shape,
+            batch_size=batch_size,
+            class_mode='categorical',
+            shuffle=shuffle
+        )
 
     def to_path(self, path: str):
         assert path.endswith('.json'), path
@@ -54,34 +69,3 @@ class Dataset(object):
             'img_path': '{}__id__.{}'.format(self.img_path, self.img_ext),
             'x_y': [self.x_col, self.y_col]
         }, sort_keys=True, separators=(',', ': '))
-
-
-class TrainingDataset(object):
-
-    @staticmethod
-    def from_path(target_ws: Workspace):
-        with open(target_ws.path_to('dataset.json'), 'r') as _:
-            dataset = json.load(_)
-        for x in dataset:
-            dataset[x] = Dataset.from_path(dataset[x])
-        return TrainingDataset(**dataset)
-
-    def __init__(self, train: Dataset, test: Dataset):
-        self.train = train
-        self.test = test
-
-    def to_path(self, target_ws: Workspace):
-        target_path = target_ws.path_to('dataset.json')
-        dataset = {
-            'train': self.train.to_path(target_ws.path_to('train.json')),
-            'test': self.test.to_path(target_ws.path_to('test.json')),
-        }
-        with open(target_path, 'w') as _:
-            json.dump(dataset, fp=_, sort_keys=True, indent=4, separators=(',', ': '))
-        return target_path
-
-    def __repr__(self) -> str:
-        return json.dumps({
-            'train': repr(self.train),
-            'test': repr(self.test)
-        }, sort_keys=True, indent=4, separators=(',', ': '))

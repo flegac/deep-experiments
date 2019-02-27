@@ -1,9 +1,8 @@
 from keras.callbacks import ModelCheckpoint, CSVLogger, LambdaCallback
-from keras.preprocessing.image import ImageDataGenerator
 
 from surili_core.pipeline_worker import PipelineWorker
 from surili_core.workspace import Workspace
-from train_common.ctx.dataset import TrainingDataset, Dataset
+from train_common.ctx.train_dataset import TrainDataset
 from train_common.ctx.train_context import TrainContext
 
 
@@ -18,7 +17,7 @@ class Trainer(PipelineWorker):
         params_ws = target_ws.get_ws('params')
 
         # load params
-        dataset = TrainingDataset.from_path(dataset_ws)
+        dataset = TrainDataset.from_path(dataset_ws)
         model = self.params.model
         train_params = self.params.params
         train_augmentation = self.params.augmentation.build()
@@ -32,29 +31,14 @@ class Trainer(PipelineWorker):
         model.to_path(params_ws.path_to('model.h5'))
         dataset.to_path(params_ws.get_ws('dataset'))
 
+        # ----- training -------------------------------------------------------------
         batch_size = train_params.params['batch_size']
-
-        def prepare_generator(data: Dataset, augmentation: ImageDataGenerator):
-            df = data.df
-
-            image_path = '{}.' + data.img_ext
-            df[data.x_col] = df[data.x_col].map(image_path.format)
-            return augmentation.flow_from_dataframe(
-                df,
-                x_col=data.x_col, y_col=data.y_col,
-                classes=list(df[data.y_col].unique()),
-                directory=data.img_path,
-                target_size=model.input_shape(),
-                batch_size=batch_size,
-                class_mode='categorical'
-            )
-
-        # ----- cancer_detection -------------------------------------------------------------
+        input_shape = model.input_shape()
         history = model.keras_model.fit_generator(
-            prepare_generator(dataset.train, train_augmentation),
+            generator=dataset.train.prepare_generator(batch_size, input_shape, train_augmentation),
             steps_per_epoch=dataset.train.steps_number(batch_size),
             epochs=train_params.params['epochs'],
-            validation_data=prepare_generator(dataset.test, test_augmentation),
+            validation_data=dataset.test.prepare_generator(batch_size, input_shape, test_augmentation),
             validation_steps=dataset.test.steps_number(batch_size),
             verbose=1,
             callbacks=[

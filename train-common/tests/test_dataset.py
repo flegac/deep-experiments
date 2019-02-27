@@ -1,7 +1,8 @@
 import pandas as pd
 
 from surili_core.workspace import Workspace
-from train_common.ctx.dataset import Dataset, TrainingDataset
+from train_common.ctx.dataset import Dataset
+from train_common.ctx.train_dataset import TrainDataset
 
 ws = Workspace.from_path('./resources/dataset')
 
@@ -11,12 +12,12 @@ def test_dataset_to_path():
         pd.DataFrame({'a': [1, 2], 'b': [3, 4]}),
         '/path/to/images',
         'jpg')
-    dataset = TrainingDataset(train, train)
+    dataset = TrainDataset(train, train)
     dataset.to_path(ws.path_to('dataset.json'))
 
 
 def test_dataset_from_path():
-    dataset = TrainingDataset.from_path(ws)
+    dataset = TrainDataset.from_path(ws)
     print(dataset)
 
 
