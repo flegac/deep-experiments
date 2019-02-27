@@ -1,0 +1,7 @@
+numpy
+keras
+stream-core
+opencv-python
+matplotlib
+sklearn
+pandas
