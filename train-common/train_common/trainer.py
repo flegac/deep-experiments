@@ -11,8 +11,6 @@ class Trainer(PipelineWorker):
     def __init__(self, params: TrainContext) -> None:
         super().__init__('model training', 'training')
         self.params = params
-        self.x = 'x'
-        self.y = 'y'
 
     def apply(self, target_ws: Workspace):
         dataset_ws = self.ctx.project_ws.get_ws('dataset')
@@ -40,11 +38,11 @@ class Trainer(PipelineWorker):
             df = data.df
 
             image_path = '{}.' + data.img_ext
-            df[self.x] = df[self.x].map(image_path.format)
+            df[data.x_col] = df[data.x_col].map(image_path.format)
             return augmentation.flow_from_dataframe(
                 df,
-                x_col=self.x, y_col=self.y,
-                classes=list(df[self.y].unique()),
+                x_col=data.x_col, y_col=data.y_col,
+                classes=list(df[data.y_col].unique()),
                 directory=data.img_path,
                 target_size=model.input_shape(),
                 batch_size=batch_size,
@@ -52,9 +50,8 @@ class Trainer(PipelineWorker):
             )
 
         # ----- cancer_detection -------------------------------------------------------------
-        train = prepare_generator(dataset.train, train_augmentation)
         history = model.keras_model.fit_generator(
-            train,
+            prepare_generator(dataset.train, train_augmentation),
             steps_per_epoch=dataset.train.steps_number(batch_size),
             epochs=train_params.params['epochs'],
             validation_data=prepare_generator(dataset.test, test_augmentation),

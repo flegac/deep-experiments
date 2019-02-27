@@ -13,12 +13,20 @@ class Dataset(object):
         return Dataset(
             pd.read_csv(dataset['dataset_path']),
             dataset['images_path'],
-            dataset['images_ext'])
+            dataset['images_ext'],
+            dataset['x_col'],
+            dataset['y_col'])
 
-    def __init__(self, dataset: pd.DataFrame, images_path: str, images_ext: str):
+    def __init__(self, dataset: pd.DataFrame, images_path: str, images_ext: str,
+                 x_col='x', y_col='y'):
         self.df = dataset
         self.img_path = images_path
         self.img_ext = images_ext
+        self.x_col = x_col
+        self.y_col = y_col
+
+    def filenames(self):
+        return self.df[self.x_col].apply(lambda x: '{}.{}'.format(x, self.img_ext))
 
     def size(self):
         return len(self.df)
@@ -34,15 +42,17 @@ class Dataset(object):
             json.dump({
                 'dataset_path': dataset_path,
                 'images_path': self.img_path,
-                'images_ext': self.img_ext
+                'images_ext': self.img_ext,
+                'x_col': self.x_col,
+                'y_col': self.y_col
             }, _, sort_keys=True, indent=4, separators=(',', ': '))
         return path
 
     def __repr__(self) -> str:
         return json.dumps({
             'dataset': list(self.df),
-            'img_path': self.img_path,
-            'img_ext': self.img_ext
+            'img_path': '{}__id__.{}'.format(self.img_path, self.img_ext),
+            'x_y': [self.x_col, self.y_col]
         }, sort_keys=True, separators=(',', ': '))
 
 

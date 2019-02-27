@@ -3,6 +3,7 @@ import keras
 from hyper_search.train_parameters import TrainParameters
 from monkeys_detection.prepare_monkeys import PrepareMonkeys
 from mydeep_lib.models.basic_model import basic_model
+from train_common.compute_submission import ComputeSubmission
 from train_common.ctx.model import Model
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline
@@ -65,7 +66,8 @@ pipe = pipeline([
     PrepareMonkeys(),
     PrepareTrainingDataset(test_size=0.1),
     Trainer(train_ctx),
-    ValidateTraining(train_ctx.augmentation)
+    ValidateTraining(train_ctx.augmentation),
+    ComputeSubmission(train_ctx.augmentation, nb_pred=2, target_x='xx', target_y='yy')
 ])
 
 pipe(PipelineContext(

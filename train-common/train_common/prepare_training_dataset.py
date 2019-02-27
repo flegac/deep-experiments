@@ -10,10 +10,7 @@ class PrepareTrainingDataset(PipelineWorker):
 
     def __init__(self, test_size: float = 0.1):
         super().__init__('prepare training dataset', 'dataset')
-
         self.test_size = test_size
-        self.x = 'x'
-        self.y = 'y'
 
     def apply(self, target_ws: Workspace):
         seed = self.ctx.seed
@@ -23,10 +20,10 @@ class PrepareTrainingDataset(PipelineWorker):
         dataset = Dataset.from_path(dataframe_path)
         dataframe = shuffle(dataset.df, random_state=seed)
         train, test = train_test_split(dataframe, test_size=self.test_size, random_state=seed,
-                                       stratify=dataframe[self.y])
+                                       stratify=dataframe[dataset.y_col])
 
         # save dataset to disk
-        train = Dataset(train.sort_values(self.x), dataset.img_path, dataset.img_ext)
-        test = Dataset(test.sort_values(self.x), dataset.img_path, dataset.img_ext)
+        train = Dataset(train.sort_values(dataset.x_col), dataset.img_path, dataset.img_ext)
+        test = Dataset(test.sort_values(dataset.x_col), dataset.img_path, dataset.img_ext)
 
         TrainingDataset(train, test).to_path(target_ws)
