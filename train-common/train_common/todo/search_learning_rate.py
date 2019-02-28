@@ -5,7 +5,7 @@ from keras.callbacks import LearningRateScheduler
 from keras.preprocessing.image import ImageDataGenerator
 
 from hyper_search.train_parameters import TrainParameters
-from mydeep_lib.callbacks import LRFinder
+from mydeep_lib.callbacks.lr_finder import LRFinder
 from mydeep_lib.dataframe import Dataframes
 from surili_core.pipeline_worker import PipelineWorker
 from surili_core.workspace import Workspace

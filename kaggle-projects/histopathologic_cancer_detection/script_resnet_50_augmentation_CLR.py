@@ -19,7 +19,7 @@ train_ctx = TrainContext(
         keras_model(
             input_shape=(96, 96, 3),
             output_class_number=2,
-            k_model=keras.applications.DenseNet169
+            k_model=keras.applications.resnet50.ResNet50
         ),
         compile_params={
             'loss': 'binary_crossentropy',
@@ -28,12 +28,12 @@ train_ctx = TrainContext(
         }),
 
     params=TrainParameters({
-        'batch_size': 32,
+        'batch_size': 64,
         'epochs': 30,
         'callbacks': [
             CyclicLR(
-                base_lr=1e-6,
-                max_lr=2e-4,
+                base_lr=5e-6,
+                max_lr=1e-4,
                 # TODO : try with 6189 x 4 = 24756
                 step_size=18567.,  # N=2 : N *(len(train) / batch_size) = 2N epochs per cycles
                 mode='triangular'
@@ -46,8 +46,8 @@ train_ctx = TrainContext(
         'rescale': 1. / 255,
         'horizontal_flip': True,
         'vertical_flip': True,
-        'rotation_range': 45,
-        'zoom_range': 0.1,
+        'rotation_range': 90,
+        'zoom_range': 0.05,
         'width_shift_range': 0.1,
         'height_shift_range': 0.1,
     })
@@ -58,9 +58,9 @@ pipe = pipeline([
     PrepareTrainingDataset(),
     Trainer(train_ctx),
     ValidateTraining(train_ctx.augmentation),
-    ComputeSubmission(train_ctx.augmentation, nb_pred=2, target_x='id', target_y='label')
+    ComputeSubmission(train_ctx.augmentation, nb_pred=10, target_x='id', target_y='label')
 ])
 
 pipe(PipelineContext(
     root_path='D:/Datasets/histopathologic-cancer-detection',
-    project_name='densenet169_augmentation_CLR'))
+    project_name='resnet50_augmentation_CLR'))

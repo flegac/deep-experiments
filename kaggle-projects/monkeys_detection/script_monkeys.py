@@ -69,7 +69,6 @@ pipe = pipeline([
     ValidateTraining(train_ctx.augmentation),
     ComputeSubmission(train_ctx.augmentation, nb_pred=2, target_x='xx', target_y='yy')
 ])
-
 pipe(PipelineContext(
     root_path='D:/Datasets/10-monkey-species',
     project_name='monkeys'))
