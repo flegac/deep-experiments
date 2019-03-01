@@ -4,7 +4,7 @@ install:
 	(cd hyper-search && make)
 	(cd mydeep-lib && make)
 	(cd train-common && make)
-	(cd kaggle-project && make)
+	(cd kaggle-projects && make)
 
 uninstall:
 	(cd stream-lib && make uninstall)
@@ -12,4 +12,4 @@ uninstall:
 	(cd hyper-search && make uninstall)
 	(cd mydeep-lib && make uninstall)
 	(cd train-common && make uninstall)
-	(cd kaggle-project && make uninstall)
+	(cd kaggle-projects && make uninstall)

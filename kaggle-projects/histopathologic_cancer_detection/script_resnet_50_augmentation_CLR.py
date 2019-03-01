@@ -19,11 +19,12 @@ train_ctx = TrainContext(
         keras_model(
             input_shape=(96, 96, 3),
             output_class_number=2,
+            weights=None,
             k_model=keras.applications.resnet50.ResNet50
         ),
         compile_params={
             'loss': 'binary_crossentropy',
-            'optimizer': 'Adam',
+            'optimizer': 'SGD',
             'metrics': ['accuracy']
         }),
 
@@ -32,8 +33,8 @@ train_ctx = TrainContext(
         'epochs': 30,
         'callbacks': [
             CyclicLR(
-                base_lr=5e-6,
-                max_lr=1e-4,
+                base_lr=5e-5,
+                max_lr=1e-3,
                 # TODO : try with 6189 x 4 = 24756
                 step_size=18567.,  # N=2 : N *(len(train) / batch_size) = 2N epochs per cycles
                 mode='triangular'
