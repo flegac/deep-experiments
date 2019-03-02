@@ -21,7 +21,7 @@ def plot_history(history, dataset):
     dataset = dataset.loc[:, ['id', 'label']]
     dataset['label'].value_counts().plot.bar(ax=axarr[0][0])
 
-    fig.show()
+    fig.plot()
 
 
 plot_history(history, dataset)

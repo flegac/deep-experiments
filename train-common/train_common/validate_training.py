@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 
 from hyper_search.train_parameters import TrainParameters
+from mydeep_lib.visualize.visualize import Visualize
 from surili_core.pipeline_worker import PipelineWorker
 from surili_core.workspace import Workspace
 from train_common.ctx.dataset import Dataset
@@ -19,20 +20,27 @@ class ValidateTraining(PipelineWorker):
         self.target_y = 'y'
 
     def apply(self, target_ws: Workspace):
-        # dataset -------------------------------------
+        # training histogram -----------------------------------
+        training_ws = self.ctx.project_ws.get_ws('training')
+        fig = Visualize.history_from_path(training_ws.path_to('training_logs.csv'))
+        fig.savefig(target_ws.path_to('training.png'))
+
+        # confusion matrix -------------------------------------
         dataset = TrainDataset.from_path(self.ctx.project_ws.get_ws('dataset')).test
-        y_classes = list(dataset.df[dataset.y_col].unique())
 
         result = self.make_predictions(dataset, target_ws)
 
         # FIXME: this is not generic !
-        result[self.target_y] = result[self.target_y].apply(lambda x: 'n' + str(x))
+        # result[self.target_y] = result[self.target_y].apply(lambda x: 'n' + str(x))
 
         cm = ConfusionMatrix(dataset.df[dataset.y_col], result[dataset.y_col])
-        cm.show(classes=y_classes, normalize=True)
+        fig = cm.plot(normalize=True)
+        fig.savefig(target_ws.path_to('confusion_matrix'))
+        fig.show()
 
         errors = result[dataset.df[dataset.y_col] != result[dataset.y_col]]
         errors.to_csv(target_ws.path_to('errors.csv'), index=False)
+        y_classes = list(dataset.df[dataset.y_col].unique())
 
         for category in y_classes:
             errors_path = target_ws.path_to('errors_{}.csv'.format(category))
@@ -63,7 +71,7 @@ class ValidateTraining(PipelineWorker):
         predictions = pd.DataFrame({
             self.target_x: df[dataset.x_col],
             self.target_y: pd.DataFrame(raw_predictions)
-                .apply(np.argmax, axis=1)
+                .apply(np.argmin, axis=1)
                 .values
         })
         predictions.to_csv(target_ws.path_to('test_predictions.csv'), index=False)

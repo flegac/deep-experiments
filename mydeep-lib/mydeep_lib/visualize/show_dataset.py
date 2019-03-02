@@ -34,6 +34,6 @@ class ShowDataset(object):
             ax[i].imshow(x)
         for i in range(len(data), len(ax)):
             ax[i].axis('off')
-        fig.show()
+        fig.plot()
 
         return stream(data)

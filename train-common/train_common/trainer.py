@@ -1,4 +1,5 @@
-from keras.callbacks import ModelCheckpoint, CSVLogger, LambdaCallback
+from keras.callbacks import ModelCheckpoint, CSVLogger, Callback
+from keras import backend as K
 
 from surili_core.pipeline_worker import PipelineWorker
 from surili_core.workspace import Workspace
@@ -34,6 +35,10 @@ class Trainer(PipelineWorker):
         # ----- training -------------------------------------------------------------
         batch_size = train_params.params['batch_size']
         input_shape = model.input_shape()
+
+        print(dataset.train.df.head(2))
+        print(dataset.test.df.head(2))
+
         history = model.keras_model.fit_generator(
             generator=dataset.train.prepare_generator(batch_size, input_shape, train_augmentation),
             steps_per_epoch=dataset.train.steps_number(batch_size),
@@ -57,11 +62,25 @@ class Trainer(PipelineWorker):
                     monitor='val_acc',
                     verbose=1,
                     save_best_only=True),
+                LearningRateLogger(model, target_ws),
                 CSVLogger(
                     target_ws.path_to('training_logs.csv'),
                     append=False),
-                LambdaCallback(
-                    on_train_end=lambda logs: model.to_path(
-                        target_ws.get_ws('output').path_to('model_final.h5'))),
             ])
+
         return history
+
+
+class LearningRateLogger(Callback):
+    def __init__(self, model, target_ws: Workspace):
+        super().__init__()
+        self.model = model
+        self.target_ws = target_ws
+
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        logs['lr'] = K.get_value(self.model.optimizer.lr)
+
+    def on_train_end(self, logs=None):
+        self.model.to_path(
+            self.target_ws.get_ws('output').path_to('model_final.h5'))

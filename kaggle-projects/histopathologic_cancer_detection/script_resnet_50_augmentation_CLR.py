@@ -10,6 +10,7 @@ from train_common.ctx.model import Model
 from train_common.ctx.train_context import TrainContext
 from surili_core.pipeline_context import PipelineContext
 from train_common.prepare_training_dataset import PrepareTrainingDataset
+from train_common.search_learning_rate import SearchLearningRate
 from train_common.trainer import Trainer
 from train_common.validate_training import ValidateTraining
 
@@ -30,13 +31,13 @@ train_ctx = TrainContext(
 
     params=TrainParameters({
         'batch_size': 64,
-        'epochs': 30,
+        'epochs': 40,
         'callbacks': [
             CyclicLR(
                 base_lr=5e-5,
                 max_lr=1e-3,
                 # TODO : try with 6189 x 4 = 24756
-                step_size=18567.,  # N=2 : N *(len(train) / batch_size) = 2N epochs per cycles
+                step_size=24756.,  # N=2 : N *(len(train) / batch_size) = 2N epochs per cycles
                 mode='triangular'
             ),
         ]
@@ -57,9 +58,10 @@ train_ctx = TrainContext(
 pipe = pipeline([
     PrepareHistopathologicCancer(),
     PrepareTrainingDataset(),
-    Trainer(train_ctx),
-    ValidateTraining(train_ctx.augmentation),
-    ComputeSubmission(train_ctx.augmentation, nb_pred=10, target_x='id', target_y='label')
+    SearchLearningRate(train_ctx, min_lr=1e-5, max_lr=1),
+    # Trainer(train_ctx),
+    # ValidateTraining(train_ctx.augmentation),
+    # ComputeSubmission(train_ctx.augmentation, nb_pred=10, target_x='id', target_y='label')
 ])
 
 pipe(PipelineContext(

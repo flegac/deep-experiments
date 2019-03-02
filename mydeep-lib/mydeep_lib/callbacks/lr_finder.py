@@ -67,7 +67,7 @@ class LRFinder(Callback):
         plt.yscale('log')
         plt.xlabel('Iteration')
         plt.ylabel('Learning rate')
-        plt.show()
+        return plt
 
     def plot_loss(self):
         '''Helper function to quickly observe the learning rate experiment results.'''
@@ -83,4 +83,4 @@ class LRFinder(Callback):
         plt.xscale('log')
         plt.xlabel('Learning rate')
         plt.ylabel('Loss')
-        plt.show()
+        return plt

@@ -34,7 +34,7 @@ class Dataset(object):
     def steps_number(self, batch_size: int):
         return np.ceil(self.size() / batch_size)
 
-    def prepare_generator(self, batch_size, target_shape, augmentation: ImageDataGenerator, shuffle=True):
+    def prepare_generator(self, batch_size, target_shape, augmentation: ImageDataGenerator, class_mode='categorical', shuffle=True):
         df = self.df
         df['_filename'] = self.filenames()
 
@@ -45,7 +45,7 @@ class Dataset(object):
             directory=self.img_path,
             target_size=target_shape,
             batch_size=batch_size,
-            class_mode='categorical',
+            class_mode=class_mode,
             shuffle=shuffle
         )
 
