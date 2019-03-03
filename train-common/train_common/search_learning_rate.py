@@ -8,7 +8,7 @@ from train_common.ctx.train_dataset import TrainDataset
 
 
 class SearchLearningRate(PipelineWorker):
-    def __init__(self, params: TrainContext, min_lr: float = 1e-6, max_lr: float = 1., epochs=2) -> None:
+    def __init__(self, params: TrainContext, min_lr: float = 1e-6, max_lr: float = 1., epochs: int = 2) -> None:
         super().__init__('Learning Rate Finder', 'lr_finder')
         self.params = params
         self.min_lr = min_lr

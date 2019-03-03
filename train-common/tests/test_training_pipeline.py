@@ -1,9 +1,7 @@
 import keras
-import numpy as np
 
 from hyper_search.train_parameters import TrainParameters
 from monkeys_detection.prepare_monkeys import PrepareMonkeys
-from mydeep_lib.callbacks.sgdr_scheduler import SGDRScheduler
 from mydeep_lib.models.basic_model import basic_model
 from train_common.compute_submission import ComputeSubmission
 from train_common.ctx.model import Model
@@ -31,39 +29,7 @@ train_ctx = TrainContext(
     params=TrainParameters({
         'batch_size': 64,
         'epochs': 2,
-        'callbacks': [
-            # CyclicLR(
-            #     base_lr=1e-6,
-            #     max_lr=1e-2,
-            #     step_size=5,
-            #     mode='triangular'
-            # ),
-            # SGDRScheduler(
-            #     min_lr=1.e-5,
-            #     max_lr=1.e-2,
-            #     steps_per_epoch=np.ceil(137 / 137),
-            #     lr_decay=.9,
-            #     cycle_length=5,
-            # )
-            # keras.callbacks.ReduceLROnPlateau(
-            #     monitor='val_loss',
-            #     mode='auto',
-            #     factor=0.5,
-            #     patience=2,
-            #     cooldown=0,
-            #     min_delta=1e-4,
-            #     min_lr=1e-9,
-            # ),
-            # keras.callbacks.EarlyStopping(
-            #     monitor='val_loss',
-            #     mode='auto',
-            #     min_delta=0,
-            #     patience=10,
-            #     verbose=0,
-            #     baseline=None,
-            #     restore_best_weights=False
-            # )
-        ]
+        'callbacks': []
     }),
 
     augmentation=TrainParameters({
@@ -87,5 +53,5 @@ pipe = pipeline([
     ComputeSubmission(train_ctx.augmentation, nb_pred=2, target_x='xx', target_y='yy')
 ])
 pipe(PipelineContext(
-    root_path='D:/Datasets/10-monkey-species',
-    project_name='monkeys'))
+    root_path='resources/dataset',
+    project_name='test'))

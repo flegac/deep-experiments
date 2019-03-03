@@ -34,11 +34,10 @@ train_ctx = TrainContext(
         'epochs': 40,
         'callbacks': [
             CyclicLR(
-                base_lr=5e-5,
-                max_lr=1e-3,
-                # TODO : try with 6189 x 4 = 24756
-                step_size=24756.,  # N=2 : N *(len(train) / batch_size) = 2N epochs per cycles
-                mode='triangular'
+                base_lr=1e-5,
+                max_lr=1e-4,
+                step_size=5,
+                mode='triangular2'
             ),
         ]
     }),
@@ -58,10 +57,10 @@ train_ctx = TrainContext(
 pipe = pipeline([
     PrepareHistopathologicCancer(),
     PrepareTrainingDataset(),
-    SearchLearningRate(train_ctx, min_lr=1e-5, max_lr=1),
-    # Trainer(train_ctx),
-    # ValidateTraining(train_ctx.augmentation),
-    # ComputeSubmission(train_ctx.augmentation, nb_pred=10, target_x='id', target_y='label')
+    SearchLearningRate(train_ctx, min_lr=1e-6, max_lr=1e-2, epochs=1),
+    Trainer(train_ctx),
+    ValidateTraining(train_ctx.augmentation),
+    ComputeSubmission(train_ctx.augmentation, nb_pred=10, target_x='id', target_y='label')
 ])
 
 pipe(PipelineContext(
