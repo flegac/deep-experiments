@@ -6,7 +6,7 @@ from string import Template
 class GCloud:
 
     @staticmethod
-    def create(user: str, zone: str, instance: str, project_id: str, config_path: str = None):
+    def create(user: str, zone: str, instance: str, project_id: str, config_path: str = None) -> 'GCloud':
         with open(config_path) as _:
             tpl = Template(_.read())
         config_path = os.path.abspath('/tmp/config_{}.yaml'.format(instance))
@@ -22,7 +22,7 @@ class GCloud:
         return GCloud(user, zone, instance, project_id)
 
     @staticmethod
-    def connect(user: str, zone: str, instance: str, project_id: str = None, config_path: str = None):
+    def connect(user: str, zone: str, instance: str, project_id: str = None, config_path: str = None) -> 'GCloud':
         return GCloud(user, zone, instance, project_id)
 
     @staticmethod

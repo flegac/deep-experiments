@@ -12,4 +12,4 @@ class WorkspaceRunner(ProjectRunner):
         for name in os.listdir(root_path):
             path = os.path.abspath(os.path.join(root_path, name))
             if name.startswith('workspace') and os.path.isdir(path):
-                subprocess.run(shlex.split('python runner.py'), cwd=path)
+                subprocess.run(shlex.split('python3 runner.py'), cwd=path)

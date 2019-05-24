@@ -9,5 +9,6 @@ class LocalRunner(ProjectRunner):
     def run(self):
         with open(self.script_path) as _:
             script = _.read()
+        print('script: {}'.format(script))
         print('running {}'.format(self.params))
         exec(script, {'params': _})

@@ -31,6 +31,7 @@ class InstanceWorkspace(object):
     def create_instance(self):
         try:
             self.cloud = GCloud.connect(**self.config)
+            self.cloud.ssh_command('ls')
         except Exception as e:
             print(e)
             self.cloud = GCloud.create(**self.config)
@@ -49,13 +50,13 @@ class InstanceWorkspace(object):
     def deploy(self):
         lib_path = os.path.abspath(os.path.join(__file__, '../..'))
         self.cloud.copy_upload(lib_path, '/tmp')
+        self.cloud.copy_upload(self.path, '/tmp')
         self.cloud.ssh_command('sudo chmod +x /tmp/cloud-runner/cloud_runner/resources/deploy.sh')
         self.cloud.ssh_command('sudo /tmp/cloud-runner/cloud_runner/resources/deploy.sh')
-        self.cloud.copy_upload(self.path, '/tmp')
 
     def run(self):
         basename = os.path.basename(self.path)
-        self.cloud.ssh_command('python /tmp/{}/runner.py'.format(basename))
+        self.cloud.ssh_command('python3 /tmp/{}/runner.py'.format(basename))
 
 
 class ProcessWorkspace(object):
