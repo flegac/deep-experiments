@@ -1,5 +1,5 @@
 import collections
-from typing import Iterator, Callable, List, Any, TypeVar, Generic
+from typing import Iterator, Callable, List, Any, TypeVar, Generic, Tuple
 
 T = TypeVar('T')
 U = TypeVar('U')
@@ -44,7 +44,7 @@ class Stream(Iterator[T]):
     def flatten(self) -> 'Stream[U]':
         return self.flatmap(Stream[U].stream_identity)
 
-    def enumerate(self) -> 'Stream':
+    def enumerate(self) -> 'Stream[Tuple[int,T]]':
         return self._stream(enumerate(self))
 
     def side_effect(self, func: Callable[[T], Any]) -> 'Stream[T]':

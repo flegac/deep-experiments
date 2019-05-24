@@ -30,6 +30,3 @@ def test_pipeline():
         TestWorker(),
     ])
     pipe(ctx)
-
-
-test_pipeline()

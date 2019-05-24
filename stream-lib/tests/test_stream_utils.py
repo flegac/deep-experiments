@@ -52,8 +52,3 @@ def test_shuffle():
 
     assert sorted(right) == list(range(50, 100))
     assert right != list(range(50, 100))
-
-
-test_cache()
-test_batch()
-test_shuffle()

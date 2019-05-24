@@ -21,6 +21,3 @@ def test_dataset_from_path():
     print(dataset)
 
 
-test_dataset_to_path()
-
-test_dataset_from_path()

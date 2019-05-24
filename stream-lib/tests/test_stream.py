@@ -92,14 +92,3 @@ def test_side_effect():
 
     assert actual == sequence
     assert data == sequence
-
-
-test_apply()
-test_map()
-test_flatmap()
-test_filter()
-test_slice()
-test_limit()
-test_flatten()
-test_enumerate()
-test_side_effect()

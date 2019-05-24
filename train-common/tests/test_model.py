@@ -37,7 +37,3 @@ def test_model():
     mm = Model.from_path('model2.h5')
 
     print(mm.keras_model.get_config())
-
-
-test_sequential_model()
-test_model()
