@@ -56,7 +56,7 @@ class InstanceWorkspace(object):
 
     def run(self):
         basename = os.path.basename(self.path)
-        self.cloud.ssh_command('python3 /tmp/{}/runner.py'.format(basename))
+        self.cloud.ssh_command('cd /tmp/{} && python3 runner.py'.format(basename))
 
 
 class ProcessWorkspace(object):
