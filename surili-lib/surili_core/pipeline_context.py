@@ -18,7 +18,7 @@ class PipelineContext(object):
         if not os.path.exists(script_destination_path):
             shutil.copyfile(running_script_path, script_destination_path)
         elif not filecmp.cmp(running_script_path, script_destination_path, shallow=False):
-            raise ValueError('Project already started, but running script has changed !')
+            raise ValueError('Existing project {}: but running script has changed !'.format(self.project_ws.path))
 
 
 def get_running_script_path():

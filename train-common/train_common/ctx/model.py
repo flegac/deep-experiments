@@ -45,6 +45,9 @@ class Model(object):
         with open(path.replace('.h5', '_summary.txt'), 'w') as _:
             self.keras_model.summary(print_fn=lambda x: _.write(str(x) + '\n'))
 
-        with open(config_path, 'w') as _:
-            json.dump(self.keras_model.get_config(), _, indent=2)
+        try:
+            with open(config_path, 'w') as _:
+                json.dump(self.keras_model.get_config(), _, indent=2)
+        except:
+            print('could not serialize the model.get_congih() !')
         self.keras_model.save_weights(path)
