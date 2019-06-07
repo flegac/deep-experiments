@@ -27,9 +27,7 @@ class PrepareSignMnist(PipelineWorker):
             # images = np.array([i.flatten() for i in images])
             return pd.DataFrame(data={'x': images, 'y': labels})
 
-        training = load_dataframe('sign_mnist_train.csv')
-        validation = load_dataframe('sign_mnist_test.csv')
-        df = pd.concat([training, validation], axis=0, ignore_index=True)
+        df = load_dataframe('sign_mnist_train.csv')
 
         filenames = [0] * len(df)
         for i, image in tqdm(enumerate(df[self.col_x])):

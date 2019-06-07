@@ -8,12 +8,11 @@ from sign_mnist.prepare_sign_mnist import PrepareSignMnist
 from surili_core.pipelines import pipeline
 from train_common.ctx.model import Model
 from surili_core.pipeline_context import PipelineContext
-from train_common.ctx.train_context import TrainContext
 from train_common.prepare_training_dataset import PrepareTrainingDataset
 from train_common.trainer import Trainer
 from train_common.validate_training import ValidateTraining
 
-train_ctx = TrainContext(
+train_ctx = Trainer.create_ctx(
 
     model_provider=lambda: Model.from_keras(
 

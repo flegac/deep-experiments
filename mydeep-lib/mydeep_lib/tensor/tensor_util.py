@@ -36,6 +36,7 @@ def tensor_centered_window(size_x, size_y):
 def tensor_save(path: str):
     def apply(item):
         name, tensor = item
+        os.makedirs(path, exist_ok=True)
         cv2.imwrite(os.path.join(path, str(name)) + '.jpg', tensor)
 
     return apply
