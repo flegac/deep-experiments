@@ -1,6 +1,8 @@
 import collections
 from typing import Iterator, Callable, List, Any, TypeVar, Generic, Tuple
 
+from tqdm import tqdm
+
 T = TypeVar('T')
 U = TypeVar('U')
 
@@ -65,7 +67,7 @@ class Stream(Iterator[T]):
         return acc
 
     def foreach(self, func) -> None:
-        for x in self:
+        for x in tqdm(self):
             func(x)
 
     def to_list(self) -> List[T]:
