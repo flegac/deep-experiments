@@ -1,10 +1,12 @@
 import json
+
 import numpy as np
 import pandas as pd
 from keras_preprocessing.image import ImageDataGenerator
 
 
 class Dataset(object):
+
     @staticmethod
     def from_path(path: str):
         with open(path, 'r') as _:
@@ -34,7 +36,8 @@ class Dataset(object):
     def steps_number(self, batch_size: int):
         return np.ceil(self.size() / batch_size)
 
-    def prepare_generator(self, batch_size, target_shape, augmentation: ImageDataGenerator, class_mode='categorical', shuffle=True):
+    def prepare_generator(self, batch_size, target_shape, augmentation: ImageDataGenerator, class_mode='categorical',
+                          shuffle=True):
         df = self.df
         df['_filename'] = self.filenames()
 

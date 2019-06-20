@@ -1,4 +1,5 @@
 import os
+from typing import Tuple
 
 import cv2
 import numpy as np
@@ -34,10 +35,12 @@ def tensor_centered_window(size_x, size_y):
 
 
 def tensor_save(path: str):
-    def apply(item):
+    def apply(item: Tuple[str, Tensor]) -> str:
         name, tensor = item
         os.makedirs(path, exist_ok=True)
-        cv2.imwrite(os.path.join(path, str(name)) + '.jpg', tensor)
+        full_filename = os.path.join(path, str(name)) + '.jpg'
+        cv2.imwrite(full_filename, tensor)
+        return full_filename
 
     return apply
 

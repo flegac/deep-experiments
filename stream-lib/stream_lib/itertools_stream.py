@@ -1,5 +1,5 @@
 import collections
-from typing import Iterator, Callable
+from typing import Iterator
 
 import itertools
 

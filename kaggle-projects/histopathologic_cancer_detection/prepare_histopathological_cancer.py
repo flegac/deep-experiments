@@ -1,9 +1,9 @@
 import pandas as pd
 
 from mydeep_lib.dataframe import Dataframes
+from mydeep_train.ctx.dataset import Dataset
 from surili_core.pipeline_worker import PipelineWorker
 from surili_core.workspace import Workspace
-from train_common.ctx.dataset import Dataset
 
 
 class PrepareHistopathologicCancer(PipelineWorker):

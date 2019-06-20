@@ -1,8 +1,8 @@
 from mydeep_lib.callbacks.lr_finder import LRFinder
 from surili_core.pipeline_worker import PipelineWorker
 from surili_core.workspace import Workspace
-from train_common.ctx.train_dataset import TrainDataset
-from train_common.trainer import TrainContext
+from mydeep_train.ctx.train_dataset import TrainDataset
+from mydeep_train.trainer import TrainContext
 
 
 class SearchLearningRate(PipelineWorker):

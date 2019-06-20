@@ -55,4 +55,4 @@ class TresholdFilter(PipelineWorker):
             .map(tensor_from_path) \
             .map(extract_features) \
             .enumerate() \
-            .foreach(tensor_save(target_ws.path_to('features')))
+            .foreach(tensor_save(target_ws.path_to('images')))

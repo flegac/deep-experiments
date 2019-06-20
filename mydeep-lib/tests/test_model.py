@@ -1,6 +1,6 @@
 from mydeep_lib.models.basic_model import basic_model
 from mydeep_lib.models.basic_model_v2 import model_v2
-from train_common.ctx.model import Model
+from mydeep_train.ctx.model import Model
 
 
 def test_sequential_model():

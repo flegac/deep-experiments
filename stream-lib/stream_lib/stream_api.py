@@ -1,4 +1,5 @@
 import collections
+from functools import partial
 from typing import Iterator, Callable, List, Any, TypeVar, Generic, Tuple
 
 from tqdm import tqdm
@@ -22,20 +23,36 @@ class Stream(Iterator[T]):
     def __next__(self) -> T:
         raise NotImplementedError()
 
-    def apply(self, func: Callable[[Iterator[U]], Iterator[U]]) -> 'Stream[U]':
+    def apply(self, func: Callable[[Iterator[T]], Iterator[U]]) -> 'Stream[U]':
         new_stream = func(self)
         if isinstance(new_stream, Stream):
             return new_stream
         return self._stream(new_stream)
 
+    def apply_partial(self, func: Callable, *args, **kwargs):
+        func = _update_func(func, *args, **kwargs)
+        return self.apply(func)
+
     def map(self, func: Callable[[T], U]) -> 'Stream[U]':
         raise NotImplementedError()
+
+    def map_partial(self, func: Callable, *args, **kwargs):
+        func = _update_func(func, *args, **kwargs)
+        return self.map(func)
 
     def flatmap(self, func: Callable[[T], 'Stream[U]']) -> 'Stream[U]':
         raise NotImplementedError()
 
+    def flatmap_partial(self, func: Callable, *args, **kwargs):
+        func = _update_func(func, *args, **kwargs)
+        return self.flatmap(func)
+
     def filter(self, predicate: Callable[[T], bool]) -> 'Stream[T]':
         raise NotImplementedError()
+
+    def filter_partial(self, predicate: Callable, *args, **kwargs):
+        func = _update_func(predicate, *args, **kwargs)
+        return self.filter(func)
 
     def slice(self, start: int, stop: int, step: int = 1) -> 'Stream[T]':
         raise NotImplementedError()
@@ -66,7 +83,7 @@ class Stream(Iterator[T]):
             acc = reduce_func(acc, x)
         return acc
 
-    def foreach(self, func) -> None:
+    def foreach(self, func: Callable) -> None:
         for x in tqdm(self):
             func(x)
 
@@ -87,3 +104,9 @@ class StreamProvider(Generic[T]):
 
     def __call__(self):
         return self.stream()
+
+
+def _update_func(func: Callable, *args, **kwargs):
+    if args or kwargs:
+        return partial(func, *args, **kwargs)
+    return func

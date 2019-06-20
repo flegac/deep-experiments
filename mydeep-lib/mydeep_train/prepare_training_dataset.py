@@ -3,8 +3,8 @@ from sklearn.utils import shuffle
 
 from surili_core.pipeline_worker import PipelineWorker
 from surili_core.workspace import Workspace
-from train_common.ctx.dataset import Dataset
-from train_common.ctx.train_dataset import TrainDataset
+from mydeep_train.ctx.dataset import Dataset
+from mydeep_train.ctx.train_dataset import TrainDataset
 
 
 class PrepareTrainingDataset(PipelineWorker):

@@ -3,15 +3,14 @@ import keras
 from hyper_search.train_parameters import TrainParameters
 from monkeys_detection.prepare_monkeys import PrepareMonkeys
 from mydeep_lib.models.basic_model import basic_model
-from train_common.compute_submission import ComputeSubmission
-from train_common.ctx.model import Model
+from mydeep_train.compute_submission import ComputeSubmission
+from mydeep_train.ctx.model import Model
+from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
+from mydeep_train.validate_training import ValidateTraining
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline
-from train_common.ctx.train_context import TrainContext
-from train_common.prepare_training_dataset import PrepareTrainingDataset
-from train_common.search_learning_rate import SearchLearningRate
-from train_common.trainer import Trainer
-from train_common.validate_training import ValidateTraining
+from mydeep_train.search_learning_rate import SearchLearningRate
+from mydeep_train.trainer import Trainer, TrainContext
 
 train_ctx = TrainContext(
 

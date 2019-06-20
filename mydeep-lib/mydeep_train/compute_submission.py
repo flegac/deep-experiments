@@ -4,9 +4,9 @@ import pandas as pd
 from hyper_search.train_parameters import TrainParameters
 from surili_core.pipeline_worker import PipelineWorker
 from surili_core.workspace import Workspace
-from train_common.ctx.dataset import Dataset
-from train_common.ctx.train_dataset import TrainDataset
-from train_common.ctx.model import Model
+from mydeep_train.ctx.dataset import Dataset
+from mydeep_train.ctx.train_dataset import TrainDataset
+from mydeep_train.ctx.model import Model
 
 
 class ComputeSubmission(PipelineWorker):
