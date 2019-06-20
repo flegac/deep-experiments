@@ -3,12 +3,12 @@ import keras
 from hyper_search.train_parameters import TrainParameters
 from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
 from sign_mnist.prepare_sign_mnist import PrepareSignMnist
-from sign_mnist.trainer_xgboost import TrainerXGBoost
+from sign_mnist.trainer_gradient_boosting import TrainerGradientBoosting
 from sign_mnist.treshold_filter import TresholdFilter, extract_features
 from surili_core.pipelines import pipeline
 from surili_core.pipeline_context import PipelineContext
 
-train_ctx = TrainerXGBoost.create_ctx(
+train_ctx = TrainerGradientBoosting.create_ctx(
     params=TrainParameters({
         'learning_rate': 0.01,
         'subsample': 0.5
@@ -28,7 +28,7 @@ pipe = pipeline([
     PrepareSignMnist(),
     # TresholdFilter(),
     PrepareTrainingDataset(test_size=0.1),
-    TrainerXGBoost(train_ctx)
+    TrainerGradientBoosting(train_ctx)
 ])
 
 pipe(PipelineContext(

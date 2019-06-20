@@ -1,5 +1,4 @@
 import sklearn
-from sklearn import pipeline
 from sklearn.ensemble import GradientBoostingClassifier
 from tqdm import tqdm
 from typing import Tuple, Callable
@@ -54,7 +53,7 @@ class TrainContext(object):
         )
 
 
-class TrainerXGBoost(PipelineWorker):
+class TrainerGradientBoosting(PipelineWorker):
     create_ctx = TrainContext
     model_id = 1
 
@@ -91,7 +90,7 @@ class TrainerXGBoost(PipelineWorker):
         plt.figure()
 
         # compute test set deviance
-        gradient_model = model.steps[TrainerXGBoost.model_id][1]
+        gradient_model = model.steps[TrainerGradientBoosting.model_id][1]
         # gradient_model = model
 
         # x_test = model.steps[0][1].transform(x_test)
