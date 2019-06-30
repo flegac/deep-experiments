@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from mydeep_lib.dataframe import Dataframes
-from surili_core.pipeline_worker import PipelineWorker
+from surili_core.pipeline_worker import Worker
 from surili_core.pipeline_context import PipelineContext
 from mydeep_lib.tensor.tensor_util import tensor_from_path, tensor_scale, tensor_centered_window
 from surili_core.workspace import Workspace
@@ -47,13 +47,13 @@ def load_dataframe(ctx: PipelineContext):
     return df
 
 
-class ComputeStats(PipelineWorker):
+class ComputeStats(Worker):
     def __init__(self, region=tuple) -> None:
         super().__init__('scan dataset', '')
         self.region = region
 
-    def apply(self, target_ws: Workspace):
-        dataset = load_dataframe(self.ctx)
+    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+        dataset = load_dataframe(ctx)
         datasets = compute_stats(dataset)
 
         for r in datasets:

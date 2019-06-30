@@ -42,7 +42,7 @@ class Workspace:
             if content:
                 json.dump(content, _, indent=2, sort_keys=True)
 
-    def save(self, name_function):
+    def writer(self, name_function):
         if not callable(name_function):
             name = name_function
             name_function = lambda x: name
@@ -55,7 +55,7 @@ class Workspace:
 
         return apply
 
-    def load(self):
+    def reader(self):
         def apply(path):
             path = os.path.join(self.path, path)
             with open(path, 'rb') as file:

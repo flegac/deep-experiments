@@ -5,21 +5,22 @@ import pandas as pd
 
 from mydeep_lib.dataframe import Dataframes
 from mydeep_train.ctx.dataset import Dataset
-from surili_core.pipeline_worker import PipelineWorker
+from surili_core.pipeline_context import PipelineContext
+from surili_core.pipeline_worker import Worker
 from surili_core.workspace import Workspace
 
 
-class PrepareMonkeys(PipelineWorker):
+class PrepareMonkeys(Worker):
 
     def __init__(self, col_x='x', col_y='y'):
         super().__init__('Prepare raw dataset', 'raw_dataset')
         self.col_x = col_x
         self.col_y = col_y
 
-    def apply(self, target_ws: Workspace):
-        path = self.ctx.root_ws.path_to('training')
+    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+        path = ctx.root_ws.path_to('training')
         training = Dataframes.from_directory_structure(self.col_x, self.col_y)(path)
-        path = self.ctx.root_ws.path_to('validation')
+        path = ctx.root_ws.path_to('validation')
         validation = Dataframes.from_directory_structure(self.col_x, self.col_y)(path)
         df = pd.concat([training, validation], axis=0, ignore_index=True)
 

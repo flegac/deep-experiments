@@ -13,7 +13,7 @@ class PipelineContext(object):
         self.project_ws = self.root_ws.get_ws(os.path.join('_Projects', 'alpha', project_name))
         self.max_batch_size = 256
 
-        running_script_path = get_running_script_path()
+        running_script_path = _get_running_script_path()
         script_destination_path = self.project_ws.path_to('script.py.txt')
         if not os.path.exists(script_destination_path):
             shutil.copyfile(running_script_path, script_destination_path)
@@ -21,5 +21,5 @@ class PipelineContext(object):
             raise ValueError('Existing project {}: but running script has changed !'.format(self.project_ws.path))
 
 
-def get_running_script_path():
+def _get_running_script_path():
     return os.path.abspath(inspect.stack()[-1][1])

@@ -3,7 +3,8 @@ from keras import backend as K
 from typing import Callable
 
 from hyper_search.train_parameters import TrainParameters
-from surili_core.pipeline_worker import PipelineWorker
+from surili_core.pipeline_context import PipelineContext
+from surili_core.pipeline_worker import Worker
 from surili_core.workspace import Workspace
 from mydeep_train.ctx.model import Model
 from mydeep_train.ctx.train_dataset import TrainDataset
@@ -25,15 +26,15 @@ class TrainContext(object):
         return self.model_provider()
 
 
-class Trainer(PipelineWorker):
+class Trainer(Worker):
     create_ctx = TrainContext
 
     def __init__(self, params: TrainContext) -> None:
         super().__init__('model training', 'training')
         self.params = params
 
-    def apply(self, target_ws: Workspace):
-        dataset_ws = self.ctx.project_ws.get_ws('dataset')
+    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+        dataset_ws = ctx.project_ws.get_ws('dataset')
         models_ws = target_ws.get_ws('models')
         params_ws = target_ws.get_ws('params')
 

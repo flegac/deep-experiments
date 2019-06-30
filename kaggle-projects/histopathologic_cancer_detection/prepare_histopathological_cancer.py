@@ -2,17 +2,18 @@ import pandas as pd
 
 from mydeep_lib.dataframe import Dataframes
 from mydeep_train.ctx.dataset import Dataset
-from surili_core.pipeline_worker import PipelineWorker
+from surili_core.pipeline_context import PipelineContext
+from surili_core.pipeline_worker import Worker
 from surili_core.workspace import Workspace
 
 
-class PrepareHistopathologicCancer(PipelineWorker):
+class PrepareHistopathologicCancer(Worker):
     def __init__(self):
         super().__init__('Prepare raw dataset', 'raw_dataset')
 
-    def apply(self, target_ws: Workspace):
-        path = self.ctx.root_ws.path_to('train')
-        df = Dataframes.from_csv(self.ctx.root_ws.path_to('train_labels.csv'))
+    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+        path = ctx.root_ws.path_to('train')
+        df = Dataframes.from_csv(ctx.root_ws.path_to('train_labels.csv'))
         df = pd.DataFrame({
             'x': df['id'],
             'y': df['label']

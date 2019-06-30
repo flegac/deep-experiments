@@ -8,7 +8,8 @@ from tqdm import tqdm
 
 from mydeep_lib.tensor.tensor import Tensor
 from mydeep_lib.tensor.tensor_util import tensor_from_path, tensor_save
-from surili_core.pipeline_worker import PipelineWorker
+from surili_core.pipeline_context import PipelineContext
+from surili_core.pipeline_worker import Worker
 from surili_core.workspace import Workspace
 
 import numpy as np
@@ -18,7 +19,11 @@ import matplotlib.pyplot as plt
 
 
 def extract_features(rgb: Tensor):
-    gray = np.dot(rgb[..., :3], [0.2989, 0.5870, 0.1140])
+    if len(rgb.shape) == 3:
+        rgb = rgb[..., :3]
+        gray = np.dot(rgb, [0.2989, 0.5870, 0.1140])
+    else:
+        gray = rgb
     # plt.imshow(gray, cmap='gray', interpolation='nearest').figure.show()
 
     # gray = gaussian_filter(gray, sigma=1)
@@ -41,15 +46,15 @@ def extract_features(rgb: Tensor):
     return mask
 
 
-class TresholdFilter(PipelineWorker):
+class TresholdFilter(Worker):
 
     def __init__(self):
         super().__init__('Treshold filter', 'treshold_filter')
         self.col_x = 'x'
         self.col_y = 'y'
 
-    def apply(self, target_ws: Workspace):
-        self.ctx.project_ws \
+    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+        ctx.project_ws \
             .get_ws('raw_dataset/images') \
             .files() \
             .map(tensor_from_path) \

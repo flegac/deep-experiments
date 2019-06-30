@@ -21,13 +21,13 @@ class Dataset(object):
     def __init__(self, dataset: pd.DataFrame, images_path: str, images_ext: str,
                  x_col='x', y_col='y'):
         self.df = dataset
-        self.img_path = images_path
-        self.img_ext = images_ext
+        self.images_path = images_path
+        self.images_ext = images_ext
         self.x_col = x_col
         self.y_col = y_col
 
     def filenames(self):
-        image_path = '{}.' + self.img_ext
+        image_path = '{}.' + self.images_ext
         return self.df[self.x_col].apply(image_path.format)
 
     def size(self):
@@ -45,7 +45,7 @@ class Dataset(object):
             dataframe=df,
             x_col='_filename', y_col=self.y_col,
             classes=list(df[self.y_col].unique()),
-            directory=self.img_path,
+            directory=self.images_path,
             target_size=target_shape,
             batch_size=batch_size,
             class_mode=class_mode,
@@ -59,8 +59,8 @@ class Dataset(object):
         with open(path, 'w') as _:
             json.dump({
                 'dataset_path': dataset_path,
-                'images_path': self.img_path,
-                'images_ext': self.img_ext,
+                'images_path': self.images_path,
+                'images_ext': self.images_ext,
                 'x_col': self.x_col,
                 'y_col': self.y_col
             }, _, sort_keys=True, indent=4, separators=(',', ': '))
@@ -69,6 +69,6 @@ class Dataset(object):
     def __repr__(self) -> str:
         return json.dumps({
             'dataset': list(self.df),
-            'img_path': '{}__id__.{}'.format(self.img_path, self.img_ext),
+            'images_path': '{}__id__.{}'.format(self.images_path, self.images_ext),
             'x_y': [self.x_col, self.y_col]
         }, sort_keys=True, separators=(',', ': '))

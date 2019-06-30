@@ -1,12 +1,12 @@
 import time
 
 from surili_core.pipelines import pipeline
-from surili_core.pipeline_worker import PipelineWorker
+from surili_core.pipeline_worker import Worker
 from surili_core.pipeline_context import PipelineContext
 from surili_core.workspace import Workspace
 
 
-class TestWorker(PipelineWorker):
+class TestWorker(Worker):
     def __init__(self):
         super().__init__("test1", "test1")
 
@@ -14,7 +14,7 @@ class TestWorker(PipelineWorker):
         time.sleep(2)
 
 
-class TestWorker2(PipelineWorker):
+class TestWorker2(Worker):
     def __init__(self):
         super().__init__("test2", "test2")
 

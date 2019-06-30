@@ -5,8 +5,8 @@ from mydeep_lib.models.basic_model_v2 import model_v2
 from mydeep_train.ctx.model import Model
 from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_train.validate_training import ValidateTraining
-from sign_mnist.prepare_sign_mnist import PrepareSignMnist
-from surili_core.pipelines import pipeline
+from sign_mnist.prepare_sign_mnist import PrepareSignMnist, sign_mnist_preparator
+from surili_core.pipelines import pipeline, step
 from surili_core.pipeline_context import PipelineContext
 from mydeep_train.trainer import Trainer
 
@@ -73,7 +73,8 @@ train_ctx = Trainer.create_ctx(
 )
 
 pipe = pipeline([
-    PrepareSignMnist(),
+    step('Prepare raw dataset', 'raw_dataset', worker=sign_mnist_preparator),
+    # PrepareSignMnist(),
     PrepareTrainingDataset(test_size=0.1),
     Trainer(train_ctx),
     ValidateTraining(train_ctx.augmentation)

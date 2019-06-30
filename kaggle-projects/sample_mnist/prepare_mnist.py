@@ -1,8 +1,8 @@
-from surili_core.pipeline_worker import PipelineWorker
+from surili_core.pipeline_worker import Worker
 from surili_core.workspace import Workspace
 
 
-class PrepareMnist(PipelineWorker):
+class PrepareMnist(Worker):
 
     def __init__(self):
         super().__init__('Prepare raw dataset', 'raw_dataset')

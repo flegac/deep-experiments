@@ -1,11 +1,12 @@
 from mydeep_lib.callbacks.lr_finder import LRFinder
-from surili_core.pipeline_worker import PipelineWorker
+from surili_core.pipeline_context import PipelineContext
+from surili_core.pipeline_worker import Worker
 from surili_core.workspace import Workspace
 from mydeep_train.ctx.train_dataset import TrainDataset
 from mydeep_train.trainer import TrainContext
 
 
-class SearchLearningRate(PipelineWorker):
+class SearchLearningRate(Worker):
     def __init__(self, params: TrainContext, min_lr: float = 1e-6, max_lr: float = 1., epochs: int = 2) -> None:
         super().__init__('Learning Rate Finder', 'lr_finder')
         self.params = params
@@ -13,8 +14,8 @@ class SearchLearningRate(PipelineWorker):
         self.max_lr = max_lr
         self.epochs = epochs
 
-    def apply(self, target_ws: Workspace):
-        dataset_ws = self.ctx.project_ws.get_ws('dataset')
+    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+        dataset_ws = ctx.project_ws.get_ws('dataset')
 
         # load params
         dataset = TrainDataset.from_path(dataset_ws)
