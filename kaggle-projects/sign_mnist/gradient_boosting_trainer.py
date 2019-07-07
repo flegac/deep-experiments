@@ -4,7 +4,7 @@ from tqdm import tqdm
 from typing import Tuple, Callable
 
 from hyper_search.train_parameters import TrainParameters
-from mydeep_lib.tensor.tensor import Tensor
+from mydeep_api.tensor import Tensor
 from mydeep_train.ctx.dataset import Dataset
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipeline_worker import Worker

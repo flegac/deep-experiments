@@ -2,7 +2,7 @@ import keras
 
 from hyper_search.train_parameters import TrainParameters
 from mydeep_lib.models.basic_model import basic_model
-from mydeep_train.ctx.model import Model
+from mydeep_train.ctx.kmodel import KModel
 from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_train.validate_training import ValidateTraining
 from sample_mnist.prepare_mnist import PrepareMnist
@@ -12,7 +12,7 @@ from mydeep_train.trainer import Trainer
 
 train_ctx = Trainer.create_ctx(
 
-    model_provider=lambda: Model.from_keras(
+    model_provider=lambda: KModel.from_keras(
         basic_model(
             input_shape=(28, 28, 1),
             output_class_number=10,

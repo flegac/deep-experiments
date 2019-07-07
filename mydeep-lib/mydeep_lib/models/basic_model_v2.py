@@ -1,15 +1,17 @@
+from typing import Tuple
+
 from keras import Model
 from keras.layers import *
 
 
 def model_v2(input_shape,
              output_class_number: int,
-             kernel_size=(3, 3),
-             base_filters=16,
+             kernel_size: Tuple[int, int] = (3, 3),
+             base_filters: int = 16,
              dropout_rate=0.25,
              activation='relu',
              layer_batch_size=2,
-             layer_batch_number=2):
+             layer_batch_number=2) -> Model:
     inputs = Input(shape=input_shape)
     x = inputs
 

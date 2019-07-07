@@ -10,7 +10,7 @@ from surili_core.workspace import Workspace
 from mydeep_train.ctx.dataset import Dataset
 from mydeep_train.ctx.train_dataset import TrainDataset
 from mydeep_lib.visualize.confusion_matrix import ConfusionMatrix
-from mydeep_train.ctx.model import Model
+from mydeep_train.ctx.kmodel import KModel
 
 
 class ValidateTraining(Worker):
@@ -55,7 +55,7 @@ class ValidateTraining(Worker):
     def make_predictions(self, ctx: PipelineContext, dataset: Dataset, target_ws: Workspace):
         # model ---------------------------------------
         training_ws = ctx.project_ws.get_ws('training')
-        model = Model.from_path(training_ws.path_to('output/model_final.h5'))
+        model = KModel.from_path(training_ws.path_to('output/model_final.h5'))
 
         df = dataset.df
         df['_filename'] = dataset.filenames()

@@ -3,16 +3,12 @@ import json
 import keras
 
 
-class Model(object):
-    # TODO: test if model.get_config() save the compilation options (optimizer, loss ...) in its json representation
-
-    # TODO : robustify serialization - use keras.models.load_model / keras_model.save()
-
+class KModel(object):
     @staticmethod
     def from_keras(keras_model: keras.Model, compile_params: dict):
         if compile_params:
             keras_model.compile(**compile_params)
-        return Model(keras_model)
+        return KModel(keras_model)
 
     @staticmethod
     def from_path(path: str):
@@ -26,7 +22,7 @@ class Model(object):
             with open(config_path) as _:
                 keras_model = keras.Model.from_config(json.load(_))
         keras_model.load_weights(path)
-        return Model(keras_model)
+        return KModel(keras_model)
 
     def __init__(self, keras_model: keras.Model):
         self.keras_model = keras_model

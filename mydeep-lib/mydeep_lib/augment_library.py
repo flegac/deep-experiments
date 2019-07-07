@@ -3,7 +3,7 @@ import random
 
 import numpy as np
 
-from mydeep_lib.tensor.tensor import Tensor
+from mydeep_api.tensor import Tensor
 
 
 def augment_light(brightness: float, contrast: float):

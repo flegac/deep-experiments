@@ -6,14 +6,14 @@ from hyper_search.train_parameters import TrainParameters
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipeline_worker import Worker
 from surili_core.workspace import Workspace
-from mydeep_train.ctx.model import Model
+from mydeep_train.ctx.kmodel import KModel
 from mydeep_train.ctx.train_dataset import TrainDataset
 
 
 class TrainContext(object):
 
     def __init__(self,
-                 model_provider: Callable[[], Model],
+                 model_provider: Callable[[], KModel],
                  params: TrainParameters,
                  augmentation) -> None:
         super().__init__()

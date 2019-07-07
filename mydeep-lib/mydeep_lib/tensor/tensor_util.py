@@ -4,7 +4,7 @@ from typing import Tuple
 import cv2
 import numpy as np
 
-from mydeep_lib.tensor.tensor import Tensor
+from mydeep_api.tensor import Tensor
 from sklearn import preprocessing
 
 

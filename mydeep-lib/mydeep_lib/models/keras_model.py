@@ -2,7 +2,7 @@ from keras import Model
 from keras.layers import *
 
 
-def keras_model(input_shape, output_class_number, k_model, **k_model_args):
+def keras_model(input_shape, output_class_number, k_model, **k_model_args) -> Model:
     inputs = Input(input_shape)
     base_model = k_model(include_top=False, input_shape=input_shape, **k_model_args)
     x = base_model(inputs)

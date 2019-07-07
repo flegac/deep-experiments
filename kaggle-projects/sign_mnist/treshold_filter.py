@@ -1,12 +1,7 @@
-import os
-import random
-
 import sklearn
-from scipy.ndimage import gaussian_filter
 from skimage.measure import block_reduce
-from tqdm import tqdm
 
-from mydeep_lib.tensor.tensor import Tensor
+from mydeep_api.tensor import Tensor
 from mydeep_lib.tensor.tensor_util import tensor_from_path, tensor_save
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipeline_worker import Worker
@@ -15,7 +10,6 @@ from surili_core.workspace import Workspace
 import numpy as np
 
 from skimage import filters
-import matplotlib.pyplot as plt
 
 
 def extract_features(rgb: Tensor):

@@ -4,7 +4,7 @@ from hyper_search.train_parameters import TrainParameters
 from monkeys_detection.prepare_monkeys import PrepareMonkeys
 from mydeep_lib.models.basic_model import basic_model
 from mydeep_train.compute_submission import ComputeSubmission
-from mydeep_train.ctx.model import Model
+from mydeep_train.ctx.kmodel import KModel
 from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_train.validate_training import ValidateTraining
 from surili_core.pipeline_context import PipelineContext
@@ -14,7 +14,7 @@ from mydeep_train.trainer import Trainer, TrainContext
 
 train_ctx = TrainContext(
 
-    model_provider=lambda: Model.from_keras(
+    model_provider=lambda: KModel.from_keras(
         basic_model(
             input_shape=(128, 128, 3),
             output_class_number=10,
