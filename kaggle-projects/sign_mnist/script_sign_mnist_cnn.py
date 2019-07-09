@@ -3,12 +3,12 @@ import keras
 from hyper_search.train_parameters import TrainParameters
 from mydeep_keras.models.basic_model_v2 import model_v2
 from mydeep_keras.k_model import KModel
-from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
-from mydeep_train.validate_training import ValidateTraining
+from mydeep_lib.worker.prepare_training_dataset import PrepareTrainingDataset
+from mydeep_lib.worker.validate_training import ValidateTraining
 from sign_mnist.prepare_sign_mnist import sign_mnist_preparator
 from surili_core.pipelines import pipeline, step
 from surili_core.pipeline_context import PipelineContext
-from mydeep_train.trainer import Trainer
+from mydeep_lib.worker.trainer import Trainer
 
 train_ctx = Trainer.create_ctx(
 

@@ -1,11 +1,11 @@
 import keras
 
 from hyper_search.train_parameters import TrainParameters
-from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
+from mydeep_lib.worker.prepare_training_dataset import PrepareTrainingDataset
 from sign_mnist.prepare_sign_mnist import sign_mnist_preparator
 from sign_mnist.gradient_boosting_trainer import GradientBoostingTrainer
 from sign_mnist.gradient_boosting_evaluator import GradientBoostingEvaluator
-from sign_mnist.treshold_filter import TresholdFilter, extract_features
+from sign_mnist.treshold_filter import extract_features
 from surili_core.pipelines import pipeline, step
 from surili_core.pipeline_context import PipelineContext
 

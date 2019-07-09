@@ -1,7 +1,7 @@
 import time
 
 from surili_core.pipelines import pipeline
-from surili_core.pipeline_worker import Worker
+from surili_core.worker import Worker
 from surili_core.pipeline_context import PipelineContext
 from surili_core.workspace import Workspace
 

@@ -5,9 +5,9 @@ from keras.callbacks import ModelCheckpoint, CSVLogger, Callback
 
 from hyper_search.train_parameters import TrainParameters
 from mydeep_keras.k_model import KModel
-from mydeep_train.ctx.train_dataset import TrainDataset
+from mydeep_lib.train_dataset import TrainDataset
 from surili_core.pipeline_context import PipelineContext
-from surili_core.pipeline_worker import Worker
+from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 

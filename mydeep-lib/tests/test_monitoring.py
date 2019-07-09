@@ -6,7 +6,7 @@ from mydeep_api.monitoring.dataset_viewer import DatasetViewer
 from mydeep_api.monitoring.history_viewer import HistoryViewer
 from surili_core.workspace import Workspace
 
-ws = Workspace.from_path('../resources')
+ws = Workspace.from_path('resources')
 
 
 def test_history_monitoring():

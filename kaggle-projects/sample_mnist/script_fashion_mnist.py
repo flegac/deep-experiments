@@ -3,9 +3,9 @@ import keras
 from hyper_search.train_parameters import TrainParameters
 from mydeep_keras.models.basic_model import basic_model
 from mydeep_keras.k_model import KModel
-from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
-from mydeep_train.trainer import Trainer
-from mydeep_train.validate_training import ValidateTraining
+from mydeep_lib.worker.prepare_training_dataset import PrepareTrainingDataset
+from mydeep_lib.worker.trainer import Trainer
+from mydeep_lib.worker.validate_training import ValidateTraining
 from sample_mnist.prepare_mnist import PrepareMnist
 from surili_core.pipelines import pipeline
 from surili_core.pipeline_context import PipelineContext

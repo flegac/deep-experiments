@@ -2,9 +2,9 @@ import sklearn
 from skimage.measure import block_reduce
 
 from mydeep_api.tensor import Tensor
-from mydeep_lib.tensor.tensor_util import tensor_from_path, tensor_save
+from mydeep_lib.tensor_util import tensor_from_path, tensor_save
 from surili_core.pipeline_context import PipelineContext
-from surili_core.pipeline_worker import Worker
+from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 import numpy as np

@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 
 from mydeep_lib.dataframe import Dataframes
-from surili_core.pipeline_worker import Worker
+from surili_core.worker import Worker
 from surili_core.pipeline_context import PipelineContext
-from mydeep_lib.tensor.tensor_util import tensor_from_path, tensor_scale, tensor_centered_window
+from mydeep_lib.tensor_util import tensor_from_path, tensor_scale, tensor_centered_window
 from surili_core.workspace import Workspace
 from stream_lib.stream import stream
 

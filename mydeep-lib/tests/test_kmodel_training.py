@@ -8,7 +8,7 @@ from mydeep_api.dataset.numpy_dataset import NumpyDataset
 from mydeep_keras.k_model import KModel, KFitConfig
 
 
-def test_kmodel():
+def test_fit():
     input_shape = (10, 10, 3)
     output_class_number = 10
 
@@ -39,5 +39,4 @@ def test_kmodel():
         ),
         config=KFitConfig(
             epochs=3,
-
         ))

@@ -4,9 +4,9 @@ import shutil
 import pandas as pd
 
 from mydeep_lib.dataframe import Dataframes
-from mydeep_train.ctx.dataset import Dataset
+from mydeep_lib.dataset import Dataset
 from surili_core.pipeline_context import PipelineContext
-from surili_core.pipeline_worker import Worker
+from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 

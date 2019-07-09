@@ -4,13 +4,13 @@ from histopathologic_cancer_detection.prepare_histopathological_cancer import Pr
 from hyper_search.train_parameters import TrainParameters
 from mydeep_keras.callbacks import CyclicLR
 from mydeep_keras.models.keras_application import keras_application
-from mydeep_train.compute_submission import ComputeSubmission
+from mydeep_lib.worker.compute_submission import ComputeSubmission
 from mydeep_keras.k_model import KModel
-from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
-from mydeep_train.validate_training import ValidateTraining
+from mydeep_lib.worker.prepare_training_dataset import PrepareTrainingDataset
+from mydeep_lib.worker.validate_training import ValidateTraining
 from surili_core.pipelines import pipeline
 from surili_core.pipeline_context import PipelineContext
-from mydeep_train.trainer import Trainer
+from mydeep_lib.worker.trainer import Trainer
 
 train_ctx = Trainer.create_ctx(
     model_provider=lambda: KModel.from_keras(

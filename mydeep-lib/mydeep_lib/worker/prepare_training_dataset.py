@@ -2,10 +2,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 
 from surili_core.pipeline_context import PipelineContext
-from surili_core.pipeline_worker import Worker
+from surili_core.worker import Worker
 from surili_core.workspace import Workspace
-from mydeep_train.ctx.dataset import Dataset
-from mydeep_train.ctx.train_dataset import TrainDataset
+from mydeep_lib.dataset import Dataset
+from mydeep_lib.train_dataset import TrainDataset
 
 
 class PrepareTrainingDataset(Worker):

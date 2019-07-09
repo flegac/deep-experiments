@@ -2,8 +2,8 @@ from typing import Tuple
 
 from tqdm import tqdm
 
-from mydeep_lib.tensor.tensor_util import tensor_save, tensor_from_path
-from mydeep_train.ctx.dataset import Dataset
+from mydeep_lib.tensor_util import tensor_save, tensor_from_path
+from mydeep_lib.dataset import Dataset
 from sign_mnist.treshold_filter import extract_features
 from surili_core.pipeline_context import PipelineContext
 from surili_core.workspace import Workspace

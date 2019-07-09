@@ -4,10 +4,10 @@ from matplotlib import pyplot as plt
 from sklearn.externals import joblib
 
 from hyper_search.train_parameters import TrainParameters
-from mydeep_train.ctx.train_dataset import TrainDataset
-from sign_mnist.gradient_boosting_trainer import GradientBoostingContext, create_dataset
+from mydeep_lib.train_dataset import TrainDataset
+from sign_mnist.gradient_boosting_trainer import create_dataset
 from surili_core.pipeline_context import PipelineContext
-from surili_core.pipeline_worker import Worker
+from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 

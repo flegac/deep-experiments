@@ -1,9 +1,9 @@
 from mydeep_keras.callbacks import LRFinder
 from surili_core.pipeline_context import PipelineContext
-from surili_core.pipeline_worker import Worker
+from surili_core.worker import Worker
 from surili_core.workspace import Workspace
-from mydeep_train.ctx.train_dataset import TrainDataset
-from mydeep_train.trainer import TrainContext
+from mydeep_lib.train_dataset import TrainDataset
+from mydeep_lib.worker.trainer import TrainContext
 
 
 class SearchLearningRate(Worker):
