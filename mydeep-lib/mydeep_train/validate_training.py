@@ -10,7 +10,7 @@ from surili_core.workspace import Workspace
 from mydeep_train.ctx.dataset import Dataset
 from mydeep_train.ctx.train_dataset import TrainDataset
 from mydeep_lib.visualize.confusion_matrix import ConfusionMatrix
-from mydeep_train.ctx.kmodel import KModel
+from mydeep_api.model.keras_model import KModel
 
 
 class ValidateTraining(Worker):

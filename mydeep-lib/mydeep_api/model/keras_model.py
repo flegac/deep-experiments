@@ -1,17 +1,35 @@
 import json
-from typing import Dict
+import random
+from typing import List, Callable
 
 import keras
 import numpy as np
-from keras import Sequential
-from keras.layers import Lambda, Conv2D, BatchNormalization, Activation, MaxPooling2D, Dropout, GlobalAveragePooling2D, \
-    Dense
 from keras.preprocessing.image import ImageDataGenerator
 
 from mydeep_api.api import Data
 from mydeep_api.dataset.dataset import Dataset, BiDataset
 from mydeep_api.dataset.numpy_dataset import NumpyDataset
-from mydeep_api.model.model import Model
+from mydeep_api.model.model import Model, FitConfig, FitReport
+
+
+class KFitReport(FitReport):
+    def __init__(self, history):
+        self.history = history
+
+
+class KFitConfig(FitConfig):
+    def __init__(self,
+                 epochs: int,
+                 batch_size: int = 32,
+                 seed: int = random.randrange(1000),
+                 shuffle: bool = True,
+                 callbacks: List[Callable] = None
+                 ):
+        super().__init__(seed)
+        self.epochs = epochs
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+        self.callbacks = callbacks or []
 
 
 class KModel(Model):
@@ -60,56 +78,29 @@ class KModel(Model):
             print('could not serialize the model.get_congih() !')
         self.keras_model.save_weights(path)
 
-    def fit(self, dataset: BiDataset, params: Dict = None):
-        params = params or {}
+    def fit(self, dataset: BiDataset, config: KFitConfig = None) -> KFitReport:
+        config = config or {}
 
-        flow = ImageDataGenerator().flow(
-            x=np.array(list(dataset.x)),
-            y=np.array(list(dataset.y))
+        history = self.keras_model.fit_generator(
+            generator=ImageDataGenerator().flow(
+                x=np.array(list(dataset.x)),
+                y=np.array(list(dataset.y)),
+                seed=config.seed
+            ),
+            epochs=config.epochs,
+            steps_per_epoch=int(len(dataset) / config.batch_size),
+            verbose=1,
+            callbacks=config.callbacks,
+            validation_data=None,
+            validation_steps=None,
+            shuffle=config.shuffle
         )
-        steps_per_epoch = len(dataset)
-        if params.get('batch_size'):
-            steps_per_epoch /= params['batch_size']
 
-        self.keras_model.fit_generator(
-            flow,
-            steps_per_epoch=steps_per_epoch
+        return KFitReport(
+            history=history
         )
-        # self.keras_model.fit(x=list(dataset.x), y=list(dataset.y), **(params or {}))
 
     def predict(self, x: Dataset):
         yy = NumpyDataset(np.array(self.keras_model.predict(x=x)))
 
         return Data.from_xy(x, yy)
-
-
-def test_kmodel():
-    input_shape = (10, 10, 3)
-    output_class_number = 10
-
-    model = KModel.from_keras(
-        keras_model=Sequential([
-            Lambda(lambda x: x, input_shape=input_shape, name="input_lambda"),
-            Conv2D(16, (3, 3), padding='same'),
-            BatchNormalization(),
-            Activation(activation='relu'),
-
-            MaxPooling2D(),
-            Dropout(.5),
-
-            GlobalAveragePooling2D(),
-            Dropout(.5),
-            Dense(output_class_number, activation='softmax')
-        ]),
-        compile_params={
-            'loss': 'binary_crossentropy',
-            'optimizer': 'Adam',
-            'metrics': ['accuracy']
-        })
-
-    model.fit(
-        dataset=Data.from_xy(
-            x=NumpyDataset(np.arange(1500).reshape((5, 10, 10, 3))),
-            y=NumpyDataset(np.arange(50).reshape((5, 10)))
-        ),
-        params={})

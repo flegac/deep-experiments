@@ -2,7 +2,7 @@ import keras
 
 from hyper_search.train_parameters import TrainParameters
 from mydeep_lib.models.basic_model_v2 import model_v2
-from mydeep_train.ctx.kmodel import KModel
+from mydeep_api.model.keras_model import KModel
 from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_train.validate_training import ValidateTraining
 from sign_mnist.prepare_sign_mnist import PrepareSignMnist, sign_mnist_preparator

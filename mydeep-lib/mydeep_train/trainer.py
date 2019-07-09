@@ -1,13 +1,14 @@
-from keras.callbacks import ModelCheckpoint, CSVLogger, Callback
-from keras import backend as K
 from typing import Callable
 
+from keras import backend as K
+from keras.callbacks import ModelCheckpoint, CSVLogger, Callback
+
 from hyper_search.train_parameters import TrainParameters
+from mydeep_api.model.keras_model import KModel
+from mydeep_train.ctx.train_dataset import TrainDataset
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipeline_worker import Worker
 from surili_core.workspace import Workspace
-from mydeep_train.ctx.kmodel import KModel
-from mydeep_train.ctx.train_dataset import TrainDataset
 
 
 class TrainContext(object):
@@ -36,7 +37,6 @@ class Trainer(Worker):
     def apply(self, ctx: PipelineContext, target_ws: Workspace):
         dataset_ws = ctx.project_ws.get_ws('dataset')
         models_ws = target_ws.get_ws('models')
-        params_ws = target_ws.get_ws('params')
 
         # load params
         dataset = TrainDataset.from_path(dataset_ws)
@@ -46,12 +46,7 @@ class Trainer(Worker):
         test_augmentation = self.params.augmentation.build()
 
         #  save params
-        with open(params_ws.path_to('params.json'), 'w') as _:
-            _.write(str(train_params))
-        with open(params_ws.path_to('augmentation.json'), 'w') as _:
-            _.write(str(self.params.augmentation))
-        model.to_path(params_ws.path_to('model.h5'))
-        dataset.to_path(params_ws.get_ws('dataset'))
+        self.save_params(dataset, model, target_ws, train_params)
 
         # ----- training -------------------------------------------------------------
         batch_size = train_params.params['batch_size']
@@ -90,6 +85,15 @@ class Trainer(Worker):
             ])
 
         return history
+
+    def save_params(self, dataset, model, target_ws, train_params):
+        params_ws = target_ws.get_ws('params')
+        with open(params_ws.path_to('params.json'), 'w') as _:
+            _.write(str(train_params))
+        with open(params_ws.path_to('augmentation.json'), 'w') as _:
+            _.write(str(self.params.augmentation))
+        model.to_path(params_ws.path_to('model.h5'))
+        dataset.to_path(params_ws.get_ws('dataset'))
 
 
 class LearningRateLogger(Callback):
