@@ -10,4 +10,4 @@ def stream(*iterables: Iterator[T]) -> Stream[T]:
     return ItertoolsStream.stream(*iterables)
 
 
-__all__ = [stream, Stream, StreamProvider]
+__all__ = ['stream', 'Stream', 'StreamProvider']

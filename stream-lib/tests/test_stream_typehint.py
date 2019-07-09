@@ -14,8 +14,8 @@ def treshold(x: float) -> bool:
 def test_map():
     result = stream(int_sequence) \
         .map(float) \
-        .map(to_string) \
         .filter(treshold) \
+        .map(to_string) \
         .to_list()
     print(result)
 

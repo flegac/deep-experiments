@@ -19,7 +19,10 @@ def cache(path: str, invalidate=False):
         def file_stream():
             with open(path, 'rb') as _:
                 while True:
-                    yield pickle.load(_)
+                    try:
+                        yield pickle.load(_)
+                    except:
+                        break
 
         return stream(file_stream())
 

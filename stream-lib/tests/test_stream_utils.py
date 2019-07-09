@@ -8,7 +8,9 @@ def test_cache():
     sequence = list(range(3))
 
     # count sequence 0 and save it to a cache
-    n0 = stream(sequence).apply(stream_util.cache('/tmp/stream_cache')).count()
+    n0 = stream(sequence) \
+        .apply(stream_util.cache('/tmp/stream_cache')) \
+        .count()
     assert n0 == len(sequence)
 
     # modify stream data

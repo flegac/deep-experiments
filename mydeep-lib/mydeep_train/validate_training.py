@@ -2,14 +2,14 @@ import numpy as np
 import pandas as pd
 
 from hyper_search.train_parameters import TrainParameters
-from mydeep_lib.visualize.visualize import Visualize
+from mydeep_api.monitoring.confusion_viewer import ConfusionViewer
+from mydeep_api.monitoring.history_viewer import HistoryViewer
+from mydeep_keras.k_model import KModel
+from mydeep_train.ctx.dataset import Dataset
+from mydeep_train.ctx.train_dataset import TrainDataset
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipeline_worker import Worker
 from surili_core.workspace import Workspace
-from mydeep_train.ctx.dataset import Dataset
-from mydeep_train.ctx.train_dataset import TrainDataset
-from mydeep_api.monitoring.confusion_viewer import ConfusionViewer
-from mydeep_keras.keras_model import KModel
 
 
 class ValidateTraining(Worker):
@@ -22,8 +22,8 @@ class ValidateTraining(Worker):
     def apply(self, ctx: PipelineContext, target_ws: Workspace):
         # training histogram -----------------------------------
         training_ws = ctx.project_ws.get_ws('training')
-        fig = Visualize.history_from_path(training_ws.path_to('training_logs.csv'))
-        fig.savefig(target_ws.path_to('training.png'))
+        history_viewer = HistoryViewer.from_path(training_ws.path_to('training_logs.csv'))
+        history_viewer.save(target_ws.path_to('training.png'))
 
         # confusion matrix -------------------------------------
         dataset = TrainDataset.from_path(ctx.project_ws.get_ws('dataset')).test
@@ -34,9 +34,8 @@ class ValidateTraining(Worker):
         # result[self.target_y] = result[self.target_y].apply(lambda x: 'n' + str(x))
 
         cm = ConfusionViewer(dataset.df[dataset.y_col], result[dataset.y_col])
-        fig = cm.plot(normalize=True)
-        fig.savefig(target_ws.path_to('confusion_matrix'))
-        fig.show()
+        cm.save(target_ws.path_to('confusion_matrix'), normalize=True)
+        cm.show()
 
         errors = result[dataset.df[dataset.y_col] != result[dataset.y_col]]
         errors.to_csv(target_ws.path_to('errors.csv'), index=False)

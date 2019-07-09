@@ -3,9 +3,9 @@ import keras
 from histopathologic_cancer_detection.prepare_histopathological_cancer import PrepareHistopathologicCancer
 from hyper_search.train_parameters import TrainParameters
 from mydeep_keras.callbacks import CyclicLR
-from mydeep_keras.models.keras_model import keras_model
+from mydeep_keras.models.keras_application import keras_application
 from mydeep_train.compute_submission import ComputeSubmission
-from mydeep_keras.keras_model import KModel
+from mydeep_keras.k_model import KModel
 from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_train.validate_training import ValidateTraining
 from surili_core.pipelines import pipeline
@@ -14,7 +14,7 @@ from mydeep_train.trainer import Trainer
 
 train_ctx = Trainer.create_ctx(
     model_provider=lambda: KModel.from_keras(
-        keras_model(
+        keras_application(
             input_shape=(96, 96, 3),
             output_class_number=2,
             k_model=keras.applications.DenseNet169
