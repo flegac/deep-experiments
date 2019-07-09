@@ -1,8 +1,8 @@
 import keras
 
 from hyper_search.train_parameters import TrainParameters
-from mydeep_lib.models.basic_model import basic_model
-from mydeep_api.model.keras_model import KModel
+from mydeep_keras.models.basic_model import basic_model
+from mydeep_keras.keras_model import KModel
 from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_train.trainer import Trainer
 from mydeep_train.validate_training import ValidateTraining

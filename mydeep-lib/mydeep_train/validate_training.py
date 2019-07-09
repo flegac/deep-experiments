@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import pandas as pd
 
@@ -9,8 +8,8 @@ from surili_core.pipeline_worker import Worker
 from surili_core.workspace import Workspace
 from mydeep_train.ctx.dataset import Dataset
 from mydeep_train.ctx.train_dataset import TrainDataset
-from mydeep_lib.visualize.confusion_matrix import ConfusionMatrix
-from mydeep_api.model.keras_model import KModel
+from mydeep_api.monitoring.confusion_viewer import ConfusionViewer
+from mydeep_keras.keras_model import KModel
 
 
 class ValidateTraining(Worker):
@@ -34,7 +33,7 @@ class ValidateTraining(Worker):
         # FIXME: this is not generic !
         # result[self.target_y] = result[self.target_y].apply(lambda x: 'n' + str(x))
 
-        cm = ConfusionMatrix(dataset.df[dataset.y_col], result[dataset.y_col])
+        cm = ConfusionViewer(dataset.df[dataset.y_col], result[dataset.y_col])
         fig = cm.plot(normalize=True)
         fig.savefig(target_ws.path_to('confusion_matrix'))
         fig.show()

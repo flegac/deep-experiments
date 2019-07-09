@@ -1,6 +1,6 @@
-from mydeep_lib.models.basic_model import basic_model
-from mydeep_lib.models.basic_model_v2 import model_v2
-from mydeep_api.model.keras_model import KModel
+from mydeep_keras.models.basic_model import basic_model
+from mydeep_keras.models.basic_model_v2 import model_v2
+from mydeep_keras.keras_model import KModel
 
 
 def test_sequential_model():

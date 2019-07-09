@@ -3,9 +3,9 @@ from keras import Sequential
 from keras.layers import Lambda, Conv2D, BatchNormalization, Activation, MaxPooling2D, Dropout, GlobalAveragePooling2D, \
     Dense
 
-from mydeep_api.api import Data
+from mydeep_api.data import Data
 from mydeep_api.dataset.numpy_dataset import NumpyDataset
-from mydeep_api.model.keras_model import KModel, KFitConfig
+from mydeep_keras.keras_model import KModel, KFitConfig
 
 
 def test_kmodel():

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from mydeep_lib.visualize.confusion_matrix import ConfusionMatrix
+from mydeep_api.monitoring.confusion_viewer import ConfusionViewer
 
 expected = pd.DataFrame({
     'x': [0, 1, 2, 3],
@@ -14,7 +14,7 @@ predictions = pd.DataFrame({
 })
 pred = (predictions['y'] > .5).astype(int)
 
-cm = ConfusionMatrix(y_expected=expected['y'], y_pred=pred)
+cm = ConfusionViewer(ground_truth=expected['y'], predicted=pred)
 fig = cm.plot(normalize=True)
 fig.show()
 # fig.savefig('output.png')

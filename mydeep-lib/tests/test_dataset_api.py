@@ -3,7 +3,7 @@ import shutil
 
 import numpy as np
 
-from mydeep_api.api import Data
+from mydeep_api.data import Data
 from mydeep_api.dataset.numpy_dataset import NumpyDataset
 
 

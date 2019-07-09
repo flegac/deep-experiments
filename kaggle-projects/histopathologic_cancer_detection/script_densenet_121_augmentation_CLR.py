@@ -2,9 +2,9 @@ import keras
 
 from histopathologic_cancer_detection.prepare_histopathological_cancer import PrepareHistopathologicCancer
 from hyper_search.train_parameters import TrainParameters
-from mydeep_api.model.keras_model import KModel
-from mydeep_lib.callbacks.cyclic_lr import CyclicLR
-from mydeep_lib.models.keras_model import keras_model
+from mydeep_keras.keras_model import KModel
+from mydeep_keras.callbacks import CyclicLR
+from mydeep_keras.models.keras_model import keras_model
 from mydeep_train.compute_submission import ComputeSubmission
 from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_train.validate_training import ValidateTraining

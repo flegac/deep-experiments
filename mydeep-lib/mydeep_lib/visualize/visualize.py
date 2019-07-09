@@ -1,10 +1,10 @@
-from mydeep_lib.visualize.show_dataset import ShowDataset
+from mydeep_api.monitoring.dataset_viewer import DatasetViewer
 
 
 class Visualize:
     @staticmethod
     def show_dataset(label='Dataset', scale=5):
-        return ShowDataset(label, scale)
+        return DatasetViewer(label, scale)
 
     @staticmethod
     def show_plot(plot):

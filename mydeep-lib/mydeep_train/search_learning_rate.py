@@ -1,4 +1,4 @@
-from mydeep_lib.callbacks.lr_finder import LRFinder
+from mydeep_keras.callbacks import LRFinder
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipeline_worker import Worker
 from surili_core.workspace import Workspace

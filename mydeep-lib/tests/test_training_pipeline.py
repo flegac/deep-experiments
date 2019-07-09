@@ -2,9 +2,9 @@ import keras
 
 from hyper_search.train_parameters import TrainParameters
 from monkeys_detection.prepare_monkeys import PrepareMonkeys
-from mydeep_lib.models.basic_model import basic_model
+from mydeep_keras.models.basic_model import basic_model
 from mydeep_train.compute_submission import ComputeSubmission
-from mydeep_api.model.keras_model import KModel
+from mydeep_keras.keras_model import KModel
 from mydeep_train.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_train.validate_training import ValidateTraining
 from surili_core.pipeline_context import PipelineContext
