@@ -27,7 +27,7 @@ def pipeline_step(worker: Worker) -> Callable[[PipelineContext], PipelineContext
             log('start worker...')
             worker(ctx, target_ws)
             total_time = time.time() - start
-            target_ws.touch('.done', content={
+            target_ws.create_file('.done', content={
                 'time': total_time
             })
             return ctx

@@ -1,46 +1,83 @@
 import json
 import os
 import pickle
-
-from stream_lib.stream import stream
+import shutil
+from typing import List
 
 
 class Workspace:
     workspace = ''
 
     @staticmethod
-    def from_path(path: str, auto_mkdir=True):
-        return Workspace(os.path.join(Workspace.workspace, path), auto_mkdir)
+    def from_path(path: str):
+        root_path = os.path.join(Workspace.workspace, path)
+        return Workspace(root_path, root_path)
 
-    def __init__(self, path: str, auto_mkdir):
-        self.path = path
-        if os.path.splitext(path)[1] == '' and auto_mkdir:
-            try:
-                os.makedirs(self.path, exist_ok=True)
-            except:
-                pass
+    def __init__(self, root_path: str, path: str):
+        root_path = clean_path(root_path)
+        path = clean_path(path)
 
-    def list_dir(self, root_path: str):
-        return stream(os.listdir(root_path)).map(lambda x: os.path.join(root_path, x))
+        assert path.startswith(root_path), \
+            'Workspace path must be in its root directory'
+        assert not os.path.exists(path) or os.path.isdir(path), \
+            'Workspace must be a directory'
 
-    def path_to(self, path):
-        return os.path.join(self.path, path)
+        self._root_path = root_path
+        self._current_path = path
 
-    def get_ws(self, path):
-        return Workspace.from_path(self.path_to(path))
+    def create_file(self, filename: str, content: dict = None, force=False):
+        new_file = self.path_to(filename)
+        if not force and os.path.exists(new_file):
+            raise ValueError('File {} exists ! use no_overwrite=False to force creation.'.format(new_file))
 
-    def files(self):
-        return stream(os.listdir(self.path)) \
-            .map(lambda x: os.path.join(self.path, x))
-
-    def touch(self, filename: str, content: dict):
-        path = os.path.dirname(filename)
-        if path != filename:
-            self.get_ws(path)
-        with open(self.path_to(filename), 'a') as _:
-            os.utime(self.path_to(filename), None)
+        with open(new_file, 'w') as _:
+            os.utime(new_file, None)
             if content:
                 json.dump(content, _, indent=2, sort_keys=True)
+
+    def mkdir(self) -> 'Workspace':
+        try:
+            os.makedirs(self.path, exist_ok=True)
+        except:
+            pass
+        return self
+
+    @property
+    def root(self) -> 'Workspace':
+        return Workspace.from_path(self._root_path)
+
+    @property
+    def path(self) -> str:
+        return self._current_path
+
+    @property
+    def parent(self) -> 'Workspace':
+        return self.get_ws('..')
+
+    @property
+    def folders(self) -> 'List[Workspace]':
+        return [
+            self.get_ws(_)
+            for _ in os.listdir(self.path)
+            if os.path.isdir(self.path_to(_))
+        ]
+
+    @property
+    def files(self) -> 'List[str]':
+        return [
+            self.path_to(_)
+            for _ in os.listdir(self.path)
+            if os.path.isfile(self.path_to(_))
+        ]
+
+    def delete(self):
+        shutil.rmtree(self.path)
+
+    def path_to(self, path):
+        return clean_path(os.path.join(self.path, path))
+
+    def get_ws(self, path):
+        return Workspace(self._root_path, self.path_to(path))
 
     def writer(self, name_function):
         if not callable(name_function):
@@ -64,4 +101,8 @@ class Workspace:
         return apply
 
     def __repr__(self) -> str:
-        return '[FS: {}]'.format(self.path)
+        return '[WS: {}]'.format(self.path)
+
+
+def clean_path(path: str):
+    return os.path.abspath(path)

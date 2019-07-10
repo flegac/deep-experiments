@@ -50,7 +50,7 @@ class TresholdFilter(Worker):
     def apply(self, ctx: PipelineContext, target_ws: Workspace):
         ctx.project_ws \
             .get_ws('raw_dataset/images') \
-            .files() \
+            .files \
             .map(tensor_from_path) \
             .map(extract_features) \
             .enumerate() \

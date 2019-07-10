@@ -1,4 +1,5 @@
 import os
+
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -23,9 +24,8 @@ class Dataframes:
     def from_directory_structure(x_key: str = 'x', y_key: str = 'y'):
         def apply(path: str):
             data = Workspace.from_path(path) \
-                .files() \
-                .map(Workspace.from_path) \
-                .flatmap(lambda fs: fs.files()) \
+                .folders \
+                .flatmap(lambda fs: fs.files) \
                 .map(lambda f: (f, os.path.basename(os.path.dirname(f)))) \
                 .to_list()
             data = np.array(data)

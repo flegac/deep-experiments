@@ -48,7 +48,7 @@ def sign_mnist_preparator(ctx: PipelineContext, target_ws: Workspace):
 
     ctx.project_ws \
         .get_ws('dataset/images') \
-        .files() \
+        .files \
         .map(tensor_from_path) \
         .map(extract_features) \
         .enumerate() \

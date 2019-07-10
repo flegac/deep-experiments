@@ -30,7 +30,7 @@ def step(step_id: str, worker: Optional[Worker[T]]) -> Callable[[T, Workspace], 
             if worker is not None:
                 worker(ctx, current_ws)
             total_time = time.time() - start
-            current_ws.touch('.done', content={
+            current_ws.create_file('.done', content={
                 'time': total_time
             })
             log('SUCCESS !'.format(step_id))
