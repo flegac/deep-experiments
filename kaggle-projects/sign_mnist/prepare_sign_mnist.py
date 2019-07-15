@@ -1,16 +1,16 @@
+import os
 from typing import Tuple
 
-from tqdm import tqdm
-
-from mydeep_lib.tensor_util import tensor_save, tensor_from_path
-from mydeep_lib.dataset import Dataset
-from sign_mnist.treshold_filter import extract_features
-from surili_core.pipeline_context import PipelineContext
-from surili_core.workspace import Workspace
-
+import numpy as np
 import pandas as pd
 
-import numpy as np
+from mydeep_lib.dataset import Dataset
+from mydeep_lib.tensor_util import tensor_save, tensor_from_path
+from sign_mnist.treshold_filter import extract_features
+from stream_lib.stream import stream
+from surili_core.pipeline_context import PipelineContext
+from surili_core.pipelines_v2.worker import Worker
+from surili_core.workspace import Workspace
 
 
 def load_dataframe(csv_path: str, target_shape: Tuple[int, int]):
@@ -23,35 +23,66 @@ def load_dataframe(csv_path: str, target_shape: Tuple[int, int]):
     return pd.DataFrame(data={'x': images, 'y': labels})
 
 
-def sign_mnist_preparator(ctx: PipelineContext, target_ws: Workspace):
-    col_x = 'x'
-    col_y = 'y'
+class ImageFileCreation(Worker):
+    def run(self, ctx: PipelineContext, target_ws: Workspace):
+        df = load_dataframe(
+            csv_path=ctx.root_ws.path_to('sign_mnist_train.csv'),
+            target_shape=(28, 28))
 
-    df = load_dataframe(
-        csv_path=ctx.root_ws.path_to('sign_mnist_train.csv'),
-        target_shape=(28, 28))
-    filenames = [0] * len(df)
-    for i, image in tqdm(enumerate(df[col_x])):
-        label = df[col_y][i]
-        name = 'cat{}_id{}'.format(label, i)
         target_path = target_ws.get_ws('images').path
-        # image = extract_features(image)
-        tensor_save(target_path)([name, image])
-        filenames[i] = name
-    df[col_x] = filenames
 
-    dataset = Dataset(
-        dataset=df,
-        images_path=target_ws.path_to('images'),
-        images_ext='jpg')
-    dataset.to_path(target_ws.path_to('dataset.json'))
+        df['x'] = stream(df['x']) \
+            .enumerate() \
+            .map(lambda image: [name_provider(df)(image[0]), image[1]]) \
+            .map(tensor_save(target_path)) \
+            .map(os.path.basename) \
+            .map(lambda _: os.path.splitext(_)[0]) \
+            .to_list()
 
-    ctx.project_ws \
-        .get_ws('dataset/images') \
-        .files \
-        .map(tensor_from_path) \
-        .map(extract_features) \
-        .enumerate() \
-        .foreach(tensor_save(target_ws.path_to('images')))
+        dataset = Dataset(
+            dataset=df,
+            images_path=target_path,
+            images_ext='jpg')
+        dataset.to_path(target_ws.path_to('dataset.json'))
 
-    return ctx
+        return ctx
+
+
+class FeatureFileCreation(Worker):
+
+    def __init__(self, input_path: str):
+        self.input_path = input_path
+
+    def run(self, ctx: PipelineContext, target_ws: Workspace):
+        source_ws = ctx.project_ws.get_ws(self.input_path)
+        target_path = target_ws.path_to('images')
+
+        dataset = Dataset.from_path(source_ws.path_to('dataset.json'))
+        df = dataset.df
+
+        df['x'] = source_ws.get_ws('images') \
+            .files \
+            .map(tensor_from_path) \
+            .map(extract_features) \
+            .enumerate() \
+            .map(lambda image: [name_provider(df)(image[0]), image[1]]) \
+            .map(tensor_save(target_path)) \
+            .map(os.path.basename) \
+            .map(lambda _: os.path.splitext(_)[0]) \
+            .to_list()
+
+        dataset = Dataset(
+            dataset=df,
+            images_path=target_path,
+            images_ext='jpg')
+        dataset.to_path(target_ws.path_to('dataset.json'))
+
+        return ctx
+
+
+def name_provider(df: pd.DataFrame):
+    def compute_name(index):
+        label = df['y'][index]
+        return 'cat{}_id{}'.format(label, index)
+
+    return compute_name

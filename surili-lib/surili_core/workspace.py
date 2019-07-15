@@ -4,6 +4,9 @@ import pickle
 import shutil
 from typing import List
 
+from stream_lib.stream import stream
+from stream_lib.stream_api import Stream
+
 
 class Workspace:
     workspace = ''
@@ -24,6 +27,8 @@ class Workspace:
 
         self._root_path = root_path
         self._current_path = path
+
+        self.mkdir()
 
     def create_file(self, filename: str, content: dict = None, force=False):
         new_file = self.path_to(filename)
@@ -63,12 +68,10 @@ class Workspace:
         ]
 
     @property
-    def files(self) -> 'List[str]':
-        return [
-            self.path_to(_)
-            for _ in os.listdir(self.path)
-            if os.path.isfile(self.path_to(_))
-        ]
+    def files(self) -> Stream[str]:
+        return stream(os.listdir(self.path)) \
+            .map(self.path_to) \
+            .filter(os.path.isfile)
 
     def delete(self):
         shutil.rmtree(self.path)

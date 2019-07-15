@@ -8,18 +8,18 @@ from mydeep_keras.k_model import KModel
 from mydeep_lib.dataset import Dataset
 from mydeep_lib.train_dataset import TrainDataset
 from surili_core.pipeline_context import PipelineContext
-from surili_core.worker import Worker
+from surili_core.pipelines_v2.worker import Worker
 from surili_core.workspace import Workspace
 
 
 class ValidateTraining(Worker):
     def __init__(self, augmentation: TrainParameters) -> None:
-        super().__init__('Validate training', 'validation')
+        super().__init__()
         self.augmentation = augmentation.build()
         self.target_x = 'x'
         self.target_y = 'y'
 
-    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+    def run(self, ctx: PipelineContext, target_ws: Workspace):
         # training histogram -----------------------------------
         training_ws = ctx.project_ws.get_ws('training')
         history_viewer = HistoryViewer.from_path(training_ws.path_to('training_logs.csv'))

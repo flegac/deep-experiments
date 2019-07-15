@@ -7,7 +7,7 @@ from hyper_search.train_parameters import TrainParameters
 from mydeep_keras.k_model import KModel
 from mydeep_lib.train_dataset import TrainDataset
 from surili_core.pipeline_context import PipelineContext
-from surili_core.worker import Worker
+from surili_core.pipelines_v2.worker import Worker
 from surili_core.workspace import Workspace
 
 
@@ -31,10 +31,10 @@ class Trainer(Worker):
     create_ctx = TrainContext
 
     def __init__(self, params: TrainContext) -> None:
-        super().__init__('model training', 'training')
+        super().__init__()
         self.params = params
 
-    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+    def run(self, ctx: PipelineContext, target_ws: Workspace):
         dataset_ws = ctx.project_ws.get_ws('dataset')
         models_ws = target_ws.get_ws('models')
 

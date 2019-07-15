@@ -1,7 +1,7 @@
 import json
 
-from surili_core.workspace import Workspace
 from mydeep_lib.dataset import Dataset
+from surili_core.workspace import Workspace
 
 
 class TrainDataset(object):

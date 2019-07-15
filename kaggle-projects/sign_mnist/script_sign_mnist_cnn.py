@@ -1,14 +1,14 @@
 import keras
 
 from hyper_search.train_parameters import TrainParameters
-from mydeep_keras.models.basic_model_v2 import model_v2
 from mydeep_keras.k_model import KModel
+from mydeep_keras.models.basic_model_v2 import model_v2
 from mydeep_lib.worker.prepare_training_dataset import PrepareTrainingDataset
-from mydeep_lib.worker.validate_training import ValidateTraining
-from sign_mnist.prepare_sign_mnist import sign_mnist_preparator
-from surili_core.pipelines import pipeline, step
-from surili_core.pipeline_context import PipelineContext
 from mydeep_lib.worker.trainer import Trainer
+from mydeep_lib.worker.validate_training import ValidateTraining
+from sign_mnist.prepare_sign_mnist import ImageFileCreation, FeatureFileCreation
+from surili_core.pipeline_context import PipelineContext
+from surili_core.pipelines_v2.pipelines import pipeline, step
 
 train_ctx = Trainer.create_ctx(
 
@@ -72,14 +72,28 @@ train_ctx = Trainer.create_ctx(
     })
 )
 
-pipe = pipeline([
-    step('Prepare raw dataset', 'raw_dataset', worker=sign_mnist_preparator),
-    # PrepareSignMnist(),
-    PrepareTrainingDataset(test_size=0.1),
-    Trainer(train_ctx),
-    ValidateTraining(train_ctx.augmentation)
-])
-
-pipe(PipelineContext(
+ctx = PipelineContext(
     root_path='D:/Datasets/sign-language-mnist',
-    project_name='sign-mnist-cnn'))
+    project_name='sign-mnist-cnn'
+)
+
+pipe = pipeline(
+    ctx=ctx,
+    steps=[
+        step('raw_dataset',
+             worker=ImageFileCreation()),
+        step('features_dataset',
+             worker=FeatureFileCreation(
+                 input_path='raw_dataset'
+             )),
+        step('dataset',
+             worker=PrepareTrainingDataset(
+                 input_path='features_dataset',
+                 test_size=0.1
+             )),
+        step('training',
+             worker=Trainer(train_ctx)),
+        step('validation',
+             worker=ValidateTraining(train_ctx.augmentation))
+    ])
+pipe(ctx.project_ws)

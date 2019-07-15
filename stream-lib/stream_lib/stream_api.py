@@ -79,7 +79,7 @@ class Stream(Iterator[T]):
     # terminal operations ---------------------------------
     def reduce(self, initial_value: U, reduce_func: Callable[[U, T], U]) -> U:
         acc = initial_value
-        for x in self:
+        for x in tqdm(self):
             acc = reduce_func(acc, x)
         return acc
 
@@ -88,7 +88,7 @@ class Stream(Iterator[T]):
             func(x)
 
     def to_list(self) -> List[T]:
-        return [x for x in self]
+        return [x for x in tqdm(self)]
 
     def count(self) -> int:
         """

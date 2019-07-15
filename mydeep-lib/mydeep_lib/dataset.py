@@ -40,7 +40,7 @@ class Dataset(object):
                           shuffle=True):
         df = self.df
         df['_filename'] = self.filenames()
-
+        df[self.y_col] = df[self.y_col].apply(str)
         return augmentation.flow_from_dataframe(
             dataframe=df,
             x_col='_filename', y_col=self.y_col,
