@@ -26,6 +26,6 @@ CloudRunner(
     cloud_config=cloud,
     nb_vms=2,
     vm_path='vm.yaml',
-    script_path='training_script.py',
+    script_path='script_local.py',
     params_provider=params_provider
 ).run()
