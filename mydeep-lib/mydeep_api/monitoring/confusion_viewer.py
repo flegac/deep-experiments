@@ -25,22 +25,21 @@ class ConfusionViewer(object):
         np.set_printoptions(precision=2)
         fig = plt.figure()
 
-        if normalize:
-            self.cm = self.cm.astype('float') / self.cm.sum(axis=1)[:, np.newaxis]
+        cm = self.cm.astype('float') / self.cm.sum(axis=1)[:, np.newaxis] if normalize else self.cm
 
-        plt.imshow(self.cm, interpolation='nearest', cmap=plt.cm.Blues)
+        plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
         plt.title(title)
         plt.colorbar()
         tick_marks = np.arange(len(self.classes))
         plt.xticks(tick_marks, self.classes, rotation=45)
         plt.yticks(tick_marks, self.classes)
 
-        fmt = '.2f' if normalize else 'd'
-        thresh = self.cm.max() / 2.
-        for i, j in itertools.product(range(self.cm.shape[0]), range(self.cm.shape[1])):
-            plt.text(j, i, format(self.cm[i, j], fmt),
+        thresh = cm.max() / 2.
+        for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+            text = '{:.2f}'.format(cm[i, j]) if normalize else '{:d}'.format(cm[i, j])
+            plt.text(j, i, text,
                      horizontalalignment="center",
-                     color="white" if self.cm[i, j] > thresh else "black")
+                     color="white" if cm[i, j] > thresh else "black")
 
         plt.ylabel('True label')
         plt.xlabel('Predicted label')

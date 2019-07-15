@@ -28,6 +28,8 @@ class HistoryViewer(object):
         dataframe = self.history
 
         lines = len(metric_names)
+        if lines == 0:
+            return plt
         fig, ax = plt.subplots(nrows=lines)
         ax = ax.reshape(lines)
         ax[0].set_title('{}'.format(metric_names), size='large')

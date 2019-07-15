@@ -3,9 +3,9 @@ from typing import Tuple
 
 import cv2
 import numpy as np
+from sklearn import preprocessing
 
 from mydeep_api.tensor import Tensor
-from sklearn import preprocessing
 
 
 def normalize(tensor: Tensor):
@@ -34,11 +34,13 @@ def tensor_centered_window(size_x, size_y):
     return apply
 
 
-def tensor_save(path: str):
+def tensor_save(path: str, no_overwrite=False):
     def apply(item: Tuple[str, Tensor]) -> str:
         name, tensor = item
         os.makedirs(path, exist_ok=True)
         full_filename = os.path.join(path, str(name)) + '.jpg'
+        if no_overwrite and os.path.exists(full_filename):
+            return full_filename
         cv2.imwrite(full_filename, tensor)
         return full_filename
 

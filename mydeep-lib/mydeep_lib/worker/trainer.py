@@ -97,15 +97,15 @@ class Trainer(Worker):
 
 
 class LearningRateLogger(Callback):
-    def __init__(self, model, target_ws: Workspace):
+    def __init__(self, model: KModel, target_ws: Workspace):
         super().__init__()
-        self.model = model
+        self.k_model = model
         self.target_ws = target_ws
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
-        logs['lr'] = K.get_value(self.model.optimizer.lr)
+        logs['lr'] = K.get_value(self.k_model.keras_model.optimizer.lr)
 
     def on_train_end(self, logs=None):
-        self.model.to_path(
+        self.k_model.to_path(
             self.target_ws.get_ws('output').path_to('model_final.h5'))

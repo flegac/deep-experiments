@@ -6,7 +6,8 @@ from mydeep_keras.models.basic_model_v2 import model_v2
 from mydeep_lib.worker.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_lib.worker.trainer import Trainer
 from mydeep_lib.worker.validate_training import ValidateTraining
-from sign_mnist.prepare_sign_mnist import ImageFileCreation, FeatureFileCreation
+from sign_mnist.image_file_creation import ImageFileCreation
+from sign_mnist.feature_file_creation import FeatureFileCreation
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines_v2.pipelines import pipeline, step
 
@@ -40,7 +41,7 @@ train_ctx = Trainer.create_ctx(
 
     params=TrainParameters({
         'batch_size': 64,
-        'epochs': 10,
+        'epochs': 1,
         'callbacks': [
             keras.callbacks.ReduceLROnPlateau(
                 monitor='val_loss',

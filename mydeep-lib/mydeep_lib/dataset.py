@@ -1,4 +1,5 @@
 import json
+import os
 
 import numpy as np
 import pandas as pd
@@ -13,22 +14,21 @@ class Dataset(object):
             dataset = json.load(_)
         return Dataset(
             pd.read_csv(dataset['dataset_path']),
-            dataset['images_path'],
-            dataset['images_ext'],
+            dataset['image_path_template'],
             dataset['x_col'],
             dataset['y_col'])
 
-    def __init__(self, dataset: pd.DataFrame, images_path: str, images_ext: str,
-                 x_col='x', y_col='y'):
+    def __init__(self, dataset: pd.DataFrame,
+                 image_path_template: str,
+                 x_col='x',
+                 y_col='y'):
         self.df = dataset
-        self.images_path = images_path
-        self.images_ext = images_ext
+        self.image_path_template = image_path_template
         self.x_col = x_col
         self.y_col = y_col
 
     def filenames(self):
-        image_path = '{}.' + self.images_ext
-        return self.df[self.x_col].apply(image_path.format)
+        return self.df[self.x_col].apply(self.image_path_template.format)
 
     def size(self):
         return len(self.df)
@@ -40,12 +40,14 @@ class Dataset(object):
                           shuffle=True):
         df = self.df
         df['_filename'] = self.filenames()
-        df[self.y_col] = df[self.y_col].apply(str)
+        df['_labels'] = df[self.y_col].apply(str)
+        classes = list(df['_labels'].unique())
         return augmentation.flow_from_dataframe(
             dataframe=df,
-            x_col='_filename', y_col=self.y_col,
-            classes=list(df[self.y_col].unique()),
-            directory=self.images_path,
+            x_col='_filename',
+            y_col='_labels',
+            classes=classes,
+            directory=os.path.basename(self.image_path_template),
             target_size=target_shape,
             batch_size=batch_size,
             class_mode=class_mode,
@@ -59,8 +61,7 @@ class Dataset(object):
         with open(path, 'w') as _:
             json.dump({
                 'dataset_path': dataset_path,
-                'images_path': self.images_path,
-                'images_ext': self.images_ext,
+                'image_path_template': self.image_path_template,
                 'x_col': self.x_col,
                 'y_col': self.y_col
             }, _, sort_keys=True, indent=4, separators=(',', ': '))
@@ -69,6 +70,6 @@ class Dataset(object):
     def __repr__(self) -> str:
         return json.dumps({
             'dataset': list(self.df),
-            'images_path': '{}__id__.{}'.format(self.images_path, self.images_ext),
+            'image_path_template': self.image_path_template,
             'x_y': [self.x_col, self.y_col]
         }, sort_keys=True, separators=(',', ': '))

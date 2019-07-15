@@ -26,7 +26,7 @@ class PrepareTrainingDataset(Worker):
                                        stratify=dataframe[dataset.y_col])
 
         # save dataset to disk
-        train = Dataset(train.sort_values(dataset.x_col), dataset.images_path, dataset.images_ext)
-        test = Dataset(test.sort_values(dataset.x_col), dataset.images_path, dataset.images_ext)
+        train = Dataset(train.sort_values(dataset.x_col), dataset.image_path_template)
+        test = Dataset(test.sort_values(dataset.x_col), dataset.image_path_template)
 
         TrainDataset(train, test).to_path(target_ws)
