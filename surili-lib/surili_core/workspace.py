@@ -2,7 +2,6 @@ import json
 import os
 import pickle
 import shutil
-from typing import List
 
 from stream_lib.stream import stream
 from stream_lib.stream_api import Stream
@@ -60,12 +59,10 @@ class Workspace:
         return self.get_ws('..')
 
     @property
-    def folders(self) -> 'List[Workspace]':
-        return [
-            self.get_ws(_)
-            for _ in os.listdir(self.path)
-            if os.path.isdir(self.path_to(_))
-        ]
+    def folders(self) -> 'Stream[Workspace]':
+        return stream(os.listdir(self.path)) \
+            .map(self.get_ws) \
+            .filter(lambda _: os.path.isdir(_.path))
 
     @property
     def files(self) -> Stream[str]:

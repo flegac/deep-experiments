@@ -6,10 +6,10 @@ from mydeep_keras.models.basic_model_v2 import model_v2
 from mydeep_lib.worker.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_lib.worker.trainer import Trainer
 from mydeep_lib.worker.validate_training import ValidateTraining
-from sign_mnist.image_file_creation import ImageFileCreation
-from sign_mnist.feature_file_creation import FeatureFileCreation
+from sign_mnist.raw_dataset_creation import RawDatasetCreation
+from sign_mnist.feature_dataset_creation import FeatureDatasetCreation
 from surili_core.pipeline_context import PipelineContext
-from surili_core.pipelines_v2.pipelines import pipeline, step
+from surili_core.pipelines import pipeline, step
 
 train_ctx = Trainer.create_ctx(
 
@@ -82,9 +82,9 @@ pipe = pipeline(
     ctx=ctx,
     steps=[
         step('raw_dataset',
-             worker=ImageFileCreation()),
+             worker=RawDatasetCreation()),
         step('features_dataset',
-             worker=FeatureFileCreation(
+             worker=FeatureDatasetCreation(
                  input_path='raw_dataset'
              )),
         step('dataset',

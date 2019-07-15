@@ -2,23 +2,23 @@ import numpy as np
 import pandas as pd
 
 from hyper_search.train_parameters import TrainParameters
+from mydeep_keras.k_model import KModel
+from mydeep_lib.dataset import Dataset
+from mydeep_lib.train_dataset import TrainDataset
 from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
-from mydeep_lib.dataset import Dataset
-from mydeep_lib.train_dataset import TrainDataset
-from mydeep_keras.k_model import KModel
 
 
 class ComputeSubmission(Worker):
     def __init__(self, augmentation: TrainParameters, nb_pred: 1, target_x='x', target_y='y') -> None:
-        super().__init__('compute submission', 'submission')
+        super().__init__()
         self.augmentation = augmentation.build()
         self.nb_pred = nb_pred
         self.target_x = target_x
         self.target_y = target_y
 
-    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+    def run(self, ctx: PipelineContext, target_ws: Workspace):
         dataset = TrainDataset.from_path(ctx.project_ws.get_ws('dataset')).test
         self.make_predictions(ctx, dataset, target_ws)
 

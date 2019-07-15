@@ -1,18 +1,19 @@
+from typing import Tuple, Callable
+
+import numpy as np
+from sklearn.base import BaseEstimator
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.externals import joblib
 from sklearn.pipeline import make_pipeline
 from tqdm import tqdm
-from typing import Tuple, Callable
 
 from hyper_search.train_parameters import TrainParameters
 from mydeep_api.tensor import Tensor
 from mydeep_lib.dataset import Dataset
+from mydeep_lib.train_dataset import TrainDataset
 from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
-from mydeep_lib.train_dataset import TrainDataset
-import numpy as np
-from sklearn.base import BaseEstimator
-from sklearn.externals import joblib
 
 
 def create_dataset(data: Dataset, augmentation: TrainParameters = None) -> Tuple[Tensor, Tensor]:
@@ -75,10 +76,10 @@ class GradientBoostingTrainer(Worker):
     create_ctx = GradientBoostingContext
 
     def __init__(self, params: GradientBoostingContext) -> None:
-        super().__init__('model training', 'training')
+        super().__init__()
         self.params = params
 
-    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+    def run(self, ctx: PipelineContext, target_ws: Workspace):
         dataset_ws = ctx.project_ws.get_ws('dataset')
         dataset = TrainDataset.from_path(dataset_ws)
 

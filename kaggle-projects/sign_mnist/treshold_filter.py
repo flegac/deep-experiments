@@ -1,4 +1,6 @@
+import numpy as np
 import sklearn
+from skimage import filters
 from skimage.measure import block_reduce
 
 from mydeep_api.tensor import Tensor
@@ -6,10 +8,6 @@ from mydeep_lib.tensor_util import tensor_from_path, tensor_save
 from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
-
-import numpy as np
-
-from skimage import filters
 
 
 def extract_features(rgb: Tensor):
@@ -43,11 +41,11 @@ def extract_features(rgb: Tensor):
 class TresholdFilter(Worker):
 
     def __init__(self):
-        super().__init__('Treshold filter', 'treshold_filter')
+        super().__init__()
         self.col_x = 'x'
         self.col_y = 'y'
 
-    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+    def run(self, ctx: PipelineContext, target_ws: Workspace):
         ctx.project_ws \
             .get_ws('raw_dataset/images') \
             .files \

@@ -2,15 +2,16 @@ import keras
 
 from histopathologic_cancer_detection.prepare_histopathological_cancer import PrepareHistopathologicCancer
 from hyper_search.train_parameters import TrainParameters
-from mydeep_keras.callbacks import CyclicLR
+from mydeep_keras.callbacks.cyclic_lr import CyclicLR
+from mydeep_keras.k_model import KModel
 from mydeep_keras.models.keras_application import keras_application
 from mydeep_lib.worker.compute_submission import ComputeSubmission
-from mydeep_keras.k_model import KModel
 from mydeep_lib.worker.prepare_training_dataset import PrepareTrainingDataset
-from mydeep_lib.worker.validate_training import ValidateTraining
-from surili_core.pipelines import pipeline
-from surili_core.pipeline_context import PipelineContext
+from mydeep_lib.worker.search_learning_rate import SearchLearningRate
 from mydeep_lib.worker.trainer import Trainer
+from mydeep_lib.worker.validate_training import ValidateTraining
+from surili_core.pipeline_context import PipelineContext
+from surili_core.pipelines import pipeline, step
 
 train_ctx = Trainer.create_ctx(
     model_provider=lambda: KModel.from_keras(
@@ -51,14 +52,27 @@ train_ctx = Trainer.create_ctx(
     })
 )
 
-pipe = pipeline([
-    PrepareHistopathologicCancer(),
-    PrepareTrainingDataset(),
-    Trainer(train_ctx),
-    ValidateTraining(train_ctx.augmentation),
-    ComputeSubmission(train_ctx.augmentation, nb_pred=2, target_x='id', target_y='label')
-])
-
-pipe(PipelineContext(
+ctx = PipelineContext(
     root_path='D:/Datasets/histopathologic-cancer-detection',
-    project_name='densenet169_augmentation_CLR'))
+    project_name='densenet169_augmentation_CLR'
+)
+
+pipe = pipeline(
+    ctx=ctx,
+    steps=[
+        step('raw_dataset',
+             worker=PrepareHistopathologicCancer()),
+        step('dataset',
+             worker=PrepareTrainingDataset(input_path='raw_dataset')),
+        step('lr_finder',
+             worker=SearchLearningRate(train_ctx, min_lr=1e-6, max_lr=1e-2, epochs=1)),
+        step('training',
+             worker=Trainer(train_ctx)),
+        step('validation',
+             worker=ValidateTraining(train_ctx.augmentation)),
+        step('submission',
+             worker=ComputeSubmission(train_ctx.augmentation, nb_pred=10, target_x='id', target_y='label')),
+
+    ])
+
+pipe(ctx.project_ws)

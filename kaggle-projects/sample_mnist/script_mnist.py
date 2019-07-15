@@ -1,14 +1,14 @@
 import keras
 
 from hyper_search.train_parameters import TrainParameters
-from mydeep_keras.models.basic_model import basic_model
 from mydeep_keras.k_model import KModel
+from mydeep_keras.models.basic_model import basic_model
 from mydeep_lib.worker.prepare_training_dataset import PrepareTrainingDataset
+from mydeep_lib.worker.trainer import Trainer
 from mydeep_lib.worker.validate_training import ValidateTraining
 from sample_mnist.prepare_mnist import PrepareMnist
-from surili_core.pipelines import pipeline
 from surili_core.pipeline_context import PipelineContext
-from mydeep_lib.worker.trainer import Trainer
+from surili_core.pipelines import pipeline, step
 
 train_ctx = Trainer.create_ctx(
 
@@ -57,13 +57,21 @@ train_ctx = Trainer.create_ctx(
     })
 )
 
-pipe = pipeline([
-    PrepareMnist(),
-    PrepareTrainingDataset(test_size=0.1),
-    Trainer(train_ctx),
-    ValidateTraining(train_ctx.augmentation)
-])
-
-pipe(PipelineContext(
+ctx = PipelineContext(
     root_path='D:/Datasets/mnist',
-    project_name='mnist'))
+    project_name='mnist'
+)
+
+pipe = pipeline(
+    ctx=ctx,
+    steps=[
+        step('raw_dataset',
+             worker=PrepareMnist()),
+        step('dataset',
+             worker=PrepareTrainingDataset(input_path='raw_dataset', test_size=0.1)),
+        step('training',
+             worker=Trainer(train_ctx)),
+        step('validation',
+             worker=ValidateTraining(train_ctx.augmentation))
+    ]
+)(ctx.project_ws)

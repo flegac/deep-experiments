@@ -8,7 +8,7 @@ from mydeep_keras.k_model import KModel
 from mydeep_lib.dataset import Dataset
 from mydeep_lib.train_dataset import TrainDataset
 from surili_core.pipeline_context import PipelineContext
-from surili_core.pipelines_v2.worker import Worker
+from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 

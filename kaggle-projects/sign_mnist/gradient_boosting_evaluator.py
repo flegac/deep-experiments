@@ -13,10 +13,7 @@ from surili_core.workspace import Workspace
 
 class GradientBoostingEvaluator(Worker):
 
-    def __init__(self) -> None:
-        super().__init__('model evaluation', 'evaluation')
-
-    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+    def run(self, ctx: PipelineContext, target_ws: Workspace):
         dataset_ws = ctx.project_ws.get_ws('dataset')
         dataset = TrainDataset.from_path(dataset_ws)
 

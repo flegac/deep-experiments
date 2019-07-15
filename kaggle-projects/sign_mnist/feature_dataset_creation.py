@@ -4,12 +4,13 @@ from mydeep_lib.dataset import Dataset
 from mydeep_lib.tensor_util import tensor_from_path, tensor_save
 from sign_mnist.prepare_sign_mnist import name_provider
 from sign_mnist.treshold_filter import extract_features
+from stream_lib.stream import stream
 from surili_core.pipeline_context import PipelineContext
-from surili_core.pipelines_v2.worker import Worker
+from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 
-class FeatureFileCreation(Worker):
+class FeatureDatasetCreation(Worker):
 
     def __init__(self, input_path: str):
         self.input_path = input_path
@@ -21,10 +22,7 @@ class FeatureFileCreation(Worker):
         dataset = Dataset.from_path(source_ws.path_to('dataset.json'))
         df = dataset.df
 
-        filenames = dataset.filenames()
-
-        df['x'] = source_ws.get_ws('images') \
-            .files \
+        df['x'] = stream(dataset.filenames()) \
             .map(tensor_from_path) \
             .map(extract_features) \
             .enumerate() \

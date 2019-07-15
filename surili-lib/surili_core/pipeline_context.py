@@ -3,6 +3,8 @@ import os
 from surili_core.workspace import Workspace
 
 
+# TODO: simplify / remove this class
+# each project should redefine its own contextual state
 class PipelineContext(object):
     def __init__(self, root_path: str, project_name: str):
         self.seed = 5435342

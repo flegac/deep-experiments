@@ -2,15 +2,15 @@ import keras
 
 from hyper_search.train_parameters import TrainParameters
 from monkeys_detection.prepare_monkeys import PrepareMonkeys
+from mydeep_keras.k_model import KModel
 from mydeep_keras.models.basic_model import basic_model
 from mydeep_lib.worker.compute_submission import ComputeSubmission
-from mydeep_keras.k_model import KModel
 from mydeep_lib.worker.prepare_training_dataset import PrepareTrainingDataset
-from mydeep_lib.worker.validate_training import ValidateTraining
-from surili_core.pipeline_context import PipelineContext
-from surili_core.pipelines import pipeline
 from mydeep_lib.worker.search_learning_rate import SearchLearningRate
 from mydeep_lib.worker.trainer import Trainer
+from mydeep_lib.worker.validate_training import ValidateTraining
+from surili_core.pipeline_context import PipelineContext
+from surili_core.pipelines import pipeline, step
 
 train_ctx = Trainer.create_ctx(
 
@@ -74,15 +74,25 @@ train_ctx = Trainer.create_ctx(
         'horizontal_flip': True,
     })
 )
-
-pipe = pipeline([
-    PrepareMonkeys(),
-    PrepareTrainingDataset(test_size=0.1),
-    SearchLearningRate(train_ctx, min_lr=0.69, max_lr=0.71),
-    Trainer(train_ctx),
-    ValidateTraining(train_ctx.augmentation),
-    ComputeSubmission(train_ctx.augmentation, nb_pred=2, target_x='xx', target_y='yy')
-])
-pipe(PipelineContext(
+ctx = PipelineContext(
     root_path='D:/Datasets/10-monkey-species',
-    project_name='monkeys'))
+    project_name='monkeys'
+)
+
+pipe = pipeline(
+    ctx=ctx,
+    steps=[
+        step('raw_dataset',
+             worker=PrepareMonkeys()),
+        step('dataset',
+             worker=PrepareTrainingDataset(input_path='raw_dataset', test_size=0.1)),
+        step('lr_finder',
+             worker=SearchLearningRate(train_ctx, min_lr=0.69, max_lr=0.71)),
+        step('training',
+             worker=Trainer(train_ctx)),
+        step('validation',
+             worker=ValidateTraining(train_ctx.augmentation)),
+        step('submission',
+             worker=ComputeSubmission(train_ctx.augmentation, nb_pred=2, target_x='xx', target_y='yy'))
+    ])
+pipe(ctx.project_ws)

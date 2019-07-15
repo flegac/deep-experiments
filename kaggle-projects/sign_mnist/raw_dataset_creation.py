@@ -9,7 +9,7 @@ from mydeep_lib.tensor_util import tensor_save
 from sign_mnist.prepare_sign_mnist import name_provider
 from stream_lib.stream import stream
 from surili_core.pipeline_context import PipelineContext
-from surili_core.pipelines_v2.worker import Worker
+from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 
@@ -23,7 +23,7 @@ def load_dataframe(csv_path: str, target_shape: Tuple[int, int]):
     return pd.DataFrame(data={'x': images, 'y': labels})
 
 
-class ImageFileCreation(Worker):
+class RawDatasetCreation(Worker):
     def run(self, ctx: PipelineContext, target_ws: Workspace):
         df = load_dataframe(
             csv_path=ctx.root_ws.path_to('sign_mnist_train.csv'),

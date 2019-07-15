@@ -1,20 +1,20 @@
-from mydeep_keras.callbacks import LRFinder
+from mydeep_keras.callbacks.lr_finder import LRFinder
+from mydeep_lib.train_dataset import TrainDataset
+from mydeep_lib.worker.trainer import TrainContext
 from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
-from mydeep_lib.train_dataset import TrainDataset
-from mydeep_lib.worker.trainer import TrainContext
 
 
 class SearchLearningRate(Worker):
     def __init__(self, params: TrainContext, min_lr: float = 1e-6, max_lr: float = 1., epochs: int = 2) -> None:
-        super().__init__('Learning Rate Finder', 'lr_finder')
+        super().__init__()
         self.params = params
         self.min_lr = min_lr
         self.max_lr = max_lr
         self.epochs = epochs
 
-    def apply(self, ctx: PipelineContext, target_ws: Workspace):
+    def run(self, ctx: PipelineContext, target_ws: Workspace):
         dataset_ws = ctx.project_ws.get_ws('dataset')
 
         # load params
