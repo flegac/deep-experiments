@@ -30,7 +30,7 @@ def step(step_id: str, worker: Optional[Worker[T]]) -> Callable[[T, Workspace], 
             if worker is not None:
                 worker(ctx, current_ws)
             total_time = time.time() - start
-            current_ws.mkdir().create_file('.done', content={
+            current_ws.create_file('.done', content={
                 'time': total_time
             })
             log('SUCCESS !'.format(step_id))
@@ -49,7 +49,6 @@ def pipeline(steps: List[Callable[[Workspace], None]], ctx: object = None):
         running_script_path = _get_running_script_path()
         script_destination_path = ws.path_to('script.py.txt')
         if not os.path.exists(script_destination_path):
-            ws.mkdir()
             shutil.copyfile(running_script_path, script_destination_path)
         elif not filecmp.cmp(running_script_path, script_destination_path, shallow=False):
             raise ValueError('Existing project, but running script has changed : rm {}'.format(script_destination_path))
