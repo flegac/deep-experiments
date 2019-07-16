@@ -1,7 +1,7 @@
 import keras
 
 from hyper_search.train_parameters import TrainParameters
-from mydeep_workers.prepare_training_dataset import PrepareTrainingDataset
+from mydeep_lib.workers.prepare_training_dataset import PrepareTrainingDataset
 from sign_mnist.feature_dataset_creation import FeatureDatasetCreation
 from sign_mnist.gradient_boosting_evaluator import GradientBoostingEvaluator
 from sign_mnist.gradient_boosting_trainer import GradientBoostingTrainer
