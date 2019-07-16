@@ -1,8 +1,8 @@
 import pandas as pd
 
-from mydeep_lib.dataset import Dataset
+from mydeep_api._deprecated.dataset import Dataset
 from surili_core.workspace import Workspace
-from mydeep_lib.train_dataset import TrainDataset
+from mydeep_api._deprecated.train_dataset import TrainDataset
 
 ws = Workspace.from_path('./resources/generated/dataset')
 
