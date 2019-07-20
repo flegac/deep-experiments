@@ -1,12 +1,15 @@
+import json
 import time
 
 
-def train(params):
-    print('training with params={}'.format(params))
+def main():
+    with open('config.json') as _:
+        config = json.load(_)
+
+    print('training with params={}'.format(str(config)))
     time.sleep(1)
     print('done !')
 
 
-global params
-
-train(params)
+if __name__ == "__main__":
+    main()

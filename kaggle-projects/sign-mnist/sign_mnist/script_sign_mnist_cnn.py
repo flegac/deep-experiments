@@ -4,7 +4,7 @@ from hyper_search.train_parameters import TrainParameters
 from mydeep_keras.k_model import KModel
 from mydeep_keras.models.basic_model_v2 import model_v2
 from mydeep_lib.workers.prepare_training_dataset import PrepareTrainingDataset
-from mydeep_keras.keras_trainer import KerasTrainer
+from mydeep_keras.k_trainer import KerasTrainer
 from mydeep_lib.workers.validate_training import ValidateTraining
 from sign_mnist.raw_dataset_creation import RawDatasetCreation
 from sign_mnist.feature_dataset_creation import FeatureDatasetCreation

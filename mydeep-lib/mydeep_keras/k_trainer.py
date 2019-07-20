@@ -1,36 +1,18 @@
-from typing import Callable
-
 from keras import backend as K
 from keras.callbacks import ModelCheckpoint, CSVLogger, Callback
 
-from hyper_search.train_parameters import TrainParameters
-from mydeep_keras.k_model import KModel
 from mydeep_api._deprecated.train_dataset import TrainDataset
+from mydeep_keras.k_model import KModel
+from mydeep_keras.k_train_context import KTrainContext
 from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 
-class TrainContext(object):
-
-    def __init__(self,
-                 model_provider: Callable[[], KModel],
-                 params: TrainParameters,
-                 augmentation) -> None:
-        super().__init__()
-        self.model_provider = model_provider
-        self.params = params
-        self.augmentation = augmentation
-
-    @property
-    def model(self):
-        return self.model_provider()
-
-
 class KerasTrainer(Worker):
-    create_ctx = TrainContext
+    create_ctx = KTrainContext
 
-    def __init__(self, params: TrainContext) -> None:
+    def __init__(self, params: KTrainContext) -> None:
         super().__init__()
         self.params = params
 

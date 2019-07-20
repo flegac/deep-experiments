@@ -1,12 +1,12 @@
 import keras
 
 from hyper_search.train_parameters import TrainParameters
+from mnist_like.prepare_mnist import PrepareMnist
 from mydeep_keras.k_model import KModel
+from mydeep_keras.k_trainer import KerasTrainer
 from mydeep_keras.models.basic_model import basic_model
 from mydeep_lib.workers.prepare_training_dataset import PrepareTrainingDataset
-from mydeep_keras.keras_trainer import KerasTrainer
 from mydeep_lib.workers.validate_training import ValidateTraining
-from sample_mnist.prepare_mnist import PrepareMnist
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline, step
 

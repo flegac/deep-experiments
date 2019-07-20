@@ -5,7 +5,7 @@ from keras.layers import *
 def basic_model(input_shape, output_class_number):
     kernel_size = (3, 3)
     filters = 16
-    dropout_rate = 0.1
+    dropout_rate = 0.25
 
     def conv_layer(layer_filters):
         return [

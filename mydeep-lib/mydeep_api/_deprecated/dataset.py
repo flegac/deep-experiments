@@ -36,6 +36,7 @@ class Dataset(object):
     def steps_number(self, batch_size: int):
         return np.ceil(self.size() / batch_size)
 
+    # TODO move to keras part
     def prepare_generator(self, batch_size, target_shape, augmentation: ImageDataGenerator, class_mode='categorical',
                           shuffle=True):
         df = self.df
