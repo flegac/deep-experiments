@@ -20,3 +20,16 @@ def test_workspace():
 
     ws.delete()
 
+
+def test_store():
+    ws = Workspace.from_path('generated/workspace')
+    ws.create_file('toto.json')
+    ws.create_file('toto2.json')
+
+    storage_path = 'gs://deep-experiments/tests'
+    ws.to_storage(storage_path)
+    ws.delete()
+
+    ws.mkdir()
+    ws.from_storage(storage_path)
+    ws.delete()

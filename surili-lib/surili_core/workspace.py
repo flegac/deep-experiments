@@ -1,7 +1,11 @@
 import json
 import os
 import pickle
+import shlex
 import shutil
+import tempfile
+import time
+from subprocess import Popen
 
 from stream_lib.stream import stream
 from stream_lib.stream_api import Stream
@@ -64,6 +68,30 @@ class Workspace:
             .map(self.get_ws) \
             .filter(lambda _: os.path.isdir(_.path))
 
+    def to_storage(self, storage_path: str):
+
+        tmp_path = tempfile.mkdtemp()
+
+        try:
+            temporary_file = os.path.join(tmp_path, os.path.basename(self.path) + time.strftime("-%Y_%m_%d-%Hh%Mm%S"))
+            temporary_file = shutil.make_archive(temporary_file, 'zip', self.path)
+            full_storage_path = os.path.join(storage_path, os.path.basename(temporary_file))
+
+            cmd = 'gsutil -m cp -r "{local_path}" "{storage_path}"'.format(
+                local_path=temporary_file,
+                storage_path=full_storage_path
+            )
+            shell(cmd).wait()
+        finally:
+            shutil.rmtree(tmp_path)
+
+    def from_storage(self, storage_path: str):
+        cmd = 'gsutil -m cp -r "{storage_path}" "{local_path}"'.format(
+            local_path=self.path,
+            storage_path=storage_path
+        )
+        shell(cmd).wait()
+
     @property
     def files(self) -> Stream[str]:
         return stream(os.listdir(self.path)) \
@@ -106,3 +134,10 @@ class Workspace:
 
 def clean_path(path: str):
     return os.path.abspath(path)
+
+
+def shell(cmd) -> Popen:
+    print(cmd)
+    # return subprocess.check_output(cmd, shell=True)
+
+    return Popen(shlex.split(cmd), shell=True)
