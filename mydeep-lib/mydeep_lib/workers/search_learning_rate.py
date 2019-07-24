@@ -1,6 +1,6 @@
 from keras.preprocessing.image import ImageDataGenerator
 
-from mydeep_api._deprecated.dataset import Dataset
+from mydeep_api._deprecated.file_dataset import FileDataset
 from mydeep_api._deprecated.train_dataset import TrainDataset
 from mydeep_keras.callbacks.lr_finder import LRFinder
 from mydeep_keras.k_model import KModel
@@ -51,7 +51,7 @@ class SearchLearningRate(Worker):
 
 
 def search_lr(model: KModel,
-              dataset: Dataset,
+              dataset: FileDataset,
               augmentation: ImageDataGenerator,
               min_lr: float = 1e-6,
               max_lr: float = 1.,

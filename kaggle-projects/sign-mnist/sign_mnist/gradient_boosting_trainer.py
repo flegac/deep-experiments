@@ -9,14 +9,14 @@ from tqdm import tqdm
 
 from hyper_search.train_parameters import TrainParameters
 from mydeep_api.tensor import Tensor
-from mydeep_api._deprecated.dataset import Dataset
+from mydeep_api._deprecated.file_dataset import FileDataset
 from mydeep_api._deprecated.train_dataset import TrainDataset
 from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 
-def create_dataset(data: Dataset, augmentation: TrainParameters = None) -> Tuple[Tensor, Tensor]:
+def create_dataset(data: FileDataset, augmentation: TrainParameters = None) -> Tuple[Tensor, Tensor]:
     training_gen = data.prepare_generator(
         batch_size=1,
         target_shape=(28, 28),

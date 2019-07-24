@@ -19,3 +19,4 @@ def test_workspace():
     print(ws)
 
     ws.delete()
+

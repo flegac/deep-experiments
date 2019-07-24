@@ -1,7 +1,8 @@
 import random
 from abc import ABC
 
-from mydeep_api.dataset.dataset import Dataset, BiDataset
+from mydeep_api.dataset.dataset import Dataset
+from mydeep_api.dataset.bi_dataset import BiDataset
 
 
 class FitReport(object):

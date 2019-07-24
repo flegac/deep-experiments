@@ -4,7 +4,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from mydeep_api._deprecated.dataset import Dataset
+from mydeep_api._deprecated.file_dataset import FileDataset
 from mydeep_utils.tensor_util import tensor_save
 from sign_mnist.prepare_sign_mnist import name_provider
 from stream_lib.stream import stream
@@ -39,7 +39,7 @@ class RawDatasetCreation(Worker):
             .map(lambda _: os.path.splitext(_)[0]) \
             .to_list()
 
-        Dataset(
+        FileDataset(
             dataset=df,
             image_path_template=os.path.join(target_path, '{}.jpg')
         ).to_path(target_ws.path_to('dataset.json'))

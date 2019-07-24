@@ -6,13 +6,13 @@ import pandas as pd
 from keras_preprocessing.image import ImageDataGenerator
 
 
-class Dataset(object):
+class FileDataset(object):
 
     @staticmethod
     def from_path(path: str):
         with open(path, 'r') as _:
             dataset = json.load(_)
-        return Dataset(
+        return FileDataset(
             pd.read_csv(dataset['dataset_path']),
             dataset['image_path_template'],
             dataset['x_col'],

@@ -7,7 +7,8 @@ import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 
 from mydeep_api.data import Data
-from mydeep_api.dataset.dataset import Dataset, BiDataset
+from mydeep_api.dataset.dataset import Dataset
+from mydeep_api.dataset.bi_dataset import BiDataset
 from mydeep_api.dataset.numpy_dataset import NumpyDataset
 from mydeep_api.model.model import Model, FitConfig, FitReport
 

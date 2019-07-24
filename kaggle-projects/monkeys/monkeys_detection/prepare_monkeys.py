@@ -4,7 +4,7 @@ import shutil
 import pandas as pd
 
 from mydeep_api._deprecated.dataframe import Dataframes
-from mydeep_api._deprecated.dataset import Dataset
+from mydeep_api._deprecated.file_dataset import FileDataset
 from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
@@ -29,7 +29,7 @@ class PrepareMonkeys(Worker):
             shutil.copyfile(x, target_path)
         df[self.col_x] = df[self.col_x].apply(lambda x: os.path.splitext(os.path.basename(x))[0])
 
-        Dataset(
+        FileDataset(
             dataset=df,
             image_path_template=os.path.join(target_ws.path_to('images'), '{}.jpg')
         ).to_path(target_ws.path_to('dataset.json'))

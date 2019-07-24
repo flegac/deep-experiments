@@ -3,7 +3,8 @@ from typing import List, Tuple
 
 import pandas as pd
 
-from mydeep_api.dataset.dataset import BiDataset, Dataset
+from mydeep_api.dataset.dataset import Dataset
+from mydeep_api.dataset.bi_dataset import BiDataset
 from mydeep_api.dataset.file_tree_dataset import ImagePathDataset
 from mydeep_api.dataset.pandas_dataset import PandasDataset
 

@@ -3,7 +3,7 @@ import pandas as pd
 
 from hyper_search.train_parameters import TrainParameters
 from mydeep_keras.k_model import KModel
-from mydeep_api._deprecated.dataset import Dataset
+from mydeep_api._deprecated.file_dataset import FileDataset
 from mydeep_api._deprecated.train_dataset import TrainDataset
 from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
@@ -22,7 +22,7 @@ class ComputeSubmission(Worker):
         dataset = TrainDataset.from_path(ctx.project_ws.get_ws('dataset')).test
         self.make_predictions(ctx, dataset, target_ws)
 
-    def make_predictions(self, ctx: PipelineContext, dataset: Dataset, target_ws: Workspace):
+    def make_predictions(self, ctx: PipelineContext, dataset: FileDataset, target_ws: Workspace):
         # model ---------------------------------------
         training_ws = ctx.project_ws.get_ws('training')
         model = KModel.from_path(training_ws.path_to('output/model_final.h5'))

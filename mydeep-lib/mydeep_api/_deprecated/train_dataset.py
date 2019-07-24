@@ -1,6 +1,6 @@
 import json
 
-from mydeep_api._deprecated.dataset import Dataset
+from mydeep_api._deprecated.file_dataset import FileDataset
 from surili_core.workspace import Workspace
 
 
@@ -11,10 +11,10 @@ class TrainDataset(object):
         with open(target_ws.path_to('dataset.json'), 'r') as _:
             dataset = json.load(_)
         for x in dataset:
-            dataset[x] = Dataset.from_path(dataset[x])
+            dataset[x] = FileDataset.from_path(dataset[x])
         return TrainDataset(**dataset)
 
-    def __init__(self, train: Dataset, test: Dataset):
+    def __init__(self, train: FileDataset, test: FileDataset):
         self.train = train
         self.test = test
 

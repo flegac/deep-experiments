@@ -5,17 +5,17 @@ import cv2
 
 from mydeep_api.dataset.dataset import Dataset
 from mydeep_api.tensor import Tensor
+from surili_core.workspace import Workspace
 
 
 class ImagePathDataset(Dataset):
     @staticmethod
     def from_folder_tree(path: str, shape: Tuple[int, int] = None):
-        categories = [_ for _ in os.listdir(path)]
-        images = [
-            os.path.join(cat, file)
-            for cat in categories
-            for file in os.listdir(os.path.join(path, cat))
-        ]
+        images = (Workspace.from_path(path)
+                  .folders
+                  .flatmap(lambda fs: fs.files)
+                  .map(lambda p: os.path.relpath(p, start=path))
+                  .to_list())
         return ImagePathDataset(images, path, shape)
 
     def __init__(self, images: Collection[str],
