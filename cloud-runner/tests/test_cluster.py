@@ -1,3 +1,5 @@
+import os
+
 from cloud_runner2.cloud_cluster import CloudCluster
 
 cluster = CloudCluster(
@@ -13,14 +15,39 @@ cluster = CloudCluster(
 
 
 def test_start():
-    cluster.start()
+    cluster.create()
 
-    # cluster.ssh('ls', 0)
+    cluster.ssh('ls', 0)
 
-    # cluster.stop()
+    cluster.stop()
 
 
 def test_ssh():
-    cluster.ssh([
-        'ls /',
-    ], 0).communicate()
+    cluster.start()
+
+    cluster.ssh(
+        commands=[
+            'ls /tmp',
+        ],
+        instance_id=0
+    ).wait()
+
+    cluster.stop()
+
+
+def test_push_pull():
+    cluster.start()
+
+    cluster.push(
+        local_path=os.getcwd(),
+        remote_path='/tmp',
+        instance_id=0
+    ).wait()
+
+    cluster.pull(
+        local_path=os.path.join(os.getcwd(), 'pull_result'),
+        remote_path='/tmp/tests',
+        instance_id=0
+    ).wait()
+
+    cluster.stop()

@@ -9,6 +9,8 @@ class CloudCluster(object):
     STOP_COMMAND = 'gcloud compute instances stop {instances} --zone={zone} {wait}'
     START_COMMAND = 'gcloud compute instances start {instances} --zone={zone} {wait}'
     SSH_COMMAND = "gcloud compute ssh --zone {zone} {instances} --command '{command}'"
+    PUSH_COMMAND = "gcloud compute scp --recurse --zone {zone} '{local_path}' '{instance}:{remote_path}'"
+    PULL_COMMAND = "gcloud compute scp --recurse --zone {zone} '{instance}:{remote_path}' '{local_path}'"
 
     def __init__(self,
                  name: str,
@@ -52,7 +54,7 @@ class CloudCluster(object):
             zone=self.zone
         )).wait()
 
-    def ssh(self, commands: Union[str, List[str]], instance_id: int = None):
+    def ssh(self, commands: Union[str, List[str]], instance_id: int = None) -> subprocess.Popen:
         cmd = commands if isinstance(commands, str) else ' && '.join(commands)
         instances = ' '.join(self.instances) if instance_id is None else self.instances[instance_id]
         return shell(CloudCluster.SSH_COMMAND.format(
@@ -61,12 +63,26 @@ class CloudCluster(object):
             command=cmd
         ))
 
-    def push(self, local_path: str, remote_path: str, instance_id: int = None):
-        cmd = 'gsutil -m cp -R {} {}'.format(local_path, remote_path)
-        raise NotImplementedError()
+    def push(self, local_path: str, remote_path: str, instance_id: int = None) -> subprocess.Popen:
+        cmd = CloudCluster.PUSH_COMMAND.format(
+            zone=self.zone,
+            instance=self.instances[instance_id],
+            local_path=local_path,
+            remote_path=remote_path)
+        return shell(cmd)
+
+    def pull(self, local_path: str, remote_path: str, instance_id: int = None) -> subprocess.Popen:
+        # os.makedirs(local_path, exist_ok=True)
+
+        cmd = CloudCluster.PULL_COMMAND.format(
+            zone=self.zone,
+            instance=self.instances[instance_id],
+            local_path=local_path,
+            remote_path=remote_path)
+        return shell(cmd)
 
 
-def shell(cmd):
+def shell(cmd) -> subprocess.Popen:
     print(cmd)
     # return subprocess.check_output(cmd, shell=True)
 
