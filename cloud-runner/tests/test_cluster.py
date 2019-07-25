@@ -1,25 +1,21 @@
 import os
 
 from cloud_runner2.cloud_cluster import CloudCluster
+from cloud_runner2.cluster_utils import cpu_config
 
 cluster = CloudCluster(
-    name='test-clusters',
-    cluster_size=2,
-    cluster_config=[
-        '--preemptible',
-        '--machine-type=n1-standard-4',
-        '--image-family=ubuntu-1810',
-        '--image-project=ubuntu-os-cloud',
-    ]
+    name='test-cluster',
+    cluster_size=1,
+    cluster_config=cpu_config()
 )
 
 
 def test_start():
-    cluster.create()
+    cluster.create().wait()
 
-    cluster.ssh('ls', 0)
+    cluster.ssh('ls /tmp', 0).wait()
 
-    cluster.stop()
+    cluster.delete().wait()
 
 
 def test_ssh():

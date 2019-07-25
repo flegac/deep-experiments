@@ -1,19 +1,22 @@
 import json
 import os
 import pickle
-import shlex
 import shutil
 import tempfile
 import time
-from subprocess import Popen
 from typing import Callable, Any
 
 from stream_lib.stream import stream
 from stream_lib.stream_api import Stream
+from surili_core.utils import shell
 
 
 class Workspace:
     workspace = ''
+
+    @staticmethod
+    def temporary(prefix: str = None, suffix: str = None, root_path=None):
+        return Workspace.from_path(tempfile.mkdtemp(prefix=prefix, suffix=suffix, dir=root_path))
 
     @staticmethod
     def from_path(path: str, storage_path: str = None):
@@ -45,6 +48,7 @@ class Workspace:
             os.utime(new_file, None)
             if content:
                 json.dump(content, _, indent=2, sort_keys=True)
+        return new_file
 
     def mkdir(self) -> 'Workspace':
         try:
@@ -77,49 +81,32 @@ class Workspace:
             .map(self.path_to) \
             .filter(os.path.isfile)
 
+    def archive(self, name: str = None):
+        name = name or os.path.basename(self.path) + time.strftime("-%Y_%m_%d-%Hh%Mm%S")
+        return shutil.make_archive(Workspace.temporary().path_to(name), 'zip', self.path)
+
+    def copy_from(self, path: str):
+        shutil.copytree(path, self.path_to(os.path.basename(path)))
+
     def to_storage(self, storage_path: str):
-        storage_path_starts_with_gs = storage_path is not None and storage_path.startswith('gs://')
-        if self.storage_path is None:
-            if not storage_path_starts_with_gs:
-                raise ValueError("A storage path starting with 'gs://' is needed !")
-            root_storage_path = storage_path
-        else:
-            if storage_path_starts_with_gs:
-                raise ValueError("A storage is set for the workspace : only relative storage path is accepted !")
-            root_storage_path = '{}/{}'.format(self.storage_path, storage_path)
+        root_storage_path = self._compute_storage_path(storage_path)
 
-        tmp_path = tempfile.mkdtemp()
-
+        temporary_file = self.archive()
         try:
-            temporary_file = os.path.join(tmp_path, os.path.basename(self.path) + time.strftime("-%Y_%m_%d-%Hh%Mm%S"))
-            temporary_file = shutil.make_archive(temporary_file, 'zip', self.path)
             full_storage_path = '{}/{}'.format(root_storage_path, os.path.basename(temporary_file))
-
-            cmd = 'gsutil -m cp -r "{local_path}" "{storage_path}"'.format(
+            shell('gsutil -m cp -r "{local_path}" "{storage_path}"'.format(
                 local_path=temporary_file,
                 storage_path=full_storage_path
-            )
-            shell(cmd).wait()
+            )).wait()
         finally:
-            shutil.rmtree(tmp_path)
+            os.remove(temporary_file)
 
     def from_storage(self, storage_path: str):
-        storage_path_starts_with_gs = storage_path is not None and storage_path.startswith('gs://')
-        if self.storage_path is None:
-            if not storage_path_starts_with_gs:
-                raise ValueError("A storage path starting with 'gs://' is needed !")
-            full_storage_path = storage_path
-        else:
-            if storage_path_starts_with_gs:
-                raise ValueError("A storage is set for the workspace : only relative storage path is accepted !")
-            full_storage_path = '{}/{}'.format(self.storage_path, storage_path)
-
         self.mkdir()
-        cmd = 'gsutil -m cp -r "{storage_path}" "{local_path}"'.format(
+        shell('gsutil -m cp -r "{storage_path}" "{local_path}"'.format(
             local_path=self.path,
-            storage_path=full_storage_path
-        )
-        shell(cmd).wait()
+            storage_path=self._compute_storage_path(storage_path)
+        )).wait()
 
     def delete(self):
         shutil.rmtree(self.path)
@@ -148,16 +135,21 @@ class Workspace:
 
         return apply
 
+    def _compute_storage_path(self, storage_path):
+        storage_path_starts_with_gs = storage_path is not None and storage_path.startswith('gs://')
+        if self.storage_path is None:
+            if not storage_path_starts_with_gs:
+                raise ValueError("A storage path starting with 'gs://' is needed !")
+            root_storage_path = storage_path
+        else:
+            if storage_path_starts_with_gs:
+                raise ValueError("A storage is set for the workspace : only relative storage path is accepted !")
+            root_storage_path = '{}/{}'.format(self.storage_path, storage_path)
+        return root_storage_path
+
     def __repr__(self) -> str:
         return '[WS: {}]'.format(self.path)
 
 
 def clean_path(path: str):
     return os.path.abspath(path)
-
-
-def shell(cmd) -> Popen:
-    print(cmd)
-    # return subprocess.check_output(cmd, shell=True)
-
-    return Popen(shlex.split(cmd), shell=True)

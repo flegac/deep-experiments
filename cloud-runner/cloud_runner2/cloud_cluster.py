@@ -1,6 +1,7 @@
-import shlex
 import subprocess
 from typing import List, Union
+
+from surili_core.utils import shell
 
 
 class CloudCluster(object):
@@ -8,9 +9,9 @@ class CloudCluster(object):
     DELETE_COMMAND = 'gcloud compute instances delete {instances} --zone={zone} -q'
     STOP_COMMAND = 'gcloud compute instances stop {instances} --zone={zone} {wait}'
     START_COMMAND = 'gcloud compute instances start {instances} --zone={zone} {wait}'
-    SSH_COMMAND = "gcloud compute ssh --zone {zone} {instances} --command '{command}'"
-    PUSH_COMMAND = "gcloud compute scp --recurse --zone {zone} '{local_path}' '{instance}:{remote_path}'"
-    PULL_COMMAND = "gcloud compute scp --recurse --zone {zone} '{instance}:{remote_path}' '{local_path}'"
+    SSH_COMMAND = 'gcloud compute ssh --zone {zone} {instances} --command "{command}"'
+    PUSH_COMMAND = 'gcloud compute scp --recurse --zone {zone} "{local_path}" "{instance}:{remote_path}"'
+    PULL_COMMAND = 'gcloud compute scp --recurse --zone {zone} "{instance}:{remote_path}" "{local_path}"'
 
     def __init__(self,
                  name: str,
@@ -25,38 +26,35 @@ class CloudCluster(object):
         self.instances = ['{}-{}'.format(name, i) for i in range(cluster_size)]
         self.instances_string = ' '.join(self.instances)
 
-    def create(self):
-        shell(CloudCluster.CREATE_COMMAND.format(
+    def create(self) -> subprocess.Popen:
+        return shell(CloudCluster.CREATE_COMMAND.format(
             instances=self.instances_string,
             config=' '.join(self.cluster_config),
             zone=self.zone
-        )).wait()
+        ))
 
-    def start(self, wait: bool = False):
-        try:
-            shell(CloudCluster.START_COMMAND.format(
-                instances=self.instances_string,
-                zone=self.zone,
-                wait='--async' if wait else ''
-            )).wait()
-        except:
-            self.create()
+    def delete(self) -> subprocess.Popen:
+        return shell(CloudCluster.DELETE_COMMAND.format(
+            instances=self.instances_string,
+            zone=self.zone
+        ))
 
-    def stop(self, wait: bool = True):
-        shell(CloudCluster.STOP_COMMAND.format(
+    def start(self, wait: bool = False) -> subprocess.Popen:
+        return shell(CloudCluster.START_COMMAND.format(
             instances=self.instances_string,
             zone=self.zone,
             wait='--async' if wait else ''
-        )).wait()
+        ))
 
-    def delete(self):
-        shell(CloudCluster.DELETE_COMMAND.format(
+    def stop(self, wait: bool = True) -> subprocess.Popen:
+        return shell(CloudCluster.STOP_COMMAND.format(
             instances=self.instances_string,
-            zone=self.zone
-        )).wait()
+            zone=self.zone,
+            wait='--async' if wait else ''
+        ))
 
     def ssh(self, commands: Union[str, List[str]], instance_id: int = None) -> subprocess.Popen:
-        cmd = commands if isinstance(commands, str) else ' && '.join(commands)
+        cmd = commands if isinstance(commands, str) else ' ; '.join(commands)
         return shell(CloudCluster.SSH_COMMAND.format(
             instances=self._instance_string(instance_id),
             zone=self.zone,
@@ -66,7 +64,7 @@ class CloudCluster(object):
     def push(self, local_path: str, remote_path: str, instance_id: int = None) -> subprocess.Popen:
         cmd = CloudCluster.PUSH_COMMAND.format(
             zone=self.zone,
-            instances=self._instance_string(instance_id),
+            instance=self._instance_string(instance_id),
             local_path=local_path,
             remote_path=remote_path)
         return shell(cmd)
@@ -76,17 +74,10 @@ class CloudCluster(object):
 
         cmd = CloudCluster.PULL_COMMAND.format(
             zone=self.zone,
-            instances=self._instance_string(instance_id),
+            instance=self._instance_string(instance_id),
             local_path=local_path,
             remote_path=remote_path)
         return shell(cmd)
 
     def _instance_string(self, instance_id: int):
         return self.instances[instance_id] if instance_id else self.instances_string
-
-
-def shell(cmd) -> subprocess.Popen:
-    print(cmd)
-    # return subprocess.check_output(cmd, shell=True)
-
-    return subprocess.Popen(shlex.split(cmd), shell=True)
