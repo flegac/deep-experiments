@@ -23,10 +23,11 @@ class CloudCluster(object):
         self.name = name
         self.size = cluster_size
         self.instances = ['{}-{}'.format(name, i) for i in range(cluster_size)]
+        self.instances_string = ' '.join(self.instances)
 
     def create(self):
         shell(CloudCluster.CREATE_COMMAND.format(
-            instances=' '.join(self.instances),
+            instances=self.instances_string,
             config=' '.join(self.cluster_config),
             zone=self.zone
         )).wait()
@@ -34,7 +35,7 @@ class CloudCluster(object):
     def start(self, wait: bool = False):
         try:
             shell(CloudCluster.START_COMMAND.format(
-                instances=' '.join(self.instances),
+                instances=self.instances_string,
                 zone=self.zone,
                 wait='--async' if wait else ''
             )).wait()
@@ -43,22 +44,21 @@ class CloudCluster(object):
 
     def stop(self, wait: bool = True):
         shell(CloudCluster.STOP_COMMAND.format(
-            instances=' '.join(self.instances),
+            instances=self.instances_string,
             zone=self.zone,
             wait='--async' if wait else ''
         )).wait()
 
     def delete(self):
         shell(CloudCluster.DELETE_COMMAND.format(
-            instances=' '.join(self.instances),
+            instances=self.instances_string,
             zone=self.zone
         )).wait()
 
     def ssh(self, commands: Union[str, List[str]], instance_id: int = None) -> subprocess.Popen:
         cmd = commands if isinstance(commands, str) else ' && '.join(commands)
-        instances = ' '.join(self.instances) if instance_id is None else self.instances[instance_id]
         return shell(CloudCluster.SSH_COMMAND.format(
-            instances=instances,
+            instances=self._instance_string(instance_id),
             zone=self.zone,
             command=cmd
         ))
@@ -66,7 +66,7 @@ class CloudCluster(object):
     def push(self, local_path: str, remote_path: str, instance_id: int = None) -> subprocess.Popen:
         cmd = CloudCluster.PUSH_COMMAND.format(
             zone=self.zone,
-            instance=self.instances[instance_id],
+            instances=self._instance_string(instance_id),
             local_path=local_path,
             remote_path=remote_path)
         return shell(cmd)
@@ -76,10 +76,13 @@ class CloudCluster(object):
 
         cmd = CloudCluster.PULL_COMMAND.format(
             zone=self.zone,
-            instance=self.instances[instance_id],
+            instances=self._instance_string(instance_id),
             local_path=local_path,
             remote_path=remote_path)
         return shell(cmd)
+
+    def _instance_string(self, instance_id: int):
+        return self.instances[instance_id] if instance_id else self.instances_string
 
 
 def shell(cmd) -> subprocess.Popen:

@@ -6,6 +6,7 @@ import shutil
 import tempfile
 import time
 from subprocess import Popen
+from typing import Callable, Any
 
 from stream_lib.stream import stream
 from stream_lib.stream_api import Stream
@@ -15,19 +16,21 @@ class Workspace:
     workspace = ''
 
     @staticmethod
-    def from_path(path: str):
+    def from_path(path: str, storage_path: str = None):
         root_path = os.path.join(Workspace.workspace, path)
-        return Workspace(root_path, root_path)
+        return Workspace(root_path, root_path, storage_path)
 
-    def __init__(self, root_path: str, path: str):
+    def __init__(self, root_path: str, path: str, storage_path: str = None):
         root_path = clean_path(root_path)
         path = clean_path(path)
 
         assert path.startswith(root_path), \
-            'Workspace path must be in its root directory'
+            'Workspace path must be in its root directory !'
         assert not os.path.exists(path) or os.path.isdir(path), \
-            'Workspace must be a directory'
-
+            'Workspace must be a directory !'
+        assert storage_path is None or storage_path.startswith('gs:/'), \
+            "If provided, a storage path must start with 'gs:/' !"
+        self.storage_path = storage_path
         self._root_path = root_path
         self._current_path = path
 
@@ -36,7 +39,7 @@ class Workspace:
     def create_file(self, filename: str, content: dict = None, force=False):
         new_file = self.path_to(filename)
         if not force and os.path.exists(new_file):
-            raise ValueError('File {} exists ! use no_overwrite=False to force creation.'.format(new_file))
+            raise ValueError('File {} exists ! use force=True to force creation.'.format(new_file))
 
         with open(new_file, 'w') as _:
             os.utime(new_file, None)
@@ -52,7 +55,7 @@ class Workspace:
 
     @property
     def root(self) -> 'Workspace':
-        return Workspace.from_path(self._root_path)
+        return Workspace.from_path(self._root_path, self.storage_path)
 
     @property
     def path(self) -> str:
@@ -68,14 +71,29 @@ class Workspace:
             .map(self.get_ws) \
             .filter(lambda _: os.path.isdir(_.path))
 
+    @property
+    def files(self) -> Stream[str]:
+        return stream(os.listdir(self.path)) \
+            .map(self.path_to) \
+            .filter(os.path.isfile)
+
     def to_storage(self, storage_path: str):
+        storage_path_starts_with_gs = storage_path is not None and storage_path.startswith('gs://')
+        if self.storage_path is None:
+            if not storage_path_starts_with_gs:
+                raise ValueError("A storage path starting with 'gs://' is needed !")
+            root_storage_path = storage_path
+        else:
+            if storage_path_starts_with_gs:
+                raise ValueError("A storage is set for the workspace : only relative storage path is accepted !")
+            root_storage_path = '{}/{}'.format(self.storage_path, storage_path)
 
         tmp_path = tempfile.mkdtemp()
 
         try:
             temporary_file = os.path.join(tmp_path, os.path.basename(self.path) + time.strftime("-%Y_%m_%d-%Hh%Mm%S"))
             temporary_file = shutil.make_archive(temporary_file, 'zip', self.path)
-            full_storage_path = os.path.join(storage_path, os.path.basename(temporary_file))
+            full_storage_path = '{}/{}'.format(root_storage_path, os.path.basename(temporary_file))
 
             cmd = 'gsutil -m cp -r "{local_path}" "{storage_path}"'.format(
                 local_path=temporary_file,
@@ -86,34 +104,36 @@ class Workspace:
             shutil.rmtree(tmp_path)
 
     def from_storage(self, storage_path: str):
+        storage_path_starts_with_gs = storage_path is not None and storage_path.startswith('gs://')
+        if self.storage_path is None:
+            if not storage_path_starts_with_gs:
+                raise ValueError("A storage path starting with 'gs://' is needed !")
+            full_storage_path = storage_path
+        else:
+            if storage_path_starts_with_gs:
+                raise ValueError("A storage is set for the workspace : only relative storage path is accepted !")
+            full_storage_path = '{}/{}'.format(self.storage_path, storage_path)
+
+        self.mkdir()
         cmd = 'gsutil -m cp -r "{storage_path}" "{local_path}"'.format(
             local_path=self.path,
-            storage_path=storage_path
+            storage_path=full_storage_path
         )
         shell(cmd).wait()
-
-    @property
-    def files(self) -> Stream[str]:
-        return stream(os.listdir(self.path)) \
-            .map(self.path_to) \
-            .filter(os.path.isfile)
 
     def delete(self):
         shutil.rmtree(self.path)
 
-    def path_to(self, path):
+    def path_to(self, path: str):
         return clean_path(os.path.join(self.path, path))
 
-    def get_ws(self, path):
-        return Workspace(self._root_path, self.path_to(path))
+    def get_ws(self, path: str):
+        return Workspace(self._root_path, self.path_to(path), self.storage_path)
 
-    def writer(self, name_function):
-        if not callable(name_function):
-            name = name_function
-            name_function = lambda x: name
-
+    def writer(self, name_provider: Callable[[Any], str]):
         def apply(data):
-            path = self.path_to(name_function(data))
+            name = name_provider if isinstance(name_provider, str) else name_provider(data)
+            path = self.path_to(name)
             with open(path, 'wb') as file:
                 pickle.dump(data, file)
             return path
