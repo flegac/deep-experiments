@@ -1,4 +1,4 @@
-from cloud_runner.cloud import GCloud
+from cloud_runner2.cloud import GCloud
 
 # GCloud.login()
 # GCloud.list_config()
