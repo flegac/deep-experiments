@@ -95,7 +95,7 @@ class Workspace:
         if os.path.isfile(path):
             shutil.copy(path, self.path_to(os.path.basename(path)))
         else:
-            shutil.copytree(path, self.path)
+            shutil.copytree(path, self.path_to(os.path.basename(path)))
 
     def to_storage(self, storage_path: str):
         root_storage_path = self._compute_storage_path(storage_path)

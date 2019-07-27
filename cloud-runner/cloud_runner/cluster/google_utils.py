@@ -5,7 +5,7 @@ class GpuType(Enum):
     P4 = 'nvidia-tesla-p4'
     V100 = 'nvidia-tesla-v100'
     P100 = 'nvidia-tesla-p100'
-    K80 = 'nvidia-tesla-K80'
+    K80 = 'nvidia-tesla-k80'
 
 
 def cpu_config():
@@ -24,7 +24,8 @@ def cpu_config():
 
         # optional
         '--preemptible',
-        '--restart-on-failure'
+        '--restart-on-failure',
+        '--tags=http-server,https-server',
     ]
 
 
@@ -51,5 +52,6 @@ def gpu_config(gpu_type: GpuType = GpuType.K80):
 
         # optional
         '--preemptible',
-        '--restart-on-failure'
+        '--restart-on-failure',
+        '--tags=http-server,https-server',
     ]

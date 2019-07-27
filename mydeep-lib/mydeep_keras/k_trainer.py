@@ -17,7 +17,7 @@ class KerasTrainer(Worker):
         self.params = params
 
     def run(self, ctx: PipelineContext, target_ws: Workspace):
-        dataset_ws = ctx.project_ws.get_ws('dataset')
+        dataset_ws = ctx.workspace.get_ws('dataset')
         models_ws = target_ws.get_ws('models')
 
         # load params

@@ -12,15 +12,21 @@ from surili_core.workspace import Workspace
 
 class PrepareMonkeys(Worker):
 
-    def __init__(self, col_x='x', col_y='y'):
+    def __init__(self, dataset_path: str, col_x='x', col_y='y'):
         super().__init__()
+        self.dataset_path = dataset_path
         self.col_x = col_x
         self.col_y = col_y
 
     def run(self, ctx: PipelineContext, target_ws: Workspace):
-        path = ctx.root_ws.path_to('training')
+        dataset_ws = target_ws.parent.get_ws(self.dataset_path)
+
+        target_ws.extract(dataset_ws.path_to('training.zip'))
+        target_ws.extract(dataset_ws.path_to('validation.zip'))
+
+        path = target_ws.path_to('training')
         training = Dataframes.from_directory_structure(self.col_x, self.col_y)(path)
-        path = ctx.root_ws.path_to('validation')
+        path = target_ws.path_to('validation')
         validation = Dataframes.from_directory_structure(self.col_x, self.col_y)(path)
         df = pd.concat([training, validation], axis=0, ignore_index=True)
 

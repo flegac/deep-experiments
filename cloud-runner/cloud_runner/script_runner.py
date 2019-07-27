@@ -1,4 +1,5 @@
 import os
+import time
 from typing import List, Dict
 
 from cloud_runner.cluster.cloud_cluster import CloudCluster
@@ -14,11 +15,13 @@ class ScriptRunner(object):
                  config_relative_path: str,
                  to_deploy: List[str],
                  configs: List[Dict],
+                 creation_sleep_time: int = None
                  ):
         self.script_relative_path = script_relative_path
         self.config_relative_path = config_relative_path
         self.to_deploy = to_deploy
         self.configs = configs
+        self.creation_sleep_time = creation_sleep_time
 
     def run_with(self, cluster: CloudCluster):
         if cluster.cluster_size() < len(self.configs):
@@ -30,6 +33,9 @@ class ScriptRunner(object):
         try:
             # prepare all instances
             cluster.create().wait()
+
+            if self.creation_sleep_time:
+                time.sleep(self.creation_sleep_time)
 
             wait_all([
                 cluster.ssh(
@@ -54,15 +60,16 @@ class ScriptRunner(object):
                 os.remove(_)
 
             # run script on each instance
+            python_path = ':'.join(['/'.join([remote_workspace, os.path.basename(_)]) for _ in self.to_deploy])
             wait_all([
                 cluster.ssh(
                     commands=[
                         'cd {}'.format(remote_workspace),
-                        'unzip {}'.format(ScriptRunner.archive_name),
-                        'rm {}'.format(ScriptRunner.archive_name),
-                        'export PYTHONPATH=${{PYTHONPATH}}:{}'.format(remote_workspace),
+                        'sudo unzip {}'.format(ScriptRunner.archive_name),
+                        'sudo rm {}'.format(ScriptRunner.archive_name),
+                        'export PYTHONPATH=${{PYTHONPATH}}:{}'.format(python_path),
                         'cd {}/{}'.format(remote_workspace, os.path.dirname(self.script_relative_path)),
-                        'python3 {} >> out.log 2>> err.log'.format(os.path.basename(self.script_relative_path))
+                        'python3 {}'.format(os.path.basename(self.script_relative_path))
                     ],
                     instance_id=_
                 ) for _ in range(cluster.cluster_size())

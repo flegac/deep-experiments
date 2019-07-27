@@ -20,7 +20,7 @@ class GoogleCluster(CloudCluster):
                  cluster_size: int,
                  zone: str = 'europe-west1-b',
                  cluster_config: List[str] = None,
-                 remote_workspace: str = '/tmp/workspace'
+                 remote_workspace: str = '/tmp/.workspace',
                  ):
         super().__init__(cluster_size, remote_workspace)
         self.cluster_config = cluster_config or []
@@ -28,9 +28,6 @@ class GoogleCluster(CloudCluster):
         self.name = name
         self.instances = ['{}-{}'.format(name, i) for i in range(cluster_size)]
         self.instances_string = ' '.join(self.instances)
-
-    def remote_workspace(self):
-        return self._remote_workspace
 
     def create(self) -> subprocess.Popen:
         return shell(GoogleCluster.CREATE_COMMAND.format(

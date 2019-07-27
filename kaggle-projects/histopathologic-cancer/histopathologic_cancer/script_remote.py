@@ -11,7 +11,7 @@ configs = [
 ]
 
 ScriptRunner(
-    script_relative_path='histopathologic-cancer/histopathologic_cancer/script_densenet_121_augmentation_CLR.py',
+    script_relative_path='histopathologic-cancer/histopathologic_cancer/script_local.py',
     config_relative_path='histopathologic-cancer/histopathologic_cancer/config.json',
     configs=configs,
     to_deploy=[
@@ -20,9 +20,10 @@ ScriptRunner(
         '../../../stream-lib',
         '../../../surili-lib',
         '../../../hyper-search'
-    ]
+    ],
+    creation_sleep_time=100
 ).run_with(GoogleCluster(
-    name='test-cluster',
+    name='cancer-cluster',
     cluster_size=1,
     cluster_config=gpu_config(GpuType.K80)
 ))

@@ -1,5 +1,5 @@
 import os
-from typing import Iterator, Tuple, Collection
+from typing import Iterator, Tuple, List
 
 import cv2
 
@@ -18,7 +18,7 @@ class ImagePathDataset(Dataset):
                   .to_list())
         return ImagePathDataset(images, path, shape)
 
-    def __init__(self, images: Collection[str],
+    def __init__(self, images: List[str],
                  root_path: str = None,
                  shape: Tuple[int, int] = None):
         self.images = images
