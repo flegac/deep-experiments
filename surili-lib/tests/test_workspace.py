@@ -1,6 +1,11 @@
 from surili_core.workspace import Workspace
 
 
+def test_workspace_basic():
+    ws = Workspace.from_path('.') / 'generated/workspace' / 'coucou.tiz'
+    print(ws.root)
+
+
 def test_workspace():
     ws = Workspace.from_path('generated/workspace')
 

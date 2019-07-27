@@ -11,15 +11,17 @@ from surili_core.workspace import Workspace
 
 
 class SearchLearningRate(Worker):
-    def __init__(self, params: KTrainContext, min_lr: float = 1e-6, max_lr: float = 1., epochs: int = 2) -> None:
+    def __init__(self, dataset_path: str, params: KTrainContext, min_lr: float = 1e-6, max_lr: float = 1.,
+                 epochs: int = 2) -> None:
         super().__init__()
+        self.dataset_path = dataset_path
         self.params = params
         self.min_lr = min_lr
         self.max_lr = max_lr
         self.epochs = epochs
 
     def run(self, ctx: PipelineContext, target_ws: Workspace):
-        dataset_ws = ctx.project_ws.get_ws('dataset')
+        dataset_ws = ctx.workspace.get_ws(self.dataset_path)
 
         # load params
         dataset = TrainDataset.from_path(dataset_ws).train

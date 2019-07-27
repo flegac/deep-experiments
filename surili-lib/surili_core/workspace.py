@@ -1,9 +1,11 @@
 import json
 import os
+import pathlib
 import pickle
 import shutil
 import tempfile
 import time
+import zipfile
 from typing import Callable, Any
 
 from stream_lib.stream import stream
@@ -81,12 +83,19 @@ class Workspace:
             .map(self.path_to) \
             .filter(os.path.isfile)
 
+    def extract(self, archive_path: str):
+        with zipfile.ZipFile(archive_path, 'r') as _:
+            _.extractall(self.path)
+
     def archive(self, name: str = None):
         name = name or os.path.basename(self.path) + time.strftime("-%Y_%m_%d-%Hh%Mm%S")
         return shutil.make_archive(Workspace.temporary().path_to(name), 'zip', self.path)
 
     def copy_from(self, path: str):
-        shutil.copytree(path, self.path_to(os.path.basename(path)))
+        if os.path.isfile(path):
+            shutil.copy(path, self.path_to(os.path.basename(path)))
+        else:
+            shutil.copytree(path, self.path)
 
     def to_storage(self, storage_path: str):
         root_storage_path = self._compute_storage_path(storage_path)
@@ -116,6 +125,9 @@ class Workspace:
 
     def get_ws(self, path: str):
         return Workspace(self._root_path, self.path_to(path), self.storage_path)
+
+    def __truediv__(self, path: str):
+        return self.get_ws(path)
 
     def writer(self, name_provider: Callable[[Any], str]):
         def apply(data):

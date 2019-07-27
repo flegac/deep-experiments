@@ -1,0 +1,5 @@
+{
+  "input_shape": [96,96,3],
+  "epochs":100,
+  "patience": 10
+}

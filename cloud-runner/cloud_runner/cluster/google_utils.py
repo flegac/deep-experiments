@@ -20,6 +20,7 @@ def cpu_config():
         # disk
         '--boot-disk-type=pd-ssd',
         # '--boot-disk-size=50Go',
+        '--scopes=storage-full',
 
         # optional
         '--preemptible',
@@ -27,7 +28,7 @@ def cpu_config():
     ]
 
 
-def gpu_config(gpu_type: GpuType):
+def gpu_config(gpu_type: GpuType = GpuType.K80):
     """
     https://cloud.google.com/deep-learning-vm/docs/tensorflow_start_instance
     :return:
@@ -46,9 +47,9 @@ def gpu_config(gpu_type: GpuType):
         # disk
         '--boot-disk-type=pd-ssd',
         # '--boot-disk-size=50Go',
+        '--scopes=storage-full',
 
         # optional
         '--preemptible',
         '--restart-on-failure'
-
     ]

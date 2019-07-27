@@ -1,9 +1,9 @@
 import os
 
-from cloud_runner2.cloud_cluster import CloudCluster
-from cloud_runner2.cluster_utils import cpu_config
+from cloud_runner.cluster.google_cluster import GoogleCluster
+from cloud_runner.cluster.google_utils import cpu_config
 
-cluster = CloudCluster(
+cluster = GoogleCluster(
     name='test-cluster',
     cluster_size=1,
     cluster_config=cpu_config()

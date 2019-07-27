@@ -1,23 +1,23 @@
-from cloud_runner2.cloud_cluster import CloudCluster
-from cloud_runner2.cloud_runner import CloudRunner2
-from cloud_runner2.cluster_utils import cpu_config
+from cloud_runner.cluster.google_cluster import GoogleCluster
+from cloud_runner.cluster.google_utils import cpu_config
+from cloud_runner.cluster.local_cluster import LocalCluster
+from cloud_runner.script_runner import ScriptRunner
 from surili_core.workspace import Workspace
 
-cluster = CloudCluster(
+google_cluster = GoogleCluster(
     name='test-cluster',
-    cluster_size=1,
+    cluster_size=2,
     cluster_config=cpu_config()
+)
+local_cluster = LocalCluster(
+    cluster_size=1,
+    remote_workspace=Workspace.temporary().path
 )
 
 
-def my_generator():
-    yield {
-        'a': 'aaaaa',
-        'b': 'bbbbb'
-    }
+def test_executer():
+    cluster = google_cluster
 
-
-def test_start():
     root_ws = Workspace.temporary()
     ws = [root_ws.get_ws('project_{}'.format(_)) for _ in range(3)]
     for _ in ws:
@@ -35,9 +35,14 @@ def test_start():
             'print("Hello World !")'
         ])
 
-    CloudRunner2(
+    ScriptRunner(
         script_relative_path='project_0/script_local.py',
         config_relative_path='project_0/conf/config.json',
-        config_generator=my_generator(),
+        configs=[
+            {
+                'a': 'aaaaa',
+                'b': 'bbbbb'
+            } for _ in range(cluster.cluster_size())
+        ],
         to_deploy=[_.path for _ in ws]
     ).run_with(cluster)

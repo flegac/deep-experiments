@@ -1,31 +1,23 @@
 import math
 
-from cloud_runner2.cloud_cluster import CloudCluster
-from cloud_runner2.cloud_runner import CloudRunner2
-from cloud_runner2.cluster_utils import cpu_config
+from cloud_runner.script_runner import ScriptRunner
+from cloud_runner.cluster.google_cluster import GoogleCluster
+from cloud_runner.cluster.google_utils import cpu_config
 
-
-def params_provider():
-    for i in range(10):
-        yield {
-            'optimizer': i,
-            'loss': i,
-            'learning_rate': math.pow(10, -(i + 2)),
-        }
-
-
-cluster = CloudCluster(
-    name='test-cluster',
-    cluster_size=1,
-    cluster_config=cpu_config()
-)
-
-CloudRunner2(
+ScriptRunner(
     script_relative_path='mini_project/script_local.py',
     config_relative_path='mini_project/config.json',
-    config_generator=params_provider(),
+    configs=[{
+        'optimizer': i,
+        'loss': i,
+        'learning_rate': math.pow(10, -(i + 2))
+    } for i in range(10)],
     to_deploy=[
         '../mini_project',
         '../mini_lib'
     ]
-).run_with(cluster)
+).run_with(GoogleCluster(
+    name='test-cluster',
+    cluster_size=1,
+    cluster_config=cpu_config()
+))
