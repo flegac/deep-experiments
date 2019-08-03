@@ -91,7 +91,14 @@ pipeline([
              test_size=0.1
          )),
     step('training',
-         worker=KerasTrainer(train_ctx)),
+         worker=KerasTrainer(
+             dataset_path='dataset',
+             params=train_ctx
+         )),
     step('validation',
-         worker=ValidateTraining(train_ctx.augmentation))
+         worker=ValidateTraining(
+             training_path='training',
+             dataset_path='dataset',
+             augmentation=train_ctx.augmentation
+         )),
 ])(ctx)

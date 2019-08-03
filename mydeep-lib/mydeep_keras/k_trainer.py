@@ -12,12 +12,13 @@ from surili_core.workspace import Workspace
 class KerasTrainer(Worker):
     create_ctx = KTrainContext
 
-    def __init__(self, params: KTrainContext) -> None:
+    def __init__(self, dataset_path:str,params: KTrainContext) -> None:
         super().__init__()
+        self.dataset_path = dataset_path
         self.params = params
 
     def run(self, ctx: PipelineContext, target_ws: Workspace):
-        dataset_ws = target_ws.root.get_ws('dataset')
+        dataset_ws = target_ws.root.get_ws(self.dataset_path)
         models_ws = target_ws.get_ws('models')
 
         # load params

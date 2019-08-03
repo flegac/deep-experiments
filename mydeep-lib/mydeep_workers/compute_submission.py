@@ -11,9 +11,17 @@ from surili_core.workspace import Workspace
 
 
 class ComputeSubmission(Worker):
-    def __init__(self, augmentation: TrainParameters, nb_pred: 1, target_x='x', target_y='y',
+    def __init__(self,
+                 dataset_path: str,
+                 training_path: str,
+                 augmentation: TrainParameters,
+                 nb_pred: 1,
+                 target_x='x',
+                 target_y='y',
                  max_batch_size: int = 256) -> None:
         super().__init__()
+        self.training_path = training_path
+        self.dataset_path = dataset_path
         self.augmentation = augmentation.build()
         self.nb_pred = nb_pred
         self.target_x = target_x
@@ -21,12 +29,12 @@ class ComputeSubmission(Worker):
         self.max_batch_size = max_batch_size
 
     def run(self, ctx: PipelineContext, target_ws: Workspace):
-        dataset = TrainDataset.from_path(target_ws.root.get_ws('dataset')).test
+        dataset = TrainDataset.from_path(target_ws.root.get_ws(self.dataset_path)).test
         self.make_predictions(dataset, target_ws)
 
     def make_predictions(self, dataset: FileDataset, target_ws: Workspace):
         # model ---------------------------------------
-        training_ws = target_ws.root.get_ws('training')
+        training_ws = target_ws.root.get_ws(self.training_path)
         model = KModel.from_path(training_ws.path_to('output/model_final.h5'))
 
         df = dataset.df

@@ -13,8 +13,14 @@ from surili_core.workspace import Workspace
 
 
 class ValidateTraining(Worker):
-    def __init__(self, augmentation: TrainParameters, max_batch_size: int = 256) -> None:
+    def __init__(self,
+                 training_path: str,
+                 dataset_path: str,
+                 augmentation: TrainParameters,
+                 max_batch_size: int = 256) -> None:
         super().__init__()
+        self.dataset_path = dataset_path
+        self.training_path = training_path
         self.augmentation = augmentation.build()
         self.target_x = 'x'
         self.target_y = 'y'
@@ -22,12 +28,12 @@ class ValidateTraining(Worker):
 
     def run(self, ctx: PipelineContext, target_ws: Workspace):
         # training histogram -----------------------------------
-        training_ws = target_ws.root.get_ws('training')
+        training_ws = target_ws.root.get_ws(self.training_path)
         history_viewer = HistoryViewer.from_path(training_ws.path_to('training_logs.csv'))
         history_viewer.save(target_ws.path_to('training.png'))
 
         # confusion matrix -------------------------------------
-        dataset = TrainDataset.from_path(target_ws.root.get_ws('dataset')).test
+        dataset = TrainDataset.from_path(target_ws.root.get_ws(self.dataset_path)).test
 
         result = self.make_predictions(dataset, target_ws)
 
@@ -53,7 +59,7 @@ class ValidateTraining(Worker):
 
     def make_predictions(self, dataset: FileDataset, target_ws: Workspace):
         # model ---------------------------------------
-        training_ws = target_ws.root.get_ws('training')
+        training_ws = target_ws.root.get_ws(self.training_path)
         model = KModel.from_path(training_ws.path_to('output/model_final.h5'))
 
         df = dataset.df

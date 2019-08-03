@@ -41,23 +41,9 @@ train_ctx = KerasTrainer.create_ctx(
             ),
             keras.callbacks.ReduceLROnPlateau(
                 factor=.75,
+                min_lr=10e-6,
                 patience=config['patience']
             ),
-            keras.callbacks.TensorBoard(
-                log_dir='./logs',
-                histogram_freq=0,
-                batch_size=32,
-                write_graph=True,
-                write_grads=False,
-                write_images=False,
-            ),
-            # CyclicLR(
-            #     base_lr=1e-6,
-            #     max_lr=2e-4,
-            #     # TODO : try with 6189 x 4 = 24756
-            #     step_size=18567.,  # N=2 : N *(len(train) / batch_size) = 2N epochs per cycles
-            #     mode='triangular'
-            # ),
         ]
     }),
 
@@ -88,15 +74,20 @@ pipeline([
          )),
     step('training',
          worker=KerasTrainer(
+             dataset_path='dataset',
              params=train_ctx
          )),
     step('validation',
          worker=ValidateTraining(
-             train_ctx.augmentation
+             dataset_path='dataset',
+             training_path='training',
+             augmentation=train_ctx.augmentation
          )),
     step('submission',
          worker=ComputeSubmission(
-             train_ctx.augmentation,
+             dataset_path='dataset',
+             training_path='training',
+             augmentation=train_ctx.augmentation,
              nb_pred=10,
              target_x='id',
              target_y='label'

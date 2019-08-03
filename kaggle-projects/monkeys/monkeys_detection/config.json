@@ -1,5 +1,5 @@
 {
-  "input_shape": [128,128,3],
+  "input_shape": [64,64,3],
   "epochs":2,
   "patience": 10,
   "workspace": "D:/Projects/10-monkey-species"
