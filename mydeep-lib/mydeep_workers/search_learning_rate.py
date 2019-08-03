@@ -21,7 +21,7 @@ class SearchLearningRate(Worker):
         self.epochs = epochs
 
     def run(self, ctx: PipelineContext, target_ws: Workspace):
-        dataset_ws = ctx.workspace.get_ws(self.dataset_path)
+        dataset_ws = target_ws.root.get_ws(self.dataset_path)
 
         # load params
         dataset = TrainDataset.from_path(dataset_ws).train

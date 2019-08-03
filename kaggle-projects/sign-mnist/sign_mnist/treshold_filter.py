@@ -4,8 +4,8 @@ from skimage import filters
 from skimage.measure import block_reduce
 
 from mydeep_api.tensor import Tensor
-from mydeep_utils.tensor_util import tensor_from_path, tensor_save
 from surili_core.pipeline_context import PipelineContext
+from surili_core.surili_io.image_io import OpencvIO
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
@@ -46,10 +46,11 @@ class TresholdFilter(Worker):
         self.col_y = 'y'
 
     def run(self, ctx: PipelineContext, target_ws: Workspace):
-        ctx.project_ws \
+        target_ws.root \
             .get_ws('raw_dataset/images') \
             .files \
-            .map(tensor_from_path) \
+            .map(OpencvIO().read) \
             .map(extract_features) \
             .enumerate() \
-            .foreach(tensor_save(target_ws.path_to('images')))
+            .map(lambda _: (target_ws.get_ws('images').path_to(_[0]), _[1])) \
+            .foreach(OpencvIO().save)

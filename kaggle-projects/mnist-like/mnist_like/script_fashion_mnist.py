@@ -5,8 +5,8 @@ from mnist_like.prepare_mnist import PrepareMnist
 from mydeep_keras.k_model import KModel
 from mydeep_keras.k_trainer import KerasTrainer
 from mydeep_keras.models.basic_model import basic_model
-from mydeep_lib.workers.prepare_training_dataset import PrepareTrainingDataset
-from mydeep_lib.workers.validate_training import ValidateTraining
+from mydeep_workers.prepare_training_dataset import PrepareTrainingDataset
+from mydeep_workers.validate_training import ValidateTraining
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline, step
 
@@ -62,16 +62,13 @@ ctx = PipelineContext(
     project_name='fashion_mnist'
 )
 
-pipe = pipeline(
-    ctx=ctx,
-    steps=[
-        step('raw_dataset',
-             worker=PrepareMnist()),
-        step('dataset',
-             worker=PrepareTrainingDataset(input_path='raw_dataset', test_size=0.1)),
-        step('training',
-             worker=KerasTrainer(train_ctx)),
-        step('validation',
-             worker=ValidateTraining(train_ctx.augmentation))
-    ]
-)(ctx.project_ws)
+pipe = pipeline([
+    step('raw_dataset',
+         worker=PrepareMnist()),
+    step('dataset',
+         worker=PrepareTrainingDataset(input_path='raw_dataset', test_size=0.1)),
+    step('training',
+         worker=KerasTrainer(train_ctx)),
+    step('validation',
+         worker=ValidateTraining(train_ctx.augmentation))
+])(ctx)

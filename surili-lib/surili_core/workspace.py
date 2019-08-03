@@ -112,7 +112,7 @@ class Workspace:
 
     def from_storage(self, storage_path: str):
         self.mkdir()
-        shell('gsutil -m cp -r "{storage_path}" "{local_path}"'.format(
+        shell('sudo gsutil -m cp -r "{storage_path}" "{local_path}"'.format(
             local_path=self.path,
             storage_path=self._compute_storage_path(storage_path)
         )).wait()

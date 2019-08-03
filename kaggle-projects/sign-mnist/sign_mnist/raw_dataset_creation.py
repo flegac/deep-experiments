@@ -5,10 +5,10 @@ import numpy as np
 import pandas as pd
 
 from mydeep_api._deprecated.file_dataset import FileDataset
-from mydeep_utils.tensor_util import tensor_save
 from sign_mnist.prepare_sign_mnist import name_provider
 from stream_lib.stream import stream
 from surili_core.pipeline_context import PipelineContext
+from surili_core.surili_io.image_io import OpencvIO
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
@@ -29,19 +29,19 @@ class RawDatasetCreation(Worker):
             csv_path=ctx.root_ws.path_to('sign_mnist_train.csv'),
             target_shape=(28, 28))
 
-        target_path = target_ws.get_ws('images').path
+        image_ws = target_ws.get_ws('images')
 
         df['x'] = stream(df['x']) \
             .enumerate() \
-            .map(lambda image: [name_provider(df)(image[0]), image[1]]) \
-            .map(tensor_save(target_path, no_overwrite=True)) \
+            .map(lambda image: [image_ws.path_to(name_provider(df)(image[0])), image[1]]) \
+            .map(OpencvIO().save) \
             .map(os.path.basename) \
             .map(lambda _: os.path.splitext(_)[0]) \
             .to_list()
 
         FileDataset(
             dataset=df,
-            image_path_template=os.path.join(target_path, '{}.jpg')
+            image_path_template=image_ws.path_to('{}.jpg')
         ).to_path(target_ws.path_to('dataset.json'))
 
         return ctx

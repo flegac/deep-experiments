@@ -8,14 +8,12 @@ from hyper_search.train_parameters import TrainParameters
 from mydeep_keras.k_model import KModel
 from mydeep_keras.k_trainer import KerasTrainer
 from mydeep_keras.models.keras_application import keras_application
-from mydeep_lib.workers.compute_submission import ComputeSubmission
-from mydeep_lib.workers.prepare_training_dataset import PrepareTrainingDataset
-from mydeep_lib.workers.search_learning_rate import SearchLearningRate
-from mydeep_lib.workers.storage_export import StorageExport
-from mydeep_lib.workers.storage_import import StorageImport
-from mydeep_lib.workers.validate_training import ValidateTraining
+from mydeep_workers.compute_submission import ComputeSubmission
+from mydeep_workers.prepare_training_dataset import PrepareTrainingDataset
+from mydeep_workers.validate_training import ValidateTraining
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline, step
+from surili_core.surili_io.storage_io import StorageExport, StorageImport
 
 with open('config.json') as _:
     config = json.load(_)
@@ -87,14 +85,6 @@ pipeline([
     step('dataset',
          worker=PrepareTrainingDataset(
              input_path='raw_dataset'
-         )),
-    step('lr_finder',
-         worker=SearchLearningRate(
-             dataset_path='dataset',
-             params=train_ctx,
-             min_lr=1e-6,
-             max_lr=1e-2,
-             epochs=1
          )),
     step('training',
          worker=KerasTrainer(

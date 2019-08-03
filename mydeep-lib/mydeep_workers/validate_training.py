@@ -2,33 +2,34 @@ import numpy as np
 import pandas as pd
 
 from hyper_search.train_parameters import TrainParameters
+from mydeep_api._deprecated.file_dataset import FileDataset
+from mydeep_api._deprecated.train_dataset import TrainDataset
 from mydeep_api.monitoring.confusion_viewer import ConfusionViewer
 from mydeep_api.monitoring.history_viewer import HistoryViewer
 from mydeep_keras.k_model import KModel
-from mydeep_api._deprecated.file_dataset import FileDataset
-from mydeep_api._deprecated.train_dataset import TrainDataset
 from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 
 class ValidateTraining(Worker):
-    def __init__(self, augmentation: TrainParameters) -> None:
+    def __init__(self, augmentation: TrainParameters, max_batch_size: int = 256) -> None:
         super().__init__()
         self.augmentation = augmentation.build()
         self.target_x = 'x'
         self.target_y = 'y'
+        self.max_batch_size = max_batch_size
 
     def run(self, ctx: PipelineContext, target_ws: Workspace):
         # training histogram -----------------------------------
-        training_ws = ctx.project_ws.get_ws('training')
+        training_ws = target_ws.root.get_ws('training')
         history_viewer = HistoryViewer.from_path(training_ws.path_to('training_logs.csv'))
         history_viewer.save(target_ws.path_to('training.png'))
 
         # confusion matrix -------------------------------------
-        dataset = TrainDataset.from_path(ctx.project_ws.get_ws('dataset')).test
+        dataset = TrainDataset.from_path(target_ws.root.get_ws('dataset')).test
 
-        result = self.make_predictions(ctx, dataset, target_ws)
+        result = self.make_predictions(dataset, target_ws)
 
         # FIXME: this is not generic !
         # result[self.target_y] = result[self.target_y].apply(lambda x: 'n' + str(x))
@@ -50,16 +51,16 @@ class ValidateTraining(Worker):
         #     doubtful = result[abs(result[self.y] - .5) < doubt]
         #     doubtful.to_csv(target_ws.path_to('doubtful_{}.csv'.format(doubt)), index=False)
 
-    def make_predictions(self, ctx: PipelineContext, dataset: FileDataset, target_ws: Workspace):
+    def make_predictions(self, dataset: FileDataset, target_ws: Workspace):
         # model ---------------------------------------
-        training_ws = ctx.project_ws.get_ws('training')
+        training_ws = target_ws.root.get_ws('training')
         model = KModel.from_path(training_ws.path_to('output/model_final.h5'))
 
         df = dataset.df
         df['_filename'] = dataset.filenames()
         df = df.sort_values(by=[dataset.x_col])
 
-        batch_size = ctx.max_batch_size
+        batch_size = self.max_batch_size
         input_shape = model.input_shape()
 
         raw_predictions = model.keras_model.predict_generator(

@@ -19,7 +19,7 @@ class PrepareTrainingDataset(Worker):
         seed = ctx.seed
 
         # prepare dataset
-        dataframe_path = ctx.workspace.get_ws(self.input_path).path_to('dataset.json')
+        dataframe_path = target_ws.root.get_ws(self.input_path).path_to('dataset.json')
         dataset = FileDataset.from_path(dataframe_path)
         dataframe = shuffle(dataset.df, random_state=seed)
         train, test = train_test_split(dataframe, test_size=self.test_size, random_state=seed,

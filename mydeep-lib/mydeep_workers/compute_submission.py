@@ -2,36 +2,38 @@ import numpy as np
 import pandas as pd
 
 from hyper_search.train_parameters import TrainParameters
-from mydeep_keras.k_model import KModel
 from mydeep_api._deprecated.file_dataset import FileDataset
 from mydeep_api._deprecated.train_dataset import TrainDataset
+from mydeep_keras.k_model import KModel
 from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 
 class ComputeSubmission(Worker):
-    def __init__(self, augmentation: TrainParameters, nb_pred: 1, target_x='x', target_y='y') -> None:
+    def __init__(self, augmentation: TrainParameters, nb_pred: 1, target_x='x', target_y='y',
+                 max_batch_size: int = 256) -> None:
         super().__init__()
         self.augmentation = augmentation.build()
         self.nb_pred = nb_pred
         self.target_x = target_x
         self.target_y = target_y
+        self.max_batch_size = max_batch_size
 
     def run(self, ctx: PipelineContext, target_ws: Workspace):
-        dataset = TrainDataset.from_path(ctx.project_ws.get_ws('dataset')).test
-        self.make_predictions(ctx, dataset, target_ws)
+        dataset = TrainDataset.from_path(target_ws.root.get_ws('dataset')).test
+        self.make_predictions(dataset, target_ws)
 
-    def make_predictions(self, ctx: PipelineContext, dataset: FileDataset, target_ws: Workspace):
+    def make_predictions(self, dataset: FileDataset, target_ws: Workspace):
         # model ---------------------------------------
-        training_ws = ctx.project_ws.get_ws('training')
+        training_ws = target_ws.root.get_ws('training')
         model = KModel.from_path(training_ws.path_to('output/model_final.h5'))
 
         df = dataset.df
         df['_filename'] = dataset.filenames()
         df = df.sort_values(by=[dataset.x_col])
 
-        batch_size = ctx.max_batch_size
+        batch_size = self.max_batch_size
         input_shape = model.input_shape()
 
         x_values = df[dataset.x_col]

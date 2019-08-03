@@ -18,3 +18,4 @@ class OpencvIO(ImageIO):
 
     def save(self, path: str, img: np.ndarray):
         cv2.imwrite(path, img)
+

@@ -2,12 +2,12 @@ import keras
 
 from hyper_search.train_parameters import TrainParameters
 from mydeep_keras.k_model import KModel
-from mydeep_keras.models.basic_model_v2 import model_v2
-from mydeep_lib.workers.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_keras.k_trainer import KerasTrainer
-from mydeep_lib.workers.validate_training import ValidateTraining
-from sign_mnist.raw_dataset_creation import RawDatasetCreation
+from mydeep_keras.models.basic_model_v2 import model_v2
+from mydeep_workers.prepare_training_dataset import PrepareTrainingDataset
+from mydeep_workers.validate_training import ValidateTraining
 from sign_mnist.feature_dataset_creation import FeatureDatasetCreation
+from sign_mnist.raw_dataset_creation import RawDatasetCreation
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline, step
 
@@ -78,23 +78,20 @@ ctx = PipelineContext(
     project_name='sign-mnist-cnn'
 )
 
-pipe = pipeline(
-    ctx=ctx,
-    steps=[
-        step('raw_dataset',
-             worker=RawDatasetCreation()),
-        step('features_dataset',
-             worker=FeatureDatasetCreation(
-                 input_path='raw_dataset'
-             )),
-        step('dataset',
-             worker=PrepareTrainingDataset(
-                 input_path='features_dataset',
-                 test_size=0.1
-             )),
-        step('training',
-             worker=KerasTrainer(train_ctx)),
-        step('validation',
-             worker=ValidateTraining(train_ctx.augmentation))
-    ])
-pipe(ctx.project_ws)
+pipeline([
+    step('raw_dataset',
+         worker=RawDatasetCreation()),
+    step('features_dataset',
+         worker=FeatureDatasetCreation(
+             input_path='raw_dataset'
+         )),
+    step('dataset',
+         worker=PrepareTrainingDataset(
+             input_path='features_dataset',
+             test_size=0.1
+         )),
+    step('training',
+         worker=KerasTrainer(train_ctx)),
+    step('validation',
+         worker=ValidateTraining(train_ctx.augmentation))
+])(ctx)

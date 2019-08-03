@@ -8,13 +8,12 @@ from monkeys_detection.prepare_monkeys import PrepareMonkeys
 from mydeep_keras.k_model import KModel
 from mydeep_keras.k_trainer import KerasTrainer
 from mydeep_keras.models.basic_model import basic_model
-from mydeep_lib.workers.compute_submission import ComputeSubmission
-from mydeep_lib.workers.prepare_training_dataset import PrepareTrainingDataset
-from mydeep_lib.workers.search_learning_rate import SearchLearningRate
-from mydeep_lib.workers.storage_import import StorageImport
-from mydeep_lib.workers.validate_training import ValidateTraining
+from mydeep_workers.compute_submission import ComputeSubmission
+from mydeep_workers.prepare_training_dataset import PrepareTrainingDataset
+from mydeep_workers.validate_training import ValidateTraining
 from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline, step
+from surili_core.surili_io.storage_io import StorageImport
 
 with open('config.json') as _:
     config = json.load(_)
@@ -42,14 +41,6 @@ train_ctx = KerasTrainer.create_ctx(
             keras.callbacks.ReduceLROnPlateau(
                 factor=.75,
                 patience=config['patience']
-            ),
-            keras.callbacks.TensorBoard(
-                log_dir='./logs',
-                histogram_freq=0,
-                batch_size=32,
-                write_graph=True,
-                write_grads=False,
-                write_images=False,
             ),
             # CyclicLR(
             #     base_lr=1e-6,
@@ -86,13 +77,6 @@ pipeline([
          worker=PrepareTrainingDataset(
              input_path='raw_dataset',
              test_size=0.1
-         )),
-    step('lr_finder',
-         worker=SearchLearningRate(
-             dataset_path='dataset',
-             params=train_ctx,
-             min_lr=0.69,
-             max_lr=0.71
          )),
     step('training',
          worker=KerasTrainer(

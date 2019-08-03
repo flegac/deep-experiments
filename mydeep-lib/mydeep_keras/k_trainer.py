@@ -1,5 +1,5 @@
 from keras import backend as K
-from keras.callbacks import ModelCheckpoint, CSVLogger, Callback
+from keras.callbacks import ModelCheckpoint, CSVLogger, Callback, TensorBoard
 
 from mydeep_api._deprecated.train_dataset import TrainDataset
 from mydeep_keras.k_model import KModel
@@ -17,7 +17,7 @@ class KerasTrainer(Worker):
         self.params = params
 
     def run(self, ctx: PipelineContext, target_ws: Workspace):
-        dataset_ws = ctx.workspace.get_ws('dataset')
+        dataset_ws = target_ws.root.get_ws('dataset')
         models_ws = target_ws.get_ws('models')
 
         # load params
@@ -61,6 +61,15 @@ class KerasTrainer(Worker):
                     verbose=1,
                     save_best_only=True),
                 LearningRateLogger(model, target_ws),
+                TensorBoard(
+                    log_dir=target_ws.path_to('logs'),
+                    histogram_freq=0,
+                    batch_size=32,
+                    write_graph=True,
+                    write_grads=False,
+                    write_images=False,
+                ),
+
                 CSVLogger(
                     target_ws.path_to('training_logs.csv'),
                     append=False),

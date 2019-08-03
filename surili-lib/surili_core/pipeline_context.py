@@ -8,4 +8,3 @@ class PipelineContext(object):
         self.seed = 5435342
         self.project_name = project_name
         self.workspace = Workspace.from_path(os.path.join(root_path, project_name))
-        self.max_batch_size = 256
