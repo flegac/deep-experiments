@@ -1,12 +1,12 @@
 import os
 from typing import Sized, Iterable, Tuple, Iterator
 
-import cv2
 import pandas as pd
 import tqdm
 
 from mydeep_api.dataset.dataset import Dataset
 from mydeep_api.tensor import Tensor
+from surili_core.surili_io.image_io import OpencvIO
 
 
 class BiDataset(Sized, Iterable[Tuple[Tensor, Tensor]]):
@@ -36,9 +36,9 @@ class BiDataset(Sized, Iterable[Tuple[Tensor, Tensor]]):
             for i, _ in tqdm.tqdm(enumerate(self), 'dataset.export({})'.format(path)):
                 _x, _y = _
                 x_path = os.path.join(img_path, '{}_x.png'.format(i))
-                x = _export_tensor(_x, x_path)
+                x = _export_tensor(x_path, _x)
                 y_path = os.path.join(img_path, '{}_y.png'.format(i))
-                y = _export_tensor(_y, y_path) if _y is not None else None
+                y = _export_tensor(y_path, _y) if _y is not None else None
 
                 yield x, y
 
@@ -47,8 +47,8 @@ class BiDataset(Sized, Iterable[Tuple[Tensor, Tensor]]):
         return new_df
 
 
-def _export_tensor(tensor: Tensor, path: str):
+def _export_tensor(path: str, tensor: Tensor):
     if 2 <= len(tensor.shape) <= 3:
-        cv2.imwrite(path, tensor)
+        OpencvIO().save(path, tensor)
         return os.path.basename(path)
     return tensor
