@@ -1,10 +1,10 @@
 from typing import Iterator, Tuple
 
-from mydeep_api.dataset.dataset import Dataset
+from mydeep_api.dataset.column import Column
 from mydeep_api.tensor import Tensor
 
 
-class NumpyDataset(Dataset):
+class NumpyColumn(Column):
 
     def __init__(self, data: Tensor):
         self._data = data

@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import confusion_matrix
 
-from mydeep_api.dataset.dataset import Dataset
+from mydeep_api.dataset.column import Column
 
 
 class ConfusionViewer(object):
-    def __init__(self, ground_truth: Dataset, predicted: Dataset):
+    def __init__(self, ground_truth: Column, predicted: Column):
         # Compute confusion matrix
         self.classes = list(set(ground_truth))
         self.cm = confusion_matrix(ground_truth, predicted, labels=self.classes)

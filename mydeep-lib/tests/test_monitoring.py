@@ -18,7 +18,7 @@ def test_history_monitoring():
 def test_dataset_monitoring():
     db = Data.from_folder_tree(x_path=ws.path_to('dataset/folder_tree'))
     DatasetViewer(
-        dataset=db.x,
+        column=db.x,
         label='dataset',
         scale=2
     ).show(n=None)

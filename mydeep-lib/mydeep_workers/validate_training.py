@@ -30,7 +30,7 @@ class ValidateTraining(Worker):
         # training histogram -----------------------------------
         training_ws = target_ws.root.get_ws(self.training_path)
         history_viewer = HistoryViewer.from_path(training_ws.path_to('training_logs.csv'))
-        history_viewer.save(target_ws.path_to('training.png'))
+        history_viewer.write(target_ws.path_to('training.png'))
 
         # confusion matrix -------------------------------------
         dataset = TrainDataset.from_path(target_ws.root.get_ws(self.dataset_path)).test

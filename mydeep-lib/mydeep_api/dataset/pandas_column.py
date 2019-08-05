@@ -2,11 +2,11 @@ from typing import List, Iterator, Tuple
 
 import pandas as pd
 
-from mydeep_api.dataset.dataset import Dataset
+from mydeep_api.dataset.column import Column
 from mydeep_api.tensor import Tensor
 
 
-class PandasDataset(Dataset):
+class PandasColumn(Column):
 
     def __init__(self, dataframe: pd.DataFrame,
                  cols: List[str] = None):

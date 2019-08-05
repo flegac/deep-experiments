@@ -8,7 +8,7 @@ class ImageIO(abc.ABC):
     def read(self, path: str):
         raise NotImplementedError()
 
-    def save(self, path: str, img: np.ndarray):
+    def write(self, path: str, img: np.ndarray):
         raise NotImplementedError()
 
 
@@ -16,6 +16,6 @@ class OpencvIO(ImageIO):
     def read(self, path: str):
         return cv2.imread(path)
 
-    def save(self, path: str, img: np.ndarray):
+    def write(self, path: str, img: np.ndarray):
         cv2.imwrite(path, img)
         return path

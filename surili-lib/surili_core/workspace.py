@@ -1,6 +1,5 @@
 import json
 import os
-import pathlib
 import pickle
 import shutil
 import tempfile
@@ -10,22 +9,27 @@ from typing import Callable, Any
 
 from stream_lib.stream import stream
 from stream_lib.stream_api import Stream
-from surili_core.utils import shell
 
 
 class Workspace:
     workspace = ''
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.delete()
 
     @staticmethod
     def temporary(prefix: str = None, suffix: str = None, root_path=None):
         return Workspace.from_path(tempfile.mkdtemp(prefix=prefix, suffix=suffix, dir=root_path))
 
     @staticmethod
-    def from_path(path: str, storage_path: str = None):
+    def from_path(path: str):
         root_path = os.path.join(Workspace.workspace, path)
-        return Workspace(root_path, root_path, storage_path)
+        return Workspace(root_path, root_path)
 
-    def __init__(self, root_path: str, path: str, storage_path: str = None):
+    def __init__(self, root_path: str, path: str):
         root_path = clean_path(root_path)
         path = clean_path(path)
 
@@ -33,9 +37,6 @@ class Workspace:
             'Workspace path must be in its root directory !'
         assert not os.path.exists(path) or os.path.isdir(path), \
             'Workspace must be a directory !'
-        assert storage_path is None or storage_path.startswith('gs:/'), \
-            "If provided, a storage path must start with 'gs:/' !"
-        self.storage_path = storage_path
         self._root_path = root_path
         self._current_path = path
 
@@ -61,7 +62,7 @@ class Workspace:
 
     @property
     def root(self) -> 'Workspace':
-        return Workspace.from_path(self._root_path, self.storage_path)
+        return Workspace.from_path(self._root_path)
 
     @property
     def path(self) -> str:
@@ -97,26 +98,6 @@ class Workspace:
         else:
             shutil.copytree(path, self.path_to(os.path.basename(path)))
 
-    def to_storage(self, storage_path: str):
-        root_storage_path = self._compute_storage_path(storage_path)
-
-        temporary_file = self.archive()
-        try:
-            full_storage_path = '{}/{}'.format(root_storage_path, os.path.basename(temporary_file))
-            shell('gsutil -m cp -r "{local_path}" "{storage_path}"'.format(
-                local_path=temporary_file,
-                storage_path=full_storage_path
-            )).wait()
-        finally:
-            os.remove(temporary_file)
-
-    def from_storage(self, storage_path: str):
-        self.mkdir()
-        shell('sudo gsutil -m cp -r "{storage_path}" "{local_path}"'.format(
-            local_path=self.path,
-            storage_path=self._compute_storage_path(storage_path)
-        )).wait()
-
     def delete(self):
         shutil.rmtree(self.path)
 
@@ -124,7 +105,7 @@ class Workspace:
         return clean_path(os.path.join(self.path, path))
 
     def get_ws(self, path: str):
-        return Workspace(self._root_path, self.path_to(path), self.storage_path)
+        return Workspace(self._root_path, self.path_to(path))
 
     def __truediv__(self, path: str):
         return self.get_ws(path)
@@ -146,18 +127,6 @@ class Workspace:
                 return pickle.load(file)
 
         return apply
-
-    def _compute_storage_path(self, storage_path):
-        storage_path_starts_with_gs = storage_path is not None and storage_path.startswith('gs://')
-        if self.storage_path is None:
-            if not storage_path_starts_with_gs:
-                raise ValueError("A storage path starting with 'gs://' is needed !")
-            root_storage_path = storage_path
-        else:
-            if storage_path_starts_with_gs:
-                raise ValueError("A storage is set for the workspace : only relative storage path is accepted !")
-            root_storage_path = '{}/{}'.format(self.storage_path, storage_path)
-        return root_storage_path
 
     def __repr__(self) -> str:
         return '[WS: {}]'.format(self.path)

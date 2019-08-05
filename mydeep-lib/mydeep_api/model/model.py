@@ -1,8 +1,7 @@
 import random
 from abc import ABC
 
-from mydeep_api.dataset.dataset import Dataset
-from mydeep_api.dataset.bi_dataset import BiDataset
+from mydeep_api.dataset.column import Column
 
 
 class FitReport(object):
@@ -16,8 +15,8 @@ class FitConfig(object):
 
 class Model(ABC):
 
-    def fit(self, dataset: BiDataset, config: FitConfig = None) -> FitReport:
+    def fit(self, x: Column, y: Column, config: FitConfig = None) -> FitReport:
         raise NotImplementedError()
 
-    def predict(self, x: Dataset) -> Dataset:
+    def predict(self, x: Column) -> Column:
         raise NotImplementedError()

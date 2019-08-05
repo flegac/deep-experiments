@@ -7,9 +7,8 @@ import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 
 from mydeep_api.data import Data
-from mydeep_api.dataset.dataset import Dataset
-from mydeep_api.dataset.bi_dataset import BiDataset
-from mydeep_api.dataset.numpy_dataset import NumpyDataset
+from mydeep_api.dataset.column import Column
+from mydeep_api.dataset.numpy_column import NumpyColumn
 from mydeep_api.model.model import Model, FitConfig, FitReport
 
 
@@ -79,17 +78,17 @@ class KModel(Model):
             print('could not serialize the model.get_congih() !')
         self.keras_model.save_weights(path)
 
-    def fit(self, dataset: BiDataset, config: KFitConfig = None) -> KFitReport:
+    def fit(self, x: Column, y: Column, config: KFitConfig = None) -> KFitReport:
         config = config or {}
 
         history = self.keras_model.fit_generator(
             generator=ImageDataGenerator().flow(
-                x=np.array(list(dataset.x)),
-                y=np.array(list(dataset.y)),
+                x=np.array(list(x)),
+                y=np.array(list(y)),
                 seed=config.seed
             ),
             epochs=config.epochs,
-            steps_per_epoch=int(len(dataset) / config.batch_size),
+            steps_per_epoch=int(len(x) / config.batch_size),
             verbose=1,
             callbacks=config.callbacks,
             validation_data=None,
@@ -101,7 +100,7 @@ class KModel(Model):
             history=history
         )
 
-    def predict(self, x: Dataset):
-        yy = NumpyDataset(np.array(self.keras_model.predict(x=x)))
+    def predict(self, x: Column):
+        yy = NumpyColumn(np.array(self.keras_model.predict(x=x)))
 
         return Data.from_xy(x, yy)

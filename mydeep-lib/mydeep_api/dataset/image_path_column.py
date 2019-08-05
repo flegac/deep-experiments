@@ -3,12 +3,12 @@ from typing import Iterator, Tuple, List
 
 import cv2
 
-from mydeep_api.dataset.dataset import Dataset
+from mydeep_api.dataset.column import Column
 from mydeep_api.tensor import Tensor
 from surili_core.workspace import Workspace
 
 
-class ImagePathDataset(Dataset):
+class ImagePathColumn(Column):
     @staticmethod
     def from_folder_tree(path: str, shape: Tuple[int, int] = None):
         images = (Workspace.from_path(path)
@@ -16,7 +16,7 @@ class ImagePathDataset(Dataset):
                   .flatmap(lambda fs: fs.files)
                   .map(lambda p: os.path.relpath(p, start=path))
                   .to_list())
-        return ImagePathDataset(images, path, shape)
+        return ImagePathColumn(images, path, shape)
 
     def __init__(self, images: List[str],
                  root_path: str = None,

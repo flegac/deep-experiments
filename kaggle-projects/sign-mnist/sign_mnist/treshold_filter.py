@@ -53,4 +53,4 @@ class TresholdFilter(Worker):
             .map(extract_features) \
             .enumerate() \
             .map(lambda _: (target_ws.get_ws('images').path_to(_[0]), _[1])) \
-            .foreach(OpencvIO().save)
+            .foreach(OpencvIO().write)

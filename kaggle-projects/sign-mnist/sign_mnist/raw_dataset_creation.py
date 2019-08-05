@@ -34,7 +34,7 @@ class RawDatasetCreation(Worker):
         df['x'] = stream(df['x']) \
             .enumerate() \
             .map(lambda image: [image_ws.path_to(name_provider(df)(image[0])), image[1]]) \
-            .map(OpencvIO().save) \
+            .map(OpencvIO().write) \
             .map(os.path.basename) \
             .map(lambda _: os.path.splitext(_)[0]) \
             .to_list()
