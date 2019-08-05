@@ -1,4 +1,5 @@
 import json
+import os
 
 import keras
 from keras.callbacks import EarlyStopping
@@ -11,9 +12,9 @@ from mydeep_keras.models.basic_model import basic_model
 from mydeep_workers.compute_submission import ComputeSubmission
 from mydeep_workers.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_workers.validate_training import ValidateTraining
-from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline, step
 from surili_core.surili_io.storage_io import StorageImport
+from surili_core.workspace import Workspace
 
 with open('config.json') as _:
     config = json.load(_)
@@ -92,7 +93,4 @@ pipeline([
              target_x='xx',
              target_y='yy'
          ))
-])(ctx=PipelineContext(
-    project_name='monkeys',
-    root_path=config['workspace']
-))
+])(Workspace.from_path(os.path.join(config['workspace'], 'monkeys')))

@@ -8,10 +8,9 @@ from sklearn.pipeline import make_pipeline
 from tqdm import tqdm
 
 from hyper_search.train_parameters import TrainParameters
-from mydeep_api.tensor import Tensor
 from mydeep_api._deprecated.file_dataset import FileDataset
 from mydeep_api._deprecated.train_dataset import TrainDataset
-from surili_core.pipeline_context import PipelineContext
+from mydeep_api.tensor import Tensor
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
@@ -75,12 +74,13 @@ class GradientBoostingContext(object):
 class GradientBoostingTrainer(Worker):
     create_ctx = GradientBoostingContext
 
-    def __init__(self, params: GradientBoostingContext) -> None:
+    def __init__(self, dataset_path: str, params: GradientBoostingContext) -> None:
         super().__init__()
+        self.dataset_path = dataset_path
         self.params = params
 
-    def run(self, ctx: PipelineContext, target_ws: Workspace):
-        dataset_ws = ctx.project_ws.get_ws('dataset')
+    def run(self, ws: Workspace):
+        dataset_ws = ws.root.get_ws(self.dataset_path)
         dataset = TrainDataset.from_path(dataset_ws)
 
         x_train, y_train = create_dataset(
@@ -90,5 +90,4 @@ class GradientBoostingTrainer(Worker):
         model = self.params.model()
         model.fit(x_train, y_train)
 
-        joblib.dump(model, target_ws.path_to('model.sav'))
-        return None
+        joblib.dump(model, ws.path_to('model.sav'))

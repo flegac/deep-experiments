@@ -1,7 +1,6 @@
 import os
 import tempfile
 
-from surili_core.pipeline_context import PipelineContext
 from surili_core.utils import shell
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
@@ -31,7 +30,7 @@ class StorageExport(Worker):
             raise ValueError("A storage path starting with 'gs://' is needed !")
         self.storage_path = storage_path
 
-    def run(self, ctx: PipelineContext, ws: Workspace):
+    def run(self, ws: Workspace):
         temporary_file = ws.root.archive()
         try:
             full_storage_path = '{}/{}'.format(self.storage_path, os.path.basename(temporary_file))
@@ -47,7 +46,7 @@ class StorageImport(Worker):
     def __init__(self, storage_path: str):
         self.storage_path = storage_path
 
-    def run(self, ctx: PipelineContext, ws: Workspace):
+    def run(self, ws: Workspace):
         ws.mkdir()
         shell(GSUTIL_COPY_COMMAND.format(
             source_path=self.storage_path,

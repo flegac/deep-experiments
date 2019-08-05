@@ -7,8 +7,8 @@ from sign_mnist.gradient_boosting_evaluator import GradientBoostingEvaluator
 from sign_mnist.gradient_boosting_trainer import GradientBoostingTrainer
 from sign_mnist.raw_dataset_creation import RawDatasetCreation
 from sign_mnist.treshold_filter import extract_features
-from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline, step
+from surili_core.workspace import Workspace
 
 train_ctx = GradientBoostingTrainer.create_ctx(
     params=TrainParameters({
@@ -26,14 +26,9 @@ train_ctx = GradientBoostingTrainer.create_ctx(
     preprocessing=extract_features
 )
 
-ctx = PipelineContext(
-    root_path='D:/Datasets/sign-language-mnist',
-    project_name='sign-mnist-boost'
-)
-
 pipe = pipeline([
     step('raw_dataset',
-         worker=RawDatasetCreation()),
+         worker=RawDatasetCreation(train_csv_path='sign_mnist_train.csv')),
     step('features_dataset',
          worker=FeatureDatasetCreation(
              input_path='raw_dataset'
@@ -44,8 +39,8 @@ pipe = pipeline([
              test_size=0.1
          )),
     step('training',
-         worker=GradientBoostingTrainer(train_ctx)),
+         worker=GradientBoostingTrainer(params=train_ctx, dataset_path='dataset')),
     step('validation',
-         worker=GradientBoostingEvaluator())
+         worker=GradientBoostingEvaluator(dataset_path='dataset', training_path='training'))
 ])
-pipe(ctx)
+pipe(Workspace.from_path('D:/Datasets/sign-language-mnist/sign-mnist-boost', ))

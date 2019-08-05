@@ -6,18 +6,20 @@ from sklearn.externals import joblib
 from hyper_search.train_parameters import TrainParameters
 from mydeep_api._deprecated.train_dataset import TrainDataset
 from sign_mnist.gradient_boosting_trainer import create_dataset
-from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
 
 class GradientBoostingEvaluator(Worker):
+    def __init__(self, dataset_path: str, training_path: str):
+        self.training_path = training_path
+        self.dataset_path = dataset_path
 
-    def run(self, ctx: PipelineContext, target_ws: Workspace):
-        dataset_ws = ctx.project_ws.get_ws('dataset')
+    def run(self, ws: Workspace):
+        dataset_ws = ws.root.get_ws(self.dataset_path)
         dataset = TrainDataset.from_path(dataset_ws)
 
-        training_ws = ctx.project_ws.get_ws('training')
+        training_ws = ws.root.get_ws(self.training_path)
         model = joblib.load(training_ws.path_to('model.sav'))
 
         plt.figure()
@@ -41,5 +43,5 @@ class GradientBoostingEvaluator(Worker):
         plt.xlabel('Boosting Iterations')
         plt.ylabel('Test Set Deviance')
         # plt.show()
-        plt.savefig(target_ws.path_to('eval.png'))
+        plt.savefig(ws.path_to('eval.png'))
         return None

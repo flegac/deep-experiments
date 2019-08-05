@@ -7,7 +7,6 @@ import pandas as pd
 from mydeep_api._deprecated.file_dataset import FileDataset
 from sign_mnist.prepare_sign_mnist import name_provider
 from stream_lib.stream import stream
-from surili_core.pipeline_context import PipelineContext
 from surili_core.surili_io.image_io import OpencvIO
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
@@ -24,12 +23,15 @@ def load_dataframe(csv_path: str, target_shape: Tuple[int, int]):
 
 
 class RawDatasetCreation(Worker):
-    def run(self, ctx: PipelineContext, target_ws: Workspace):
+    def __init__(self, train_csv_path: str):
+        self.train_csv_path = train_csv_path
+
+    def run(self, ws: Workspace):
         df = load_dataframe(
-            csv_path=ctx.root_ws.path_to('sign_mnist_train.csv'),
+            csv_path=ws.root.path_to(self.train_csv_path),
             target_shape=(28, 28))
 
-        image_ws = target_ws.get_ws('images')
+        image_ws = ws.get_ws('images')
 
         df['x'] = stream(df['x']) \
             .enumerate() \
@@ -42,6 +44,4 @@ class RawDatasetCreation(Worker):
         FileDataset(
             dataset=df,
             image_path_template=image_ws.path_to('{}.jpg')
-        ).to_path(target_ws.path_to('dataset.json'))
-
-        return ctx
+        ).to_path(ws.path_to('dataset.json'))

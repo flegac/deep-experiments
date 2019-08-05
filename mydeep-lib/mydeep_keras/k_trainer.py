@@ -4,7 +4,6 @@ from keras.callbacks import ModelCheckpoint, CSVLogger, Callback, TensorBoard
 from mydeep_api._deprecated.train_dataset import TrainDataset
 from mydeep_keras.k_model import KModel
 from mydeep_keras.k_train_context import KTrainContext
-from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
@@ -12,14 +11,14 @@ from surili_core.workspace import Workspace
 class KerasTrainer(Worker):
     create_ctx = KTrainContext
 
-    def __init__(self, dataset_path:str,params: KTrainContext) -> None:
+    def __init__(self, dataset_path: str, params: KTrainContext) -> None:
         super().__init__()
         self.dataset_path = dataset_path
         self.params = params
 
-    def run(self, ctx: PipelineContext, target_ws: Workspace):
-        dataset_ws = target_ws.root.get_ws(self.dataset_path)
-        models_ws = target_ws.get_ws('models')
+    def run(self, ws: Workspace):
+        dataset_ws = ws.root.get_ws(self.dataset_path)
+        models_ws = ws.get_ws('models')
 
         # load params
         dataset = TrainDataset.from_path(dataset_ws)
@@ -29,7 +28,7 @@ class KerasTrainer(Worker):
         test_augmentation = self.params.augmentation.build()
 
         #  save params
-        self.save_params(dataset, model, target_ws, train_params)
+        self.save_params(dataset, model, ws, train_params)
 
         # ----- training -------------------------------------------------------------
         batch_size = train_params.params['batch_size']
@@ -61,9 +60,9 @@ class KerasTrainer(Worker):
                     monitor='val_acc',
                     verbose=1,
                     save_best_only=True),
-                LearningRateLogger(model, target_ws),
+                LearningRateLogger(model, ws),
                 TensorBoard(
-                    log_dir=target_ws.path_to('logs'),
+                    log_dir=ws.path_to('logs'),
                     histogram_freq=0,
                     batch_size=32,
                     write_graph=True,
@@ -72,7 +71,7 @@ class KerasTrainer(Worker):
                 ),
 
                 CSVLogger(
-                    target_ws.path_to('training_logs.csv'),
+                    ws.path_to('training_logs.csv'),
                     append=False),
             ])
 

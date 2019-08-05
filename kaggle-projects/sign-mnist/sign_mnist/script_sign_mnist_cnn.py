@@ -8,8 +8,8 @@ from mydeep_workers.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_workers.validate_training import ValidateTraining
 from sign_mnist.feature_dataset_creation import FeatureDatasetCreation
 from sign_mnist.raw_dataset_creation import RawDatasetCreation
-from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline, step
+from surili_core.workspace import Workspace
 
 train_ctx = KerasTrainer.create_ctx(
 
@@ -73,11 +73,6 @@ train_ctx = KerasTrainer.create_ctx(
     })
 )
 
-ctx = PipelineContext(
-    root_path='D:/Datasets/sign-language-mnist',
-    project_name='sign-mnist-cnn'
-)
-
 pipeline([
     step('raw_dataset',
          worker=RawDatasetCreation()),
@@ -101,4 +96,4 @@ pipeline([
              dataset_path='dataset',
              augmentation=train_ctx.augmentation
          )),
-])(ctx)
+])(Workspace.from_path('D:/Datasets/sign-language-mnist/sign-mnist-cnn', ))

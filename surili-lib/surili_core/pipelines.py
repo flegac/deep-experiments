@@ -5,21 +5,20 @@ import shutil
 import time
 from typing import Callable, Optional, List
 
-from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
-StepWorker = Callable[[PipelineContext, Workspace], None]
+StepWorker = Callable[[Workspace], None]
 
 
-def step(step_id: str, worker: Optional[Worker[PipelineContext]]) -> StepWorker:
+def step(step_id: str, worker: Optional[Worker]) -> StepWorker:
     def log(msg: str):
         print('{}: {}'.format(step_id, msg))
 
-    def run(ctx: PipelineContext):
+    def run(ws: Workspace):
         try:
             log('----- START {} -------------------'.format(step_id))
-            current_ws = ctx.workspace.get_ws(step_id)
+            current_ws = ws.get_ws(step_id)
 
             log('check folder : {}'.format(current_ws.path))
             start = time.time()
@@ -29,7 +28,7 @@ def step(step_id: str, worker: Optional[Worker[PipelineContext]]) -> StepWorker:
 
             log('start worker...')
             if worker is not None:
-                worker(ctx, current_ws)
+                worker(current_ws)
             total_time = time.time() - start
             current_ws.create_file('.done', content={
                 'time': total_time
@@ -46,16 +45,16 @@ def step(step_id: str, worker: Optional[Worker[PipelineContext]]) -> StepWorker:
 
 
 def pipeline(steps: List[StepWorker]):
-    def run(ctx: PipelineContext):
+    def run(ws: Workspace):
         running_script_path = _get_running_script_path()
-        script_destination_path = ctx.workspace.path_to('script.py.txt')
+        script_destination_path = ws.path_to('script.py.txt')
         if not os.path.exists(script_destination_path):
             shutil.copyfile(running_script_path, script_destination_path)
         elif not filecmp.cmp(running_script_path, script_destination_path, shallow=False):
             raise ValueError('Existing project, but running script has changed : rm {}'.format(script_destination_path))
 
         for step in steps:
-            step(ctx)
+            step(ws)
 
     return run
 

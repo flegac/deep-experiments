@@ -11,9 +11,9 @@ from mydeep_keras.models.keras_application import keras_application
 from mydeep_workers.compute_submission import ComputeSubmission
 from mydeep_workers.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_workers.validate_training import ValidateTraining
-from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline, step
 from surili_core.surili_io.storage_io import StorageExport, StorageImport
+from surili_core.workspace import Workspace
 
 with open('config.json') as _:
     config = json.load(_)
@@ -96,7 +96,4 @@ pipeline([
          worker=StorageExport(
              storage_path='gs://deep-experiments/results'
          ))
-])(ctx=PipelineContext(
-    project_name='MobileNetV2_augmentation_CLR',
-    root_path='D:/Projects/histopathologic-cancer-detection'
-))
+])(ctx=Workspace.from_path('D:/Projects/histopathologic-cancer-detection/MobileNetV2_augmentation_CLR'))

@@ -7,8 +7,8 @@ from mydeep_keras.k_trainer import KerasTrainer
 from mydeep_keras.models.basic_model import basic_model
 from mydeep_workers.prepare_training_dataset import PrepareTrainingDataset
 from mydeep_workers.validate_training import ValidateTraining
-from surili_core.pipeline_context import PipelineContext
 from surili_core.pipelines import pipeline, step
+from surili_core.workspace import Workspace
 
 train_ctx = KerasTrainer.create_ctx(
 
@@ -57,11 +57,6 @@ train_ctx = KerasTrainer.create_ctx(
     })
 )
 
-ctx = PipelineContext(
-    root_path='D:/Datasets/fashion_mnist',
-    project_name='fashion_mnist'
-)
-
 pipe = pipeline([
     step('raw_dataset',
          worker=PrepareMnist()),
@@ -78,4 +73,4 @@ pipe = pipeline([
              dataset_path='dataset',
              augmentation=train_ctx.augmentation
          ))
-])(ctx)
+])(Workspace.from_path('D:/Datasets/fashion_mnist/fashion_mnist'))

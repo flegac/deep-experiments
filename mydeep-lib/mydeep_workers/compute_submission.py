@@ -5,7 +5,6 @@ from hyper_search.train_parameters import TrainParameters
 from mydeep_api._deprecated.file_dataset import FileDataset
 from mydeep_api._deprecated.train_dataset import TrainDataset
 from mydeep_keras.k_model import KModel
-from surili_core.pipeline_context import PipelineContext
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
 
@@ -28,13 +27,13 @@ class ComputeSubmission(Worker):
         self.target_y = target_y
         self.max_batch_size = max_batch_size
 
-    def run(self, ctx: PipelineContext, target_ws: Workspace):
-        dataset = TrainDataset.from_path(target_ws.root.get_ws(self.dataset_path)).test
-        self.make_predictions(dataset, target_ws)
+    def run(self, ws: Workspace):
+        dataset = TrainDataset.from_path(ws.root.get_ws(self.dataset_path)).test
+        self.make_predictions(dataset, ws)
 
-    def make_predictions(self, dataset: FileDataset, target_ws: Workspace):
+    def make_predictions(self, dataset: FileDataset, ws: Workspace):
         # model ---------------------------------------
-        training_ws = target_ws.root.get_ws(self.training_path)
+        training_ws = ws.root.get_ws(self.training_path)
         model = KModel.from_path(training_ws.path_to('output/model_final.h5'))
 
         df = dataset.df
@@ -56,12 +55,12 @@ class ComputeSubmission(Worker):
             labels = raw_predictions[:, 1]
 
             predictions.append(labels)
-            self.write_to_disk(x_values, labels, target_ws.path_to('predictions_{}.csv'.format(i)))
+            self.write_to_disk(x_values, labels, ws.path_to('predictions_{}.csv'.format(i)))
 
         y_values = np.average(predictions, axis=0)
 
         return self.write_to_disk(x_values, y_values,
-                                  target_ws.path_to('submission_from_{}.csv'.format(self.nb_pred)))
+                                  ws.path_to('submission_from_{}.csv'.format(self.nb_pred)))
 
     def write_to_disk(self, x_values, y_values: np.ndarray, path: str):
         predictions = pd.DataFrame({
