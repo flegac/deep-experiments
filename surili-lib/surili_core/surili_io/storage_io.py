@@ -26,7 +26,7 @@ class StorageIO(object):
 
 class StorageExport(Worker):
     def __init__(self, storage_path: str):
-        if self.storage_path is None or not self.storage_path.startswith('gs://'):
+        if storage_path is None or not storage_path.startswith('gs://'):
             raise ValueError("A storage path starting with 'gs://' is needed !")
         self.storage_path = storage_path
 
@@ -34,16 +34,15 @@ class StorageExport(Worker):
         temporary_file = ws.root.archive()
         try:
             full_storage_path = '{}/{}'.format(self.storage_path, os.path.basename(temporary_file))
-            shell(GSUTIL_COPY_COMMAND.format(
-                source_path=temporary_file,
-                target_path=full_storage_path
-            )).wait()
+            shell(GSUTIL_COPY_COMMAND.format(source_path=temporary_file, target_path=full_storage_path)).wait()
         finally:
             os.remove(temporary_file)
 
 
 class StorageImport(Worker):
     def __init__(self, storage_path: str):
+        if storage_path is None or not storage_path.startswith('gs://'):
+            raise ValueError("A storage path starting with 'gs://' is needed !")
         self.storage_path = storage_path
 
     def run(self, ws: Workspace):

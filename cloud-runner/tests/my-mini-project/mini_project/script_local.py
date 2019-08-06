@@ -1,18 +1,16 @@
 import json
-import time
 
-from mini_lib.lib1 import func1
+from surili_core.pipelines import pipeline, step
+from surili_core.surili_io.storage_io import StorageExport
+from surili_core.workspace import Workspace
 
-
-def main():
-    with open('config.json') as _:
-        config = json.load(_)
-
-    func1(config)
-
-    time.sleep(1)
-    print('done !')
-
+with open('config.json') as _:
+    config = json.load(_)
 
 if __name__ == "__main__":
-    main()
+    _ = Workspace.from_path('/tmp/.workspace/my_workspace')
+    pipeline(
+        steps=[
+            step(step_id='step_01', worker=StorageExport('gs://flegac-test/cloud_runner')),
+        ]
+    )(_)

@@ -5,16 +5,17 @@ from cloud_runner.cluster.google_cluster import GoogleCluster
 from cloud_runner.cluster.google_utils import cpu_config
 
 ScriptRunner(
-    script_relative_path='mini_project/script_local.py',
-    config_relative_path='mini_project/config.json',
+    script_relative_path='my-mini-project/mini_project/script_local.py',
+    config_relative_path='my-mini-project/mini_project/config.json',
     configs=[{
         'optimizer': i,
         'loss': i,
         'learning_rate': math.pow(10, -(i + 2))
-    } for i in range(10)],
+    } for i in range(1)],
     to_deploy=[
-        '../mini_project',
-        '../mini_lib'
+        '../../my-mini-project',
+        '../../../../surili-lib',
+        '../../../../stream-lib',
     ]
 ).run_with(GoogleCluster(
     name='test-cluster',

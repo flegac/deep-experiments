@@ -1,3 +1,4 @@
+import contextlib
 import filecmp
 import inspect
 import os
@@ -53,8 +54,10 @@ def pipeline(steps: List[StepWorker]):
         elif not filecmp.cmp(running_script_path, script_destination_path, shallow=False):
             raise ValueError('Existing project, but running script has changed : rm {}'.format(script_destination_path))
 
-        for step in steps:
-            step(ws)
+        with open(ws.path_to('out.txt'), 'w') as out_log, open(ws.path_to('err.txt'), 'w') as err_log:
+            with contextlib.redirect_stdout(out_log), contextlib.redirect_stderr(err_log):
+                for _ in steps:
+                    _(ws)
 
     return run
 
