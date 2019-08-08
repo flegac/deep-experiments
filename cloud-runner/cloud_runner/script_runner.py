@@ -40,8 +40,9 @@ class ScriptRunner(object):
             wait_all([
                 cluster.ssh(
                     commands=[
-                        'rm -rf {}'.format(remote_workspace),
-                        'mkdir {}'.format(remote_workspace),
+                        'sudo rm -rf {}'.format(remote_workspace),
+                        'sudo mkdir {}'.format(remote_workspace),
+                        'sudo chmod -R 777 {}'.format(remote_workspace),
                     ],
                     instance_id=_
                 ) for _ in range(cluster.cluster_size())
@@ -65,9 +66,9 @@ class ScriptRunner(object):
                 cluster.ssh(
                     commands=[
                         'cd {}'.format(remote_workspace),
-                        'sudo unzip {}'.format(ScriptRunner.archive_name),
-                        'sudo rm {}'.format(ScriptRunner.archive_name),
-                        'export PYTHONPATH=${{PYTHONPATH}}:{}'.format(python_path),
+                        'unzip {}'.format(ScriptRunner.archive_name),
+                        'rm {}'.format(ScriptRunner.archive_name),
+                        'export PYTHONPATH={}'.format(python_path),
                         'cd {}/{}'.format(remote_workspace, os.path.dirname(self.script_relative_path)),
                         'python3 {}'.format(os.path.basename(self.script_relative_path))
                     ],

@@ -20,7 +20,7 @@ class GoogleCluster(CloudCluster):
                  cluster_size: int,
                  zone: str = 'europe-west1-b',
                  cluster_config: List[str] = None,
-                 remote_workspace: str = '/tmp/.workspace',
+                 remote_workspace: str = '/home/workspace',
                  ):
         super().__init__(cluster_size, remote_workspace)
         self.cluster_config = cluster_config or []
