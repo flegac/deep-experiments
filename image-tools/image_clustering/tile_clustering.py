@@ -5,13 +5,11 @@ from typing import List
 import cv2
 import numpy as np
 from scipy.stats import wasserstein_distance
-from skimage import exposure
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
 
 from image_clustering.flag import Flag, FlagComputer
-from image_clustering.image_utils import contrast_stretching
 from image_clustering.tiler import Box, GridTiler
 from mydeep_api.tensor import Tensor
 
@@ -124,42 +122,29 @@ def compute_std(paths: List[str]):
 
 COLORS = ['red', 'blue', 'green', 'white', 'yellow', 'orange', 'purple', 'cyan', 'magenta', 'gray']
 P = Params(
-    bins=256,
-    pca_components=128,
+    bins=64,
+    pca_components=64,
     tile_size=32
 )
 CLUSTERS = Clusters('../image_editor/tiles', P)
 
 if __name__ == '__main__':
     N = 1
-    images = glob.glob('../../feat-detection/detection/images/*_?.tif')
+    images = glob.glob('../tests/tiles/*_?.png')
 
     # avg, std = compute_std(images)
     # print('avg:' + str(avg))
     # print('std:' + str(std))
 
-    # for _ in images:
-    #     name = os.path.basename(_).replace('.tif', '')
-    #     img = cv2.imread(_)
-    #     img= contrast_stretching(img)
-    #     img = exposure.equalize_hist(img) * 256
-    #     cv2.imwrite('dataset/{}_model.png'.format(name), img)
-    #
-    #     img = contrast_stretching(img)
-    #     plt.hist(img[0], bins=64, range=[0, 256], cumulative=False)
-    #     plt.hist(img[1], bins=64, range=[0, 256], cumulative=False)
-    #     plt.hist(img[2], bins=64, range=[0, 256], cumulative=False)
-    #     plt.show()
+    tag_computer_provider = compute_clusters(P, images, COLORS[:5])
+    os.makedirs('dataset', exist_ok=True)
 
-    # tag_computer_provider = compute_clusters(P, images, COLORS[:3])
-    # os.makedirs('dataset', exist_ok=True)
-    #
-    # for _ in images:
-    #     name = os.path.basename(_).replace('.tif', '')
-    #     img = cv2.imread(_)
-    #
-    #     img1 = tile_clustering(img, tag_computer_provider(img), P.tiler)
-    #     cv2.imwrite('dataset/{}_model.png'.format(name), img1)
+    for _ in images:
+        name = os.path.basename(_).replace('.tif', '')
+        img = cv2.imread(_)
 
-    # img2 = tile_clustering(img, CLUSTERS.tag_computer(img), P.tiler)
-    # cv2.imwrite('dataset/{}_clusters.png'.format(name), img2)
+        img1 = tile_clustering(img, tag_computer_provider(img), P.tiler)
+        cv2.imwrite('dataset/{}_model.png'.format(name), img1)
+
+        # img2 = tile_clustering(img, CLUSTERS.tag_computer(img), P.tiler)
+        # cv2.imwrite('dataset/{}_clusters.png'.format(name), img2)
