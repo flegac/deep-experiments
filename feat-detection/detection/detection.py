@@ -4,26 +4,18 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-from skimage import exposure, transform
 from skimage import img_as_float
+from skimage import transform
 from skimage.measure import compare_ssim as ssim
-
-
-#structural similarity
-
-# histogram matching
-# http://paulbourke.net/miscellaneous/equalisation/
 
 # Histogram of Oriented Gradients
 # https://www.learnopencv.com/histogram-of-oriented-gradients/
-
-def contrast_stretching(img):
-    p2, p98 = np.percentile(img, (2, 98))
-    return exposure.rescale_intensity(img, in_range=(p2, p98))
+from image_clustering.image_utils import contrast_stretching, adaptive_equalization
 
 
-def adaptive_equalization(img):
-    return exposure.equalize_adapthist(img, clip_limit=0.03) * 255
+# structural similarity
+# histogram matching
+# http://paulbourke.net/miscellaneous/equalisation/
 
 
 def detection(x1, x2, win_size=1, power=2, treshold=.5):
