@@ -4,6 +4,10 @@ from mydeep_api.tensor import Tensor
 
 
 class Box(object):
+    @staticmethod
+    def from_limits(top: int, bottom: int, left: int, right: int):
+        return Box(top, left, bottom - top, right - left)
+
     def __init__(self, top: int, left: int, v_size: int, h_size: int):
         self.top = top
         self.left = left
