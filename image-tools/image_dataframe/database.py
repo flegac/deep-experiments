@@ -74,14 +74,12 @@ class Clustering(object):
             ])
             self.fit(df)
 
-    def predict(self, df: pd.DataFrame):
+    def predict(self, dataset: pd.DataFrame):
         print('predict ...')
-        dataset = df.apply(self._extract_box, axis=1)
         return self.pipeline.predict(dataset)
 
-    def fit(self, df: pd.DataFrame):
+    def fit(self, dataset: pd.DataFrame):
         print('fitting ...')
-        dataset = df.apply(self._extract_box, axis=1)
         self.pipeline.fit(dataset)
 
     def save(self):
@@ -96,9 +94,9 @@ class Clustering(object):
 
 
 os.makedirs('data', exist_ok=True)
-dataset_path = 'data/dataste.csv'
+dataset_path = 'data/dataset.csv'
 tile_size = 64
-stride = 32
+stride = 128
 
 if os.path.exists(dataset_path):
     df = pd.read_csv(dataset_path)
@@ -107,11 +105,12 @@ else:
         df=df_from_path('../../feat-detection/detection/images'),
         tiler=GridTiler(tile_size=tile_size, stride=stride)
     )
-    df.to_csv(dataset_path)
+    df.to_csv(dataset_path, index=False)
 
-model = Clustering('data/model.joblib', df)
+dataset = df[['avg_b', 'avg_g', 'avg_r', 'std_b', 'std_g', 'std_r']]
+model = Clustering('data/model.joblib', dataset)
 model.save()
-df['k'] = model.predict(df)
+df['k'] = model.predict(dataset)
 
 for i in range(model.n_clusters):
     print('tiles[{}] : {}'.format(i, len(df[df.k == i][df.tagged > 0].values)))
