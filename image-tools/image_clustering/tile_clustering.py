@@ -5,8 +5,9 @@ from typing import List
 import cv2
 import numpy as np
 from scipy.stats import wasserstein_distance
-from sklearn.cluster import KMeans
+from sklearn.cluster import AgglomerativeClustering
 from sklearn.decomposition import PCA
+from sklearn.neural_network import BernoulliRBM
 from sklearn.pipeline import Pipeline
 
 from image_clustering.flag import Flag, FlagComputer
@@ -63,14 +64,21 @@ def compute_clusters(p: Params, images: List[str], colors: List[str]):
         histograms = [p.compute_hist(_.cut(img)) for _ in boxes]
         dataset.extend(histograms)
 
+    # pipeline = Pipeline(steps=[
+    #     ('pca', PCA(n_components=p.pca_components)),
+    #     ('clustering', BernoulliRBM(n_components=len(colors), random_state=0, verbose=True)),
+    # ])
     pipeline = Pipeline(steps=[
         ('pca', PCA(n_components=p.pca_components)),
-        ('clustering', KMeans(n_clusters=len(colors), n_init=20)),
-        # ('clustering', GaussianMixture(n_components=len(colors), n_init=100)),
-        # ('clustering', MiniBatchKMeans(n_clusters=len(colors), n_init=100)),
-        # ('clustering', DBSCAN()),
-        # ('clustering', MeanShift(bandwidth=2)),
-        # ('clustering', SpectralClustering(n_clusters=len(colors), n_init=250)),
+        ('clustering', AgglomerativeClustering(n_clusters=len(colors))),
+
+        #     ('clustering', KMeans(n_clusters=len(colors), n_init=20)),
+        #
+        #     # ('clustering', GaussianMixture(n_components=len(colors), n_init=100)),
+        #     # ('clustering', MiniBatchKMeans(n_clusters=len(colors), n_init=100)),
+        #     # ('clustering', DBSCAN()),
+        #     # ('clustering', MeanShift(bandwidth=2)),
+        #     # ('clustering', SpectralClustering(n_clusters=len(colors), n_init=250)),
     ])
 
     # param_grid = {
@@ -88,7 +96,8 @@ def compute_clusters(p: Params, images: List[str], colors: List[str]):
         def tag_computer(box: Box):
             hist = p.compute_hist(box.cut(img))
 
-            index = pipeline.predict([hist])[0]
+            # index = pipeline.predict([hist])[0]
+            index = np.argmax(pipeline.transform([hist]))
             return Flag.from_name(box, colors[index])
 
         return tag_computer
