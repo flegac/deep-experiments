@@ -3,15 +3,14 @@ import tkinter as tk
 import cv2
 from PIL import ImageTk, Image
 
+from editor.canvas.viewport import Viewport
 from editor.hidden_scrollbar import HiddenScrollbar
 
 
-# basic bersion :
-# https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse
-
 # advanced version :
 # https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257
-from editor.canvas.viewport import Viewport
+# basic version :
+# https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse
 
 
 class MouseCanvas(tk.Frame):
@@ -38,31 +37,43 @@ class MouseCanvas(tk.Frame):
         self.pack(fill="both", expand=True)
 
         # image
-        self.viewport = None
+        self.viewport = Viewport()
         self.image = None
         self.image_id = None
         self.mouse_x = None
         self.mouse_y = None
 
         # help
-        self.text_id = self.canvas.create_text(2, 2, anchor='nw', text='Click and drag to move\nScroll to zoom')
-        self.debug_id = self.canvas.create_text(2, 25, anchor='nw', text='viewport={}'.format(self.viewport))
+        self.canvas.create_text(5, 10, anchor='nw', text='CTRL+Click : move image\nMouse Wheel : zoom image')
+        self.debug_id = self.canvas.create_text(5, 50, anchor='nw', text='viewport={}'.format(self.viewport))
+
+        # toolbox
+        self.var = tk.BooleanVar()
+
+        def update_contrast():
+            self.viewport.with_contrast_stretching = self.var.get()
+            self.redraw_canvas()
+
+        tk.Checkbutton(self.canvas,
+                       text='contrast stretching',
+                       variable=self.var,
+                       command=update_contrast).pack()
 
         # Bind events to the Canvas
         self.canvas.bind('<Configure>', lambda event: self.redraw_canvas())
 
-        self.canvas.bind('<ButtonPress-1>', self.move_from)
-        self.canvas.bind('<B1-Motion>', self.move_to)
+        self.canvas.bind('<Control-ButtonPress-1>', self.move_from)
+        self.canvas.bind('<Control-B1-Motion>', self.move_to)
         # linux scroll
-        self.canvas.bind('<Button-4>', self.zoom)  # wheel scroll up
-        self.canvas.bind('<Button-5>', self.zoom)  # wheel scroll down
+        self.canvas.bind('<Button-4>', self.zoom)
+        self.canvas.bind('<Button-5>', self.zoom)
         # windows scroll
         self.canvas.bind('<MouseWheel>', self.zoom)
 
     def open(self, path: str):
         data = cv2.imread(path)
         data = cv2.cvtColor(data, cv2.COLOR_BGR2RGB)
-        self.viewport = Viewport(data)
+        self.viewport.data = data
         self.redraw_canvas()
 
     def move_from(self, event):
@@ -90,7 +101,7 @@ class MouseCanvas(tk.Frame):
     def update_debug(self, w: int, h: int):
         if self.debug_id:
             self.canvas.delete(self.debug_id)
-        self.debug_id = self.canvas.create_text(2, 25, anchor='nw',
+        self.debug_id = self.canvas.create_text(2, 30, anchor='nw',
                                                 text='canvas=({},{}) viewport={}'.format(w, h, self.viewport))
 
     def redraw_canvas(self):
@@ -104,10 +115,12 @@ class MouseCanvas(tk.Frame):
 
         # extract data
         data = self.viewport.get_buffer(w, h)
-
-        self.image = ImageTk.PhotoImage(image=Image.fromarray(data))
-        self.image_id = self.canvas.create_image((0, 0), anchor=tk.NW, image=self.image)
-        self.canvas.lower(self.image_id)  # set it into background
+        try:
+            self.image = ImageTk.PhotoImage(image=Image.fromarray(data))
+            self.image_id = self.canvas.create_image((0, 0), anchor=tk.NW, image=self.image)
+            self.canvas.lower(self.image_id)  # set it into background
+        except:
+            pass
 
 
 if __name__ == "__main__":
