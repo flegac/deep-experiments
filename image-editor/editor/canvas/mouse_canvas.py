@@ -11,6 +11,9 @@ from editor.hidden_scrollbar import HiddenScrollbar
 
 # advanced version :
 # https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257
+from editor.canvas.viewport import Viewport
+
+
 class MouseCanvas(tk.Frame):
     ZOOM_SPEED = 0.75
 
@@ -35,16 +38,18 @@ class MouseCanvas(tk.Frame):
         self.pack(fill="both", expand=True)
 
         # image
-        self.data = None
+        self.viewport = None
         self.image = None
         self.image_id = None
-        self.zoom_factor = 1.
+        self.mouse_x = None
+        self.mouse_y = None
 
         # help
         self.text_id = self.canvas.create_text(2, 2, anchor='nw', text='Click and drag to move\nScroll to zoom')
+        self.debug_id = self.canvas.create_text(2, 25, anchor='nw', text='viewport={}'.format(self.viewport))
 
         # Bind events to the Canvas
-        self.canvas.bind('<Configure>', lambda _: self.redraw_canvas)
+        self.canvas.bind('<Configure>', lambda event: self.redraw_canvas())
 
         self.canvas.bind('<ButtonPress-1>', self.move_from)
         self.canvas.bind('<B1-Motion>', self.move_to)
@@ -55,46 +60,54 @@ class MouseCanvas(tk.Frame):
         self.canvas.bind('<MouseWheel>', self.zoom)
 
     def open(self, path: str):
-        self.data = cv2.imread(path)
-        self.data = cv2.cvtColor(self.data, cv2.COLOR_BGR2RGB)
+        data = cv2.imread(path)
+        data = cv2.cvtColor(data, cv2.COLOR_BGR2RGB)
+        self.viewport = Viewport(data)
         self.redraw_canvas()
 
     def move_from(self, event):
-        self.canvas.scan_mark(event.x, event.y)
+        self.mouse_x = event.x
+        self.mouse_y = event.y
+        # self.canvas.scan_mark(event.x, event.y)
 
     def move_to(self, event):
-        self.canvas.scan_dragto(event.x, event.y, gain=1)
+        # self.canvas.scan_dragto(event.x, event.y, gain=1)
+        dx = self.mouse_x - event.x
+        dy = self.mouse_y - event.y
+        self.mouse_x = event.x
+        self.mouse_y = event.y
+        self.viewport.move(dx, dy)
         self.redraw_canvas()
 
     def zoom(self, event):
-        scale = 1.0
         # Respond to Linux (event.num) or Windows (event.delta) wheel event
         if event.num == 5 or event.delta == -120:
-            scale *= self.ZOOM_SPEED
-            self.zoom_factor *= self.ZOOM_SPEED
+            self.viewport.zoom(self.ZOOM_SPEED)
         if event.num == 4 or event.delta == 120:
-            scale /= self.ZOOM_SPEED
-            self.zoom_factor /= self.ZOOM_SPEED
-        # Rescale all canvas objects
-        x = self.canvas.canvasx(event.x)
-        y = self.canvas.canvasy(event.y)
-        self.canvas.scale('all', x, y, scale, scale)
+            self.viewport.zoom(1 / self.ZOOM_SPEED)
         self.redraw_canvas()
 
+    def update_debug(self, w: int, h: int):
+        if self.debug_id:
+            self.canvas.delete(self.debug_id)
+        self.debug_id = self.canvas.create_text(2, 25, anchor='nw',
+                                                text='canvas=({},{}) viewport={}'.format(w, h, self.viewport))
+
     def redraw_canvas(self):
+        w = self.canvas.winfo_width()
+        h = self.canvas.winfo_height()
+
+        self.update_debug(w, h)
+
         if self.image_id:
             self.canvas.delete(self.image_id)
 
         # extract data
-        height, width = self.data.shape[:2]
-        new_size = int(self.zoom_factor * width), int(self.zoom_factor * height)
-
-        data = cv2.resize(self.data, new_size)
+        data = self.viewport.get_buffer(w, h)
 
         self.image = ImageTk.PhotoImage(image=Image.fromarray(data))
-        self.image_id = self.canvas.create_image(self.canvas.coords(self.text_id), anchor=tk.NW, image=self.image)
+        self.image_id = self.canvas.create_image((0, 0), anchor=tk.NW, image=self.image)
         self.canvas.lower(self.image_id)  # set it into background
-        # self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
 
 if __name__ == "__main__":

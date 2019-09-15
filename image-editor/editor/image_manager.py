@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 
-from editor.mouse_canvas import MouseCanvas
+from editor.canvas.mouse_canvas import MouseCanvas
 
 
 class ImageManager(tk.LabelFrame):
