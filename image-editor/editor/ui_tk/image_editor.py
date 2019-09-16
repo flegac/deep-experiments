@@ -1,19 +1,19 @@
 import tkinter as tk
 
-import cv2
 from PIL import ImageTk, Image
 
-from editor.canvas.viewport import Viewport
-from editor.hidden_scrollbar import HiddenScrollbar
+from editor.core.provider.multi_band import MultiBand
+from editor.core.transform.viewport import ViewportTransform
+from editor.ui_tk.multi_band_editor import MultiBandEditor
+from editor.ui_tk.transform_editor import TransformEditor
+from editor.ui_tk.utils.hidden_scrollbar import HiddenScrollbar
 
 
 # advanced version :
 # https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257
 # basic version :
 # https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse
-
-
-class MouseCanvas(tk.Frame):
+class ImageEditor(tk.Frame):
     ZOOM_SPEED = 0.75
 
     def __init__(self, master):
@@ -37,7 +37,8 @@ class MouseCanvas(tk.Frame):
         self.pack(fill="both", expand=True)
 
         # image
-        self.viewport = Viewport()
+        self.data_provider = MultiBand('')
+        self.viewport = ViewportTransform(self._viewport_provider)
         self.image = None
         self.image_id = None
         self.mouse_x = None
@@ -48,16 +49,13 @@ class MouseCanvas(tk.Frame):
         self.debug_id = self.canvas.create_text(5, 50, anchor='nw', text='viewport={}'.format(self.viewport))
 
         # toolbox
-        self.var = tk.BooleanVar()
+        self.transform_editor = TransformEditor(self, self.redraw_canvas)
+        self.transform_editor.grid(row=0, column=1, sticky='ne')
 
-        def update_contrast():
-            self.viewport.with_contrast_stretching = self.var.get()
-            self.redraw_canvas()
+        self.band_editor = MultiBandEditor(self, self.data_provider)
+        self.band_editor.grid(row=1, column=0, sticky='ne')
 
-        tk.Checkbutton(self.canvas,
-                       text='contrast stretching',
-                       variable=self.var,
-                       command=update_contrast).pack()
+        # self.transform_editor.pack()
 
         # Bind events to the Canvas
         self.canvas.bind('<Configure>', lambda event: self.redraw_canvas())
@@ -71,9 +69,7 @@ class MouseCanvas(tk.Frame):
         self.canvas.bind('<MouseWheel>', self.zoom)
 
     def open(self, path: str):
-        data = cv2.imread(path)
-        data = cv2.cvtColor(data, cv2.COLOR_BGR2RGB)
-        self.viewport.data = data
+        self.data_provider.open(path)
         self.redraw_canvas()
 
     def move_from(self, event):
@@ -98,23 +94,28 @@ class MouseCanvas(tk.Frame):
             self.viewport.zoom(1 / self.ZOOM_SPEED)
         self.redraw_canvas()
 
-    def update_debug(self, w: int, h: int):
+    def update_debug(self):
+        w = self.canvas.winfo_width()
+        h = self.canvas.winfo_height()
+
         if self.debug_id:
             self.canvas.delete(self.debug_id)
         self.debug_id = self.canvas.create_text(2, 30, anchor='nw',
                                                 text='canvas=({},{}) viewport={}'.format(w, h, self.viewport))
 
     def redraw_canvas(self):
-        w = self.canvas.winfo_width()
-        h = self.canvas.winfo_height()
+        self.band_editor.update()
 
-        self.update_debug(w, h)
+        self.update_debug()
 
         if self.image_id:
             self.canvas.delete(self.image_id)
 
         # extract data
-        data = self.viewport.get_buffer(w, h)
+        data = self.data_provider \
+            .with_transform(self.transform_editor.get_transform()) \
+            .with_transform(self.viewport) \
+            .get_buffer()
         try:
             self.image = ImageTk.PhotoImage(image=Image.fromarray(data))
             self.image_id = self.canvas.create_image((0, 0), anchor=tk.NW, image=self.image)
@@ -122,10 +123,15 @@ class MouseCanvas(tk.Frame):
         except:
             pass
 
+    def _viewport_provider(self):
+        w = self.canvas.winfo_width()
+        h = self.canvas.winfo_height()
+        return w, h
+
 
 if __name__ == "__main__":
     root = tk.Tk()
-    canvas = MouseCanvas(root)
-    canvas.open('D:\\Datasets\\change\\20190802_export_s2_it1\\images\\nouakchott_1_s2_0.tif')
+    canvas = ImageEditor(root)
+    canvas.open('../tests/test.jpg')
 
     root.mainloop()

@@ -1,7 +1,7 @@
 import tkinter as tk
 from typing import Mapping, Union
 
-from editor.image_manager import ImageManager
+from editor.ui_tk.editor_manager import EditorManager
 
 MenuConfig = Mapping[str, Union[str, Mapping[str, str]]]
 
@@ -9,7 +9,7 @@ MenuConfig = Mapping[str, Union[str, Mapping[str, str]]]
 class Win(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.editor = ImageManager(self)
+        self.editor = EditorManager(self)
 
     def config_menu(self, config: MenuConfig):
         top_menu = tk.Menu(self)
