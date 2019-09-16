@@ -4,7 +4,6 @@ from PIL import ImageTk, Image
 
 from editor.core.provider.multi_band import MultiBand
 from editor.core.transform.viewport import ViewportTransform
-from editor.ui_tk.multi_band_editor import MultiBandEditor
 from editor.ui_tk.transform_editor import TransformEditor
 from editor.ui_tk.utils.hidden_scrollbar import HiddenScrollbar
 
@@ -13,6 +12,7 @@ from editor.ui_tk.utils.hidden_scrollbar import HiddenScrollbar
 # https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257
 # basic version :
 # https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse
+
 class ImageEditor(tk.Frame):
     ZOOM_SPEED = 0.75
 
@@ -52,10 +52,8 @@ class ImageEditor(tk.Frame):
         self.transform_editor = TransformEditor(self, self.redraw_canvas)
         self.transform_editor.grid(row=0, column=1, sticky='ne')
 
-        self.band_editor = MultiBandEditor(self, self.data_provider)
-        self.band_editor.grid(row=1, column=0, sticky='ne')
-
-        # self.transform_editor.pack()
+        # self.band_editor = MultiBandEditor(self, self.data_provider)
+        # self.band_editor.grid(row=0, column=1, sticky='se')
 
         # Bind events to the Canvas
         self.canvas.bind('<Configure>', lambda event: self.redraw_canvas())
@@ -70,6 +68,7 @@ class ImageEditor(tk.Frame):
 
     def open(self, path: str):
         self.data_provider.open(path)
+        # self.band_editor.update()
         self.redraw_canvas()
 
     def move_from(self, event):
@@ -104,8 +103,6 @@ class ImageEditor(tk.Frame):
                                                 text='canvas=({},{}) viewport={}'.format(w, h, self.viewport))
 
     def redraw_canvas(self):
-        self.band_editor.update()
-
         self.update_debug()
 
         if self.image_id:

@@ -1,6 +1,16 @@
+from enum import Enum
+
 import numpy as np
 
 from editor.core.api.data_pipeline import DataProvider
+
+
+class ColorCanal(Enum):
+    RED = 'red'
+    GREEN = 'green'
+    BLUE = 'blue'
+    ALPHA = 'alpha'
+    GRAY = 'gray'
 
 
 class Band(DataProvider):

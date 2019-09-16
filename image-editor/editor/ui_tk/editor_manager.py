@@ -24,9 +24,9 @@ class EditorManager(tk.LabelFrame):
                 ('all files', '.*')
             ]
         )
-        self.open_files(paths)
-        # for _ in paths:
-        #     self.open_file(_)
+        # self.open_files(paths)
+        for _ in paths:
+            self.open_file(_)
 
     def open_file(self, path: str):
         frame = ttk.Frame(self.notebook)
