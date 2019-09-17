@@ -1,13 +1,13 @@
 import tkinter as tk
 from typing import Callable
 
-from editor.core.api.data_transformer import DataTransformer
+from editor.core.plugin.plugin_manager import EDITOR
 from editor.core.transformer.pipeline import PipelineTransform
 
 
-class TransformEditor(tk.Frame):
+class TransformEditor(tk.LabelFrame):
     def __init__(self, master, callback: Callable[[], None]):
-        tk.Frame.__init__(self, master)
+        tk.LabelFrame.__init__(self, master, text='transform')
 
         def class_loader(cls):
             try:
@@ -15,10 +15,8 @@ class TransformEditor(tk.Frame):
             except:
                 return None
 
-        print([cls.__name__ for cls in DataTransformer.__subclasses__()])
-
         # toolbox
-        self.transforms = list(filter(None, [class_loader(cls) for cls in DataTransformer.__subclasses__()]))
+        self.transforms = list(filter(None, [class_loader(cls) for cls in EDITOR.transformers]))
 
         self.variables = [tk.BooleanVar() for _ in self.transforms]
 

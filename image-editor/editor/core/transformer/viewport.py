@@ -14,9 +14,6 @@ class ViewportTransform(DataTransformer):
         self.zoom_factor = 1.
         self.x = 0
         self.y = 0
-        self.with_contrast_stretching = False
-
-        self.with_normalization = False
 
     def zoom(self, factor: float):
         self.zoom_factor *= factor
@@ -34,7 +31,7 @@ class ViewportTransform(DataTransformer):
         aspect = width / height
         img_aspect = img_width / img_height
 
-        self.zoom_factor = max(self.zoom_factor, min(width / img_width, height / img_height))
+        # self.zoom_factor = max(self.zoom_factor, min(width / img_width, height / img_height))
 
         w = min(img_width, int(width / self.zoom_factor))
         h = min(img_height, int(height / self.zoom_factor))
@@ -47,7 +44,9 @@ class ViewportTransform(DataTransformer):
         self.x = min(max(self.x, 0), img_width - w)
         self.y = min(max(self.y, 0), img_height - h)
 
-        data = cv2.resize(data[self.y:self.y + h, self.x:self.x + w], (width, height))
+        crop_data = data[self.y:self.y + h, self.x:self.x + w]
+
+        data = cv2.resize(crop_data, (width, height))
         return data
 
     def __repr__(self) -> str:

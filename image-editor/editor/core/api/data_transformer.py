@@ -9,9 +9,6 @@ class DataTransformer(abc.ABC):
     def apply(self, data: np.ndarray) -> np.ndarray:
         raise NotImplementedError()
 
-    def with_provider(self, provider: DataSource) -> DataSource:
-        return _TransformedProvider(provider, self)
-
 
 class _TransformedProvider(DataSource):
     def __init__(self, provider: DataSource, transform: DataTransformer):

@@ -3,20 +3,21 @@ import tkinter as tk
 from PIL import ImageTk, Image
 
 from editor.core.datasource.rgb_source import RGBSource
+from editor.core.transformer.pipeline import PipelineTransform
 from editor.core.transformer.viewport import ViewportTransform
 from editor.ui_tk.transform_editor import TransformEditor
 from editor.ui_tk.utils.hidden_scrollbar import HiddenScrollbar
-
-
 # advanced version :
 # https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257
 # basic version :
 # https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse
+from editor.ui_tk.visu_editor import VisuEditor
+
 
 class ImageEditor(tk.Frame):
     ZOOM_SPEED = 0.75
 
-    def __init__(self, master):
+    def __init__(self, master, path: str):
         tk.Frame.__init__(self, master)
 
         # canvas creation
@@ -37,7 +38,7 @@ class ImageEditor(tk.Frame):
         self.pack(fill="both", expand=True)
 
         # image
-        self.data_provider = RGBSource('')
+        self.data_provider = RGBSource(path)
         self.viewport = ViewportTransform(self._viewport_provider)
         self.image = None
         self.image_id = None
@@ -51,6 +52,8 @@ class ImageEditor(tk.Frame):
         # toolbox
         self.transform_editor = TransformEditor(self, self.redraw_canvas)
         self.transform_editor.grid(row=0, column=1, sticky='ne')
+        self.visu = VisuEditor(self)
+        self.visu.grid(row=0, column=1, sticky='se')
 
         # self.band_editor = MultiBandEditor(self, self.data_provider)
         # self.band_editor.grid(row=0, column=1, sticky='se')
@@ -65,11 +68,6 @@ class ImageEditor(tk.Frame):
         self.canvas.bind('<Button-5>', self.zoom)
         # windows scroll
         self.canvas.bind('<MouseWheel>', self.zoom)
-
-    def open(self, path: str):
-        self.data_provider.open(path)
-        # self.band_editor.update()
-        self.redraw_canvas()
 
     def move_from(self, event):
         self.mouse_x = event.x
@@ -109,10 +107,13 @@ class ImageEditor(tk.Frame):
             self.canvas.delete(self.image_id)
 
         # extract data
-        data = self.data_provider \
-            .with_transform(self.transform_editor.get_transform()) \
-            .with_transform(self.viewport) \
-            .get_buffer()
+        data = PipelineTransform([
+            self.viewport,
+            self.transform_editor.get_transform(),
+        ]).apply(self.data_provider.get_buffer())
+
+        self.visu.update_data(data)
+
         try:
             self.image = ImageTk.PhotoImage(image=Image.fromarray(data))
             self.image_id = self.canvas.create_image((0, 0), anchor=tk.NW, image=self.image)
@@ -128,7 +129,6 @@ class ImageEditor(tk.Frame):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    canvas = ImageEditor(root)
-    canvas.open('../tests/test.jpg')
+    canvas = ImageEditor(root, '../tests/test.jpg')
 
     root.mainloop()

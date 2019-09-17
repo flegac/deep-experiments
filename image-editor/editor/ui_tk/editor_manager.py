@@ -1,10 +1,9 @@
 import os
 import tkinter as tk
 from tkinter import ttk
-from tkinter.filedialog import askopenfilenames
-from typing import List
 
 from editor.ui_tk.image_editor import ImageEditor
+from editor.ui_tk.utils.ui_utils import dataset_selection
 
 
 class EditorManager(tk.LabelFrame):
@@ -16,29 +15,13 @@ class EditorManager(tk.LabelFrame):
         self.editors = []
 
     def open(self):
-        paths = askopenfilenames(
-            title="Open image",
-            filetypes=[
-                ('tiff files', '.tif'),
-                ('png files', '.png'),
-                ('all files', '.*')
-            ]
-        )
-        # self.open_files(paths)
+        paths = dataset_selection()
         for _ in paths:
             self.open_file(_)
 
     def open_file(self, path: str):
         frame = ttk.Frame(self.notebook)
-        editor = ImageEditor(frame)
-        editor.open(path)
+        editor = ImageEditor(frame, path)
         self.editors.append(editor)
         self.notebook.add(frame, text=os.path.basename(path))
-
-    def open_files(self, paths: List[str]):
-        frame = ttk.Frame(self.notebook)
-        editor = ImageEditor(frame)
-        for _ in paths:
-            editor.open(_)
-        self.editors.append(editor)
-        self.notebook.add(frame, text=os.path.basename(paths[0]))
+        self.notebook.select(frame)

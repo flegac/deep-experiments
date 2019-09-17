@@ -15,12 +15,12 @@ class CorePlugin(Plugin):
             GraySource
         ]
 
-    def transformers(self) -> List[DataTransformer]:
+    def transformers(self) -> List[type(DataTransformer)]:
         return [
 
         ]
 
-    def processes(self) -> List[DataProcess]:
+    def processes(self) -> List[type(DataProcess)]:
         return [
 
         ]
