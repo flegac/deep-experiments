@@ -1,10 +1,10 @@
 import tkinter as tk
 
-from editor.core.provider.multi_band import MultiBand
+from editor.core.datasource.rgb_source import RGBSource
 
 
 class MultiBandEditor(tk.Frame):
-    def __init__(self, master, multi_band: MultiBand):
+    def __init__(self, master, multi_band: RGBSource):
         tk.Frame.__init__(self, master)
         self.multi_band = multi_band
         self.variables = None
@@ -32,7 +32,7 @@ class MultiBandEditor(tk.Frame):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    multi_band = MultiBand('')
+    multi_band = RGBSource('')
     multi_band.open('../tests/test.jpg')
     widget = MultiBandEditor(root, multi_band)
     widget.pack()

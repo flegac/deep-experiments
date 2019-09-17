@@ -1,10 +1,10 @@
 import numpy as np
 from skimage import exposure
 
-from editor.core.api.data_pipeline import DataTransform
+from editor.core.api.data_transformer import DataTransformer
 
 
-class ContrastStretchingTransform(DataTransform):
+class ContrastStretchingTransform(DataTransformer):
 
     def apply(self, data: np.ndarray) -> np.ndarray:
         p2, p98 = np.percentile(data, (1, 99))

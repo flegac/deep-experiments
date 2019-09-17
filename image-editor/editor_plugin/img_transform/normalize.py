@@ -1,9 +1,9 @@
 import numpy as np
 
-from editor.core.api.data_pipeline import DataTransform
+from editor.core.api.data_transformer import DataTransformer
 
 
-class NormalizeTransform(DataTransform):
+class NormalizeTransform(DataTransformer):
 
     def apply(self, data: np.ndarray) -> np.ndarray:
         data = data - data.min()

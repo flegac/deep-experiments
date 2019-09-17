@@ -3,12 +3,12 @@ from typing import Callable, Tuple
 import cv2
 import numpy as np
 
-from editor.core.api.data_pipeline import DataTransform
+from editor.core.api.data_transformer import DataTransformer
 
 ViewportProvider = Callable[[], Tuple[int, int]]
 
 
-class ViewportTransform(DataTransform):
+class ViewportTransform(DataTransformer):
     def __init__(self, viewport_provider: ViewportProvider):
         self.viewport_provider = viewport_provider
         self.zoom_factor = 1.

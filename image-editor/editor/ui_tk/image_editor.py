@@ -2,8 +2,8 @@ import tkinter as tk
 
 from PIL import ImageTk, Image
 
-from editor.core.provider.multi_band import MultiBand
-from editor.core.transform.viewport import ViewportTransform
+from editor.core.datasource.rgb_source import RGBSource
+from editor.core.transformer.viewport import ViewportTransform
 from editor.ui_tk.transform_editor import TransformEditor
 from editor.ui_tk.utils.hidden_scrollbar import HiddenScrollbar
 
@@ -37,7 +37,7 @@ class ImageEditor(tk.Frame):
         self.pack(fill="both", expand=True)
 
         # image
-        self.data_provider = MultiBand('')
+        self.data_provider = RGBSource('')
         self.viewport = ViewportTransform(self._viewport_provider)
         self.image = None
         self.image_id = None

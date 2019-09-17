@@ -2,11 +2,11 @@ from typing import List
 
 import numpy as np
 
-from editor.core.api.data_pipeline import DataTransform
+from editor.core.api.data_transformer import DataTransformer
 
 
-class PipelineTransform(DataTransform):
-    def __init__(self, pipeline: List[DataTransform]):
+class PipelineTransform(DataTransformer):
+    def __init__(self, pipeline: List[DataTransformer]):
         self.pipeline = pipeline
 
     def apply(self, data: np.ndarray) -> np.ndarray:
