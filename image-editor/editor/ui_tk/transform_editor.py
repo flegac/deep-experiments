@@ -1,40 +1,52 @@
 import tkinter as tk
 from typing import Callable
 
-from editor.core.plugin.plugin_manager import EDITOR
-from editor.core.transformer.pipeline import PipelineTransform
+from editor.api.data import DataTransformer
+from editor.config import EDITOR
+from editor.plugins.core.transforms.pipeline import Pipeline
 
 
 class TransformEditor(tk.LabelFrame):
     def __init__(self, master, callback: Callable[[], None]):
         tk.LabelFrame.__init__(self, master, text='transform')
 
-        def class_loader(cls):
-            try:
-                return cls()
-            except:
-                return None
+        self.pipeline = Pipeline()
 
-        # toolbox
-        self.transforms = list(filter(None, [class_loader(cls) for cls in EDITOR.transformers]))
+        transformers = list(filter(None, [_test_class_loader(cls) for cls in EDITOR.transformers]))
+        for i in range(len(transformers)):
+            def _callback(step: DataTransformer):
+                def run():
+                    self.pipeline.add_transform(step)
+                    callback()
 
-        self.variables = [tk.BooleanVar() for _ in self.transforms]
+                return run
 
-        for var, transform in zip(self.variables, self.transforms):
-            tk.Checkbutton(self,
-                           text=type(transform).__name__,
-                           variable=var,
-                           command=callback).pack(fill="both", expand=True)
+            button = tk.Button(
+                self,
+                text=type(transformers[i]).__name__,
+                command=_callback(transformers[i])
+            )
+            button.pack(fill='both', expand=True, side=tk.TOP)
+
+        def _callback():
+            self.pipeline.clear()
+            callback()
+
+        tk.Button(
+            self,
+            text='reset',
+            command=_callback
+        ).pack(fill='both', expand=True, side=tk.BOTTOM)
 
     def get_transform(self):
-        pipeline = [
-            self.transforms[i]
-            if self.variables[i].get()
-            else None
-            for i in range(len(self.transforms))
-        ]
+        return self.pipeline
 
-        return PipelineTransform(pipeline)
+
+def _test_class_loader(cls):
+    try:
+        return cls()
+    except:
+        return None
 
 
 if __name__ == "__main__":

@@ -1,20 +1,24 @@
-from editor.core.plugin.plugin_manager import EDITOR
+from tkinter import messagebox
+
+from editor.config import EDITOR
+from editor.plugins.image_filter.plugin import ImageFilterPlugin
+from editor.plugins.tiling.plugin import TilingPlugin
 from editor.ui_tk.window import Win
-from plugin_0.plugin_0 import Plugin0
-from plugin_tiling.tiling import TilingPlugin
 
 if __name__ == '__main__':
     win = Win()
-    EDITOR.load(Plugin0())
+    EDITOR.load(ImageFilterPlugin())
 
     EDITOR.load(TilingPlugin())
 
     win.config_menu({
         'File': {
+            'New': win.editor.new_editor,
             'Open': win.editor.open
+
         },
         'Edit': {},
-        'Help': {}
+        'Help': win.help
     })
 
     win.mainloop()

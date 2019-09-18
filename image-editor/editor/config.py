@@ -1,19 +1,23 @@
 import json
 import os
 
-from editor.core.api.plugin import Plugin
+from editor.api.plugin import Plugin
 
 DEFAULT_CONFIG = {
     'dataset_selection_path': '/'
 }
 
 
-class Editor(object):
+class EditorConfig(object):
+    @staticmethod
+    def from_path(path: str):
+        return EditorConfig(path)
+
     def __init__(self, config_path: str = '/tmp/.editor/config.json'):
         self.config_path = config_path
-        self.sources = set()
-        self.transformers = set()
-        self.processes = set()
+        self.sources = []
+        self.transformers = []
+        self.processes = []
 
         self.config = DEFAULT_CONFIG
         if os.path.exists(config_path):
@@ -26,9 +30,9 @@ class Editor(object):
             json.dump(self.config, _, indent=4, sort_keys=True)
 
     def load(self, plugin: Plugin):
-        self.sources.update(plugin.sources())
-        self.transformers.update(plugin.transformers())
-        self.processes.update(plugin.processes())
+        self.sources.extend(plugin.sources())
+        self.transformers.extend(plugin.transformers())
+        self.processes.extend(plugin.processes())
 
 
-EDITOR = Editor()
+EDITOR = EditorConfig()

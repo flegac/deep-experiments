@@ -1,14 +1,13 @@
 from typing import Callable, Tuple
 
 import cv2
-import numpy as np
 
-from editor.core.api.data_transformer import DataTransformer
+from editor.api.data import DataTransformer, Buffer
 
 ViewportProvider = Callable[[], Tuple[int, int]]
 
 
-class ViewportTransform(DataTransformer):
+class ViewportTransformer(DataTransformer):
     def __init__(self, viewport_provider: ViewportProvider):
         self.viewport_provider = viewport_provider
         self.zoom_factor = 1.
@@ -22,8 +21,7 @@ class ViewportTransform(DataTransformer):
         self.x += dx
         self.y += dy
 
-    def apply(self, data: np.ndarray) -> np.ndarray:
-
+    def __call__(self, data: Buffer) -> Buffer:
         width, height = self.viewport_provider()
         img_width = data.shape[1]
         img_height = data.shape[0]
@@ -31,7 +29,7 @@ class ViewportTransform(DataTransformer):
         aspect = width / height
         img_aspect = img_width / img_height
 
-        # self.zoom_factor = max(self.zoom_factor, min(width / img_width, height / img_height))
+        self.zoom_factor = max(self.zoom_factor, min(width / img_width, height / img_height))
 
         w = min(img_width, int(width / self.zoom_factor))
         h = min(img_height, int(height / self.zoom_factor))

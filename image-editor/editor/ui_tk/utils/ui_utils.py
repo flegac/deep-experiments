@@ -1,7 +1,7 @@
 import os
 from tkinter.filedialog import askopenfilenames
 
-from editor.core.plugin.plugin_manager import EDITOR
+from editor.config import EDITOR
 
 
 def dataset_selection():
