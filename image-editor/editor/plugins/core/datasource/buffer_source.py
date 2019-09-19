@@ -1,6 +1,6 @@
 import numpy as np
 
-from editor.api.data import DataSource, Buffer
+from editor.core.data import DataSource, Buffer
 
 
 class BufferSource(DataSource):

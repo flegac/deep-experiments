@@ -1,6 +1,6 @@
 from typing import Callable, Any
 
-from editor.api.data import DataSource
+from editor.core.data import DataSource
 
 ProcessUpdater = Callable[[float], Any]
 DataProcess = Callable[[ProcessUpdater], None]

@@ -1,8 +1,8 @@
 import abc
 from typing import List
 
-from editor.api.data import DataSource, DataTransformer
-from editor.api.process import DataProcessFactory
+from editor.core.data import DataSource, DataTransformer
+from editor.core.process import DataProcessFactory
 
 
 class Plugin(abc.ABC):

@@ -2,7 +2,7 @@ from typing import Callable, Tuple
 
 import cv2
 
-from editor.api.data import DataTransformer, Buffer
+from editor.core.data import DataTransformer, Buffer
 
 ViewportProvider = Callable[[], Tuple[int, int]]
 

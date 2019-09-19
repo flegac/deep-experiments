@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from editor.api.data import DataTransformer, Buffer
+from editor.core.data import DataTransformer, Buffer
 
 
 class DilateTransformer(DataTransformer):

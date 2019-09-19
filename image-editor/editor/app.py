@@ -3,7 +3,7 @@ from tkinter import messagebox
 from editor.config import EDITOR
 from editor.plugins.image_filter.plugin import ImageFilterPlugin
 from editor.plugins.tiling.plugin import TilingPlugin
-from editor.ui_tk.window import Win
+from editor.gui.window import Win
 
 if __name__ == '__main__':
     win = Win()

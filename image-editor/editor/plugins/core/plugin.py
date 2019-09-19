@@ -1,8 +1,8 @@
 from typing import List
 
-from editor.api.data import DataTransformer, DataSource
-from editor.api.plugin import Plugin
-from editor.api.process import DataProcess
+from editor.core.data import DataTransformer, DataSource
+from editor.core.plugin import Plugin
+from editor.core.process import DataProcess
 from editor.plugins.core.datasource.buffer_source import BufferSource
 from editor.plugins.core.datasource.cached_source import CachedSource
 from editor.plugins.core.datasource.file_source import FileSource

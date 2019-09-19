@@ -1,10 +1,10 @@
 import tkinter as tk
 from typing import Callable, List
 
-from editor.api.data import DataSource
+from editor.core.data import DataSource
 from editor.plugins.core.datasource.multi_source import MultiSource
 from editor.plugins.core.datasource.file_source import FileSource
-from editor.ui_tk.utils.ui_utils import dataset_selection
+from editor.gui.utils.ui_utils import dataset_selection
 
 
 class SourceEditor(tk.LabelFrame):

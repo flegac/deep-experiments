@@ -1,7 +1,7 @@
 import json
 import os
 
-from editor.api.plugin import Plugin
+from editor.core.plugin import Plugin
 
 DEFAULT_CONFIG = {
     'dataset_selection_path': '/'

@@ -1,7 +1,7 @@
 import tkinter as tk
 from typing import Callable
 
-from editor.api.data import DataTransformer
+from editor.core.data import DataTransformer
 from editor.config import EDITOR
 from editor.plugins.core.transforms.pipeline import Pipeline
 

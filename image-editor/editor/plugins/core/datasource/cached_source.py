@@ -1,4 +1,4 @@
-from editor.api.data import DataSource, Buffer
+from editor.core.data import DataSource, Buffer
 
 
 class CachedSource(DataSource):

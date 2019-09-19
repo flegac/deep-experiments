@@ -2,7 +2,8 @@ import tkinter as ttk
 from tkinter import messagebox
 from typing import Mapping, Union, Callable
 
-from editor.ui_tk.editor_manager import EditorManager
+from editor.gui.dataset_manager import FileBrowser
+from editor.gui.editor_manager import EditorManager
 
 MenuConfig = Mapping[str, Union[str, Mapping[str, str]]]
 
@@ -13,7 +14,12 @@ class Win(ttk.Tk):
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
 
         self.geometry('{}x{}+5+5'.format(w - 20, h - 150))
+
+        self.dataset = FileBrowser(self)
+        self.dataset.pack(fill="both", expand="no", side=ttk.LEFT)
+
         self.editor = EditorManager(self)
+        self.editor.pack(fill="both", expand="yes", side=ttk.RIGHT)
 
         self.protocol("WM_DELETE_WINDOW", self._on_exit)
 

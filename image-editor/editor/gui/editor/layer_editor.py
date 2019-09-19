@@ -1,14 +1,14 @@
 import tkinter as tk
 from typing import Callable
 
-from editor.ui_tk.source_editor import SourceEditor
-from editor.ui_tk.transform_editor import TransformEditor
-from editor.ui_tk.visu_editor import VisuEditor
+from editor.gui.editor.source_editor import SourceEditor
+from editor.gui.editor.transform_editor import TransformEditor
+from editor.gui.editor.visu_editor import VisuEditor
 
 
-class LayerEditor(tk.LabelFrame):
+class LayerEditor(tk.Frame):
     def __init__(self, master, on_update: Callable[[], None]):
-        tk.LabelFrame.__init__(self, master, text='layers')
+        tk.Frame.__init__(self, master)
 
         # Make the canvas expandable
         self.grid_rowconfigure(0, weight=1)

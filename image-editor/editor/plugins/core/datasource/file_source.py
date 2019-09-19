@@ -2,7 +2,7 @@ import os
 
 import cv2
 
-from editor.api.data import DataSource, Buffer
+from editor.core.data import DataSource, Buffer
 
 
 class FileSource(DataSource):

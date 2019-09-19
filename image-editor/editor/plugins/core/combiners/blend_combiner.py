@@ -3,7 +3,7 @@ from typing import List
 import cv2
 import numpy as np
 
-from editor.api.data import DataCombiner, Buffer
+from editor.core.data import DataCombiner, Buffer
 
 
 class BlendCombiner(DataCombiner):

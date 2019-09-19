@@ -1,6 +1,6 @@
 from typing import List
 
-from editor.api.data import DataSource, Buffer
+from editor.core.data import DataSource, Buffer
 from editor.plugins.core.combiners.blend_combiner import BlendCombiner
 
 

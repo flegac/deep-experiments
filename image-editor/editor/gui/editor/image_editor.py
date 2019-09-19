@@ -3,10 +3,10 @@ from enum import Enum
 
 from PIL import ImageTk, Image
 
+from editor.gui.editor.layer_editor import LayerEditor
+from editor.gui.utils.hidden_scrollbar import HiddenScrollbar
 from editor.plugins.core.datasource.cached_source import CachedSource
 from editor.plugins.core.transforms.viewport import ViewportTransformer
-from editor.ui_tk.layer_editor import LayerEditor
-from editor.ui_tk.utils.hidden_scrollbar import HiddenScrollbar
 
 
 # advanced version :
@@ -25,6 +25,8 @@ class ImageEditor(tk.Frame):
 
     def __init__(self, master):
         tk.Frame.__init__(self, master)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
         # canvas creation
         self.canvas = tk.Canvas(self, width=600, height=400)
@@ -38,10 +40,9 @@ class ImageEditor(tk.Frame):
 
         self.canvas.configure(yscrollcommand=vbar.set, xscrollcommand=hbar.set)
 
-        # Make the canvas expandable
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-        self.pack(fill="both", expand=True)
+        # editors
+        self.layer_editor = LayerEditor(self, self.on_source_change)
+        self.layer_editor.grid(row=0, column=1, sticky='nsew')
 
         # image
         self.source = CachedSource(lambda: self.layer_editor.get_source())
@@ -51,10 +52,6 @@ class ImageEditor(tk.Frame):
 
         # help
         self.debug_id = self.canvas.create_text(5, 60, anchor='nw', text='')
-
-        # editors
-        self.layer_editor = LayerEditor(self, self.on_source_change)
-        self.layer_editor.grid(row=0, column=1, sticky='nsew')
 
         # Bind events to the Canvas
         self.canvas.bind('<Configure>', lambda event: self.redraw_canvas())
