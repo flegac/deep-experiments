@@ -5,3 +5,5 @@ imutils
 rxpython
 pandas
 idlelib
+pandastable
+
