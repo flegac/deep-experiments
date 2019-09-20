@@ -1,30 +1,31 @@
 import os
 
 from editor_gui.config import EDITOR_CONFIG
+from editor_gui.events import PROJECT_OPEN_BUS, IMAGE_OPEN_BUS
 from editor_gui.utils.ui_utils import dir_selection, file_selection
 from editor_gui.window import Win
-
-
-def opopen_project():
-    path = dir_selection()
-    win.browser.open(path)
 
 
 def open_editor():
     paths = file_selection()
     name, _ = os.path.splitext(os.path.basename(paths[0]))
-    win.editor.create(name, paths)
+    IMAGE_OPEN_BUS.on_next((name, paths))
 
 
 if __name__ == '__main__':
     win = Win()
 
+    if EDITOR_CONFIG.config_path_is_valid('project_browser_path'):
+        PROJECT_OPEN_BUS.on_next(EDITOR_CONFIG.config.get('project_browser_path'))
+
     win.config_menu({
-        'Open project': opopen_project,
 
         'File': {
-            'New': lambda: win.editor.create('editor'),
-            'Open': open_editor
+            'New': lambda: IMAGE_OPEN_BUS.on_next(('---', None)),
+            'Open project': lambda: PROJECT_OPEN_BUS.on_next(dir_selection()),
+            'Open image': open_editor,
+
+            'Exit': win.destroy
 
         },
         'Edit': {},

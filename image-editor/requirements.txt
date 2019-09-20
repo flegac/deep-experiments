@@ -1,10 +1,11 @@
 numpy
 opencv-python
+rasterio
 matplotlib
 imutils
 pandas
-idlelib
 pandastable
-rxpython
 rx
 functional
+scikit-learn
+imghdr

@@ -1,37 +1,41 @@
+import imghdr
 import os
 import tkinter as tk
 from idlelib.tree import ScrolledCanvas, FileTreeItem, TreeNode
 
-from editor_gui.config import EDITOR_CONFIG
-from editor_gui.utils.frame_manager import FrameManager
+from editor_gui.events import PROJECT_OPEN_BUS, IMAGE_OPEN_BUS, DATASET_OPEN_BUS, TEXT_OPEN_BUS
 
 
 class ProjectBrowser(tk.LabelFrame):
-    def __init__(self, master, editor: FrameManager):
+    def __init__(self, master: tk.Widget):
         super().__init__(master, text="project")
-        self.editor = editor
+        PROJECT_OPEN_BUS.subscribe(on_next=self.open_project)
 
         self.sc = ScrolledCanvas(self, bg="white", highlightthickness=0, takefocus=1, width=200)
         self.sc.frame.pack(expand=True, fill="both", side=tk.LEFT)
         self.node = None
-        if EDITOR_CONFIG.config_path_is_valid('project_browser_path'):
-            self.open(EDITOR_CONFIG.config.get('project_browser_path'))
 
-    def open(self, path: str):
-        editor = self.editor
-
-        class MyTreeNode(TreeNode):
-            def select(self, event=None):
-                TreeNode.select(self, event)
-                print('select called')
-                print('self.item.GetText(): {!r}'.format(self.item.GetText()))
-                print('self.item.path: "{}"'.format(self.item.path))
-                name, _ = os.path.splitext(os.path.basename(self.item.path))
-                if os.path.isfile(self.item.path):
-                    editor.create(name, [self.item.path])
-
+    def open_project(self, path: str):
         if self.node is not None:
             self.node.destroy()
 
         self.node = MyTreeNode(self.sc.canvas, None, FileTreeItem(path))
         self.node.expand()
+
+
+class MyTreeNode(TreeNode):
+    def select(self, event=None):
+        TreeNode.select(self, event)
+        path = str(self.item.path)
+        print('self.item.GetText(): {!r}'.format(self.item.GetText()))
+        print('self.item.path: "{}"'.format(path))
+        name = os.path.basename(path)
+        if os.path.isfile(path):
+            if path.endswith('.csv'):
+                DATASET_OPEN_BUS.on_next((name, path))
+            elif imghdr.what(path) is not None:
+                IMAGE_OPEN_BUS.on_next((name, path))
+            elif path.endswith('.txt') or path.endswith('.json') or path.endswith('.py'):
+                TEXT_OPEN_BUS.on_next((name, path))
+            else:
+                print('unsupported file format !')

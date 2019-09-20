@@ -2,8 +2,10 @@ import tkinter as ttk
 from tkinter import messagebox
 from typing import Mapping, Union, Callable
 
-from editor_gui.data_browser import DataBrowser
-from editor_gui.editor.image_editor import ImageEditor
+from editor_gui.dataset.dataset_editor import DatasetEditor
+from editor_gui.dataset.text_editor import TextEditor
+from editor_gui.events import IMAGE_OPEN_BUS, DATASET_OPEN_BUS, TEXT_OPEN_BUS
+from editor_gui.image.image_editor import ImageEditor
 from editor_gui.project_browser import ProjectBrowser
 from editor_gui.utils.frame_manager import FrameManager
 
@@ -19,14 +21,17 @@ class Win(ttk.Tk):
 
         frame = ttk.PanedWindow(orient=ttk.HORIZONTAL)
         frame.pack(fill=ttk.BOTH, expand=1)
-        self.editor = FrameManager(frame, name='editor', on_create=ImageEditor)
-        self.editor.create('editor')
 
-        self.browser = ProjectBrowser(frame, self.editor)
-        self.data = DataBrowser(frame)
-
+        self.browser = ProjectBrowser(frame)
         frame.add(self.browser)
-        frame.add(self.data)
+
+        self.editor = FrameManager(frame, name='editor')
+        self.editor.register(IMAGE_OPEN_BUS, ImageEditor)
+        self.editor.register(DATASET_OPEN_BUS, DatasetEditor)
+        self.editor.register(TEXT_OPEN_BUS, TextEditor)
+
+        IMAGE_OPEN_BUS.on_next(('---', None))
+
         frame.add(self.editor)
 
     def config_menu(self, config: MenuConfig):

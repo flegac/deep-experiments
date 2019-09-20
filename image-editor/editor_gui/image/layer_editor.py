@@ -1,13 +1,13 @@
 import tkinter as tk
 from typing import Callable
 
-from editor_gui.editor.operator_toolbox import OperatorToolbox
-from editor_gui.editor.source_editor import SourceEditor
-from editor_gui.editor.visu_editor import VisuEditor
+from editor_gui.image.operator_toolbox import OperatorToolbox
+from editor_gui.image.source_editor import SourceEditor
+from editor_gui.image.visu_editor import VisuEditor
 
 
 class LayerEditor(tk.Frame):
-    def __init__(self, master, on_update: Callable[[], None]):
+    def __init__(self, master: tk.Widget, on_update: Callable[[], None]):
         tk.Frame.__init__(self, master)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)

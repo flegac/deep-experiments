@@ -1,10 +1,10 @@
+import os
+
 from kivy.app import App
-from kivy.uix.floatlayout import FloatLayout
 from kivy.factory import Factory
 from kivy.properties import ObjectProperty
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
-
-import os
 
 
 class LoadDialog(FloatLayout):
@@ -30,13 +30,13 @@ class Root(FloatLayout):
         content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
-        self._popup.open()
+        self._popup.open_project()
 
     def show_save(self):
         content = SaveDialog(save=self.save, cancel=self.dismiss_popup)
         self._popup = Popup(title="Save file", content=content,
                             size_hint=(0.9, 0.9))
-        self._popup.open()
+        self._popup.open_project()
 
     def load(self, path, filename):
         with open(os.path.join(path, filename[0])) as stream:
@@ -58,7 +58,6 @@ class Editor(App):
 Factory.register('Root', cls=Root)
 Factory.register('LoadDialog', cls=LoadDialog)
 Factory.register('SaveDialog', cls=SaveDialog)
-
 
 if __name__ == '__main__':
     Editor().run()

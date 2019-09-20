@@ -1,5 +1,5 @@
 import tkinter as tk
-from typing import Callable, List
+from typing import Callable
 
 from editor_api.data import DataSource, IdentityOperator, EmptySource, PipelineOperator, DataOperator
 from editor_core.file_source import FileSource
@@ -8,11 +8,11 @@ from editor_plugins.image_filter.operators.normalize import NormalizeOperator
 
 
 class SourceEditor(tk.LabelFrame):
-    def __init__(self, master, on_update: Callable[[], None]):
+    def __init__(self, master: tk.Widget, on_update: Callable[[], None]):
         tk.LabelFrame.__init__(self, master, text='sources')
         self.source = EmptySource()
         self.pipeline: PipelineOperator = IdentityOperator() | NormalizeOperator()
-        self.buttons = []
+        self.buttons: tk.Widget = []
         self._on_update = on_update
 
         tk.Button(
@@ -21,10 +21,10 @@ class SourceEditor(tk.LabelFrame):
             command=self.open
         ).pack(fill="both", expand=True, side=tk.BOTTOM)
 
-    def open(self, paths: List[str] = None):
-        if paths is None:
-            paths = file_selection()
-        self.source = FileSource.from_rgb(paths[0])
+    def open(self, path: str = None):
+        if path is None:
+            path = file_selection()
+        self.source = FileSource.from_rgb(path)
         self.on_update()
 
     def on_update(self):
@@ -42,11 +42,12 @@ class SourceEditor(tk.LabelFrame):
             return run
 
         self.buttons = [
-                           tk.Label(self, text=str(self.source))
-                       ] + [
-                           tk.Button(self, text=str(step), command=_callback(step))
-                           for step in self.pipeline.pipeline
-                       ]
+            tk.Label(self, text=str(self.source)),
+            *[
+                tk.Button(self, text=str(step), command=_callback(step))
+                for step in self.pipeline.pipeline
+            ]
+        ]
         for _ in self.buttons:
             _.pack(fill="both", expand=True, side=tk.TOP)
 

@@ -1,22 +1,26 @@
 import tkinter as tk
 
-import pandas as pd
 from pandastable import Table
+
 
 # https://pandastable.readthedocs.io/en/latest/examples.html
 
-class DataBrowser(tk.LabelFrame):
-    def __init__(self, master):
+
+class DatasetEditor(tk.LabelFrame):
+    def __init__(self, master: tk.Widget, name: str, path: str):
         super().__init__(master, text="data", width=300)
 
         self.table = Table(
             self,
-            dataframe=pd.DataFrame({
-                'x': ['file_path'],
-                'y': ['file_path']
-            }),
             showtoolbar=True,
             showstatusbar=True,
         )
-
         self.table.show()
+        if path is not None:
+            self.open_dataset(path)
+
+    def open_dataset(self, path: str):
+        self.table.importCSV(path)
+        self.table.redraw()
+
+

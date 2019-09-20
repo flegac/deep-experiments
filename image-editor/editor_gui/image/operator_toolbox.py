@@ -6,7 +6,7 @@ from editor_gui.config import EDITOR_CONFIG
 
 
 class OperatorToolbox(tk.LabelFrame):
-    def __init__(self, master, callback: Callable[[DataOperator], None], undo_callback: Callable[[], None]):
+    def __init__(self, master: tk.Widget, callback: Callable[[DataOperator], None], undo_callback: Callable[[], None]):
         tk.LabelFrame.__init__(self, master, text='operator')
 
         operators = EDITOR_CONFIG.operators()

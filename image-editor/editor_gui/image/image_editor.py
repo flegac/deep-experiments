@@ -8,7 +8,7 @@ from PIL import ImageTk, Image
 # basic version :
 # https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse
 from editor_core.viewport import ViewportTransformer
-from editor_gui.editor.layer_editor import LayerEditor
+from editor_gui.image.layer_editor import LayerEditor
 from editor_gui.utils.hidden_scrollbar import HiddenScrollbar
 
 
@@ -20,7 +20,7 @@ class ImageEvent(Enum):
 class ImageEditor(tk.Frame):
     ZOOM_SPEED = 0.75
 
-    def __init__(self, master, name: str, paths: str = None):
+    def __init__(self, master: tk.Widget, name: str, path: str = None):
         tk.Frame.__init__(self, master)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -65,8 +65,8 @@ class ImageEditor(tk.Frame):
         # windows scroll
         self.canvas.bind('<MouseWheel>', self.zoom)
 
-        if paths is not None:
-            self.layer_editor.source_editor.open(paths)
+        if path is not None:
+            self.layer_editor.source_editor.open(path)
 
     def start_move(self, event):
         self.mouse_x = event.x

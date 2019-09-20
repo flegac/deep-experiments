@@ -2,18 +2,27 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Callable, Any
 
+from rx import Observable
+
+EditorProvider = Callable[[tk.Widget, str, str], Any]
+
 
 class FrameManager(tk.LabelFrame):
-    def __init__(self, master, name: str, on_create: Callable[..., Any]):
+    def __init__(self, master: tk.Widget, name: str):
         super().__init__(master, text=name)
-        self.on_create = on_create
+
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(fill='both', expand='yes')
 
-    def create(self, name: str, *args, **kwargs):
-        frame = ttk.Frame(self.notebook)
-        item = self.on_create(frame, name, *args, **kwargs)
-        item.pack(fill='both', expand=True)
+    def register(self, bus: Observable, editor: EditorProvider):
+        bus.pipe(
+            # operators.map(select_editor)
+        ).subscribe(on_next=lambda event: self.create(event[0], event[1], editor))
 
+    def create(self, name: str, data_path: str, on_create: EditorProvider):
+        frame = ttk.Frame(self.notebook)
         self.notebook.add(frame, text=name)
         self.notebook.select(frame)
+
+        item = on_create(frame, name, data_path)
+        item.pack(fill='both', expand=True)

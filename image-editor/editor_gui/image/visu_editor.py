@@ -6,7 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 class VisuEditor(tk.LabelFrame):
-    def __init__(self, master):
+    def __init__(self, master: tk.Widget):
         tk.LabelFrame.__init__(self, master, text='visu')
         self.fig = None
         self.canvas = None
