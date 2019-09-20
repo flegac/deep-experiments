@@ -1,5 +1,4 @@
 import tkinter as tk
-from enum import Enum
 
 from PIL import ImageTk, Image
 
@@ -8,13 +7,9 @@ from PIL import ImageTk, Image
 # basic version :
 # https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse
 from editor_core.viewport import ViewportTransformer
+from editor_gui.events import ON_VIEWPORT_CHANGE, ON_SOURCE_CHANGE
 from editor_gui.image.layer_editor import LayerEditor
 from editor_gui.utils.hidden_scrollbar import HiddenScrollbar
-
-
-class ImageEvent(Enum):
-    ON_VIEWPORT_CHANGE = 'on_viewport'
-    ON_SOURCE_CHANGE = 'on_source_change'
 
 
 class ImageEditor(tk.Frame):
@@ -24,6 +19,9 @@ class ImageEditor(tk.Frame):
         tk.Frame.__init__(self, master)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+
+        # ON_VIEWPORT_CHANGE.subscribe(on_next=lambda _: self.on_viewport_change)
+        # ON_SOURCE_CHANGE.subscribe(on_next=lambda _: self.on_source_change)
 
         self.name = name
 
