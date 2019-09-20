@@ -9,17 +9,20 @@ class OperatorToolbox(tk.LabelFrame):
     def __init__(self, master, callback: Callable[[DataOperator], None], undo_callback: Callable[[], None]):
         tk.LabelFrame.__init__(self, master, text='operator')
 
-        operators = list(filter(None, [_test_class_loader(cls) for cls in EDITOR_CONFIG.operators()]))
+        operators = EDITOR_CONFIG.operators()
+
         for i in range(len(operators)):
-            def _callback(step: DataOperator):
+            _ = operators[i]()
+
+            def _callback(op: DataOperator):
                 def run():
-                    callback(step)
+                    callback(op)
 
                 return run
 
             button = tk.Button(
                 self,
-                text=str(operators[i]),
+                text=str(_),
                 command=_callback(operators[i])
             )
             button.pack(fill='both', expand=True, side=tk.TOP)
@@ -36,11 +39,3 @@ def _test_class_loader(cls):
         return cls()
     except:
         return None
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    widget = OperatorToolbox(root, lambda: None)
-    widget.pack()
-
-    root.mainloop()

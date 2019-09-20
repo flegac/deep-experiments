@@ -1,8 +1,8 @@
 import tkinter as tk
 from typing import Callable
 
-from editor_gui.editor.source_editor import SourceEditor
 from editor_gui.editor.operator_toolbox import OperatorToolbox
+from editor_gui.editor.source_editor import SourceEditor
 from editor_gui.editor.visu_editor import VisuEditor
 
 
@@ -15,7 +15,7 @@ class LayerEditor(tk.Frame):
         self.source_editor = SourceEditor(self, on_update)
         self.source_editor.grid(row=0, sticky='new')
 
-        self.transform_editor = OperatorToolbox(self, self.source_editor.push_operator,self.source_editor.pop_operator)
+        self.transform_editor = OperatorToolbox(self, self.source_editor.push_operator, self.source_editor.pop_operator)
         self.transform_editor.grid(row=1, sticky='sew')
 
         self.visu_editor = VisuEditor(self)

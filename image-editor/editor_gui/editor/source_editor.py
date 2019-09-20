@@ -33,21 +33,35 @@ class SourceEditor(tk.LabelFrame):
         for _ in self.buttons:
             _.destroy()
 
+        editor = self
+
+        def _callback(step: DataOperator):
+            def run():
+                editor.remove_operator(step)
+
+            return run
+
         self.buttons = [
                            tk.Label(self, text=str(self.source))
                        ] + [
-                           tk.Label(self, text=str(step))
+                           tk.Button(self, text=str(step), command=_callback(step))
                            for step in self.pipeline.pipeline
                        ]
         for _ in self.buttons:
             _.pack(fill="both", expand=True, side=tk.TOP)
 
     def push_operator(self, op: DataOperator):
-        self.pipeline = self.pipeline | op
+        self.pipeline = self.pipeline | op()
         self.on_update()
 
     def pop_operator(self):
         self.pipeline = PipelineOperator(self.pipeline.pipeline[:-1])
+        self.on_update()
+
+    def remove_operator(self, op: DataOperator):
+        pipe = self.pipeline.pipeline
+        pipe.remove(op)
+        self.pipeline = PipelineOperator(pipe)
         self.on_update()
 
     def get_source(self) -> DataSource:
