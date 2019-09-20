@@ -89,8 +89,8 @@ class ImageEditor(tk.Frame):
             self.viewport.zoom(1 / self.ZOOM_SPEED)
         self.on_viewport_change()
 
-    def read_data(self):
-        if self.data is None:
+    def read_data(self, reset=False):
+        if self.data is None or reset:
             source = self.layer_editor.source_editor.get_source()
             self.data = source.get_buffer(None, None)
         return self.data
@@ -101,8 +101,14 @@ class ImageEditor(tk.Frame):
         return w, h
 
     def on_source_change(self):
-        self.data = None
-        self.layer_editor.visu_editor.update_data(self.name, self.read_data())
+        data = self.read_data(reset=True)
+
+        label = '{data.shape[1]}x{data.shape[0]} {data.dtype} [{min},{max}]'.format(
+            data=data,
+            min=data.min(),
+            max=data.max()
+        )
+        self.layer_editor.visu_editor.update_data(label, data)
         self.redraw_canvas()
 
     def on_viewport_change(self):

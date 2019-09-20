@@ -2,8 +2,9 @@ numpy
 opencv-python
 matplotlib
 imutils
-rxpython
 pandas
 idlelib
 pandastable
-
+rxpython
+rx
+functional

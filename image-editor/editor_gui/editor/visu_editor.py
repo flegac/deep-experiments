@@ -24,9 +24,9 @@ class VisuEditor(tk.LabelFrame):
         self.label = tk.Label(self, textvariable=self.text)
         self.label.pack(side=tk.BOTTOM, fill=tk.BOTH)
 
-    def update_data(self, name: str, data: np.ndarray):
+    def update_data(self, label: str, data: np.ndarray):
 
-        self.text.set('{} {}x{}'.format(name, data.shape[1], data.shape[0]))
+        self.text.set(label)
 
         if len(data.shape) == 2:
             return
