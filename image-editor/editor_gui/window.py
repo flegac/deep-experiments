@@ -2,9 +2,9 @@ import tkinter as ttk
 from tkinter import messagebox
 from typing import Mapping, Union, Callable
 
-from editor_gui.dataframe_browser import DataframeBrowser
+from editor_gui.data_browser import DataBrowser
 from editor_gui.editor.image_editor import ImageEditor
-from editor_gui.file_browser import FileBrowser
+from editor_gui.project_browser import ProjectBrowser
 from editor_gui.utils.frame_manager import FrameManager
 
 MenuConfig = Mapping[str, Union[str, Mapping[str, str]]]
@@ -20,9 +20,10 @@ class Win(ttk.Tk):
         frame = ttk.PanedWindow(orient=ttk.HORIZONTAL)
         frame.pack(fill=ttk.BOTH, expand=1)
         self.editor = FrameManager(frame, name='editor', on_create=ImageEditor)
+        self.editor.create('editor')
 
-        self.browser = FileBrowser(frame, self.editor)
-        self.data = DataframeBrowser(frame)
+        self.browser = ProjectBrowser(frame, self.editor)
+        self.data = DataBrowser(frame)
 
         frame.add(self.browser)
         frame.add(self.data)

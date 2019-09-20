@@ -9,7 +9,7 @@ from editor_plugins.tiling.plugin import TilingPlugin
 
 DEFAULT_CONFIG = {
     'file_browser_path': '/',
-    'directory_browser_path': '/'
+    'project_browser_path': '/'
 }
 DEFAULT_CONFIG_PATH = str(Path.home() / '.my_editor/config.json')
 

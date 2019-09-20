@@ -6,16 +6,16 @@ from editor_gui.config import EDITOR_CONFIG
 from editor_gui.utils.frame_manager import FrameManager
 
 
-class FileBrowser(tk.LabelFrame):
+class ProjectBrowser(tk.LabelFrame):
     def __init__(self, master, editor: FrameManager):
-        super().__init__(master, text="browser")
+        super().__init__(master, text="project")
         self.editor = editor
 
         self.sc = ScrolledCanvas(self, bg="white", highlightthickness=0, takefocus=1, width=200)
         self.sc.frame.pack(expand=True, fill="both", side=tk.LEFT)
         self.node = None
-        if EDITOR_CONFIG.config_path_is_valid('directory_browser_path'):
-            self.open(EDITOR_CONFIG.config.get('directory_browser_path'))
+        if EDITOR_CONFIG.config_path_is_valid('project_browser_path'):
+            self.open(EDITOR_CONFIG.config.get('project_browser_path'))
 
     def open(self, path: str):
         editor = self.editor

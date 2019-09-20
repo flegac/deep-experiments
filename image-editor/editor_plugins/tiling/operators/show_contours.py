@@ -7,6 +7,7 @@ from editor_api.data import DataOperator, Buffer
 class ShowContours(DataOperator):
 
     def apply(self, data: Buffer) -> Buffer:
+        data = data.copy()
         # gray = cv2.cvtColor(data, cv2.COLOR_BGR2GRAY)
         # gray = cv2.bilateralFilter(gray, 11, 17, 17)
         edged = cv2.Canny(data, 0, 255)

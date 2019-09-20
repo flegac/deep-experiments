@@ -1,3 +1,4 @@
+from math import ceil
 from typing import Callable, Tuple
 
 import cv2
@@ -33,8 +34,8 @@ class ViewportTransformer(DataOperator):
 
         self.zoom_factor = max(self.zoom_factor, width / img_width if aspect > 1 else height / img_height)
 
-        w = min(img_width, int(width / self.zoom_factor))
-        h = min(img_height, int(height / self.zoom_factor))
+        w = min(img_width, ceil(width / self.zoom_factor))
+        h = min(img_height, ceil(height / self.zoom_factor))
 
         self.x = min(max(self.x, 0), img_width - w)
         self.y = min(max(self.y, 0), img_height - h)

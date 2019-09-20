@@ -5,7 +5,7 @@ from pandastable import Table
 
 # https://pandastable.readthedocs.io/en/latest/examples.html
 
-class DataframeBrowser(tk.LabelFrame):
+class DataBrowser(tk.LabelFrame):
     def __init__(self, master):
         super().__init__(master, text="data", width=300)
 

@@ -5,7 +5,7 @@ from editor_gui.utils.ui_utils import dir_selection, file_selection
 from editor_gui.window import Win
 
 
-def open_workspace():
+def opopen_project():
     path = dir_selection()
     win.browser.open(path)
 
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     win = Win()
 
     win.config_menu({
-        'Open workspace': open_workspace,
+        'Open project': opopen_project,
 
         'File': {
             'New': lambda: win.editor.create('editor'),
@@ -28,12 +28,16 @@ if __name__ == '__main__':
 
         },
         'Edit': {},
+        'View': {},
 
         'Operator': {
-            str(_): {}
+            str(_()): {}
             for _ in EDITOR_CONFIG.operators()
         },
-        'Help': win.help
+        'Help': {
+            'Help': win.help,
+            'About': {}
+        }
     })
 
     win.mainloop()

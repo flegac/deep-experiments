@@ -9,6 +9,8 @@ class ShowTiling(DataOperator):
         self.tile_shape = (tile_size, tile_size)
 
     def apply(self, data: Buffer) -> Buffer:
+        data = data.copy()
+
         h, w = data.shape[:2]
         n_x = int(w / self.tile_shape[0])
         n_y = int(h / self.tile_shape[1])

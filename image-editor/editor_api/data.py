@@ -15,7 +15,13 @@ class DataSource(abc.ABC):
         return _ComplexSource(operator, self)
 
     def __repr__(self):
-        return self.__class__.__name__.replace('Source', '')
+        return str(self.__class__).replace('Source', '')
+
+
+class EmptySource(DataSource):
+
+    def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
+        return np.zeros((1, 1, 3))
 
 
 class DataOperator(Callable[[DataSource], DataSource]):
@@ -32,6 +38,11 @@ class DataOperator(Callable[[DataSource], DataSource]):
         return self.__class__.__name__.replace('Operator', '')
 
 
+class IdentityOperator(DataOperator):
+    def apply(self, data: Buffer) -> Buffer:
+        return data
+
+
 class DataMixer(Callable[[List[DataSource]], DataSource]):
     def apply(self, data: List[Buffer]) -> Buffer:
         raise NotImplementedError()
@@ -40,7 +51,7 @@ class DataMixer(Callable[[List[DataSource]], DataSource]):
         return _MixedSource(self.apply, sources)
 
     def __repr__(self):
-        return self.__class__.__name__.replace('Mixer', '')
+        return str(type(self)).replace('Mixer', '')
 
 
 class _ComplexSource(DataSource):
@@ -59,23 +70,22 @@ class PipelineOperator(DataOperator):
     def __init__(self, operators: List[DataOperator] = None):
         self._operators = []
         if operators is not None:
-            for _ in operators:
-                self.add_transform(_)
+            for step in operators:
+                if step is None or isinstance(step, IdentityOperator):
+                    continue
+                if isinstance(step, PipelineOperator):
+                    self._operators.extend(step.pipeline)
+                else:
+                    self._operators.append(step)
+
+    @property
+    def pipeline(self):
+        return self._operators
 
     def apply(self, data: Buffer) -> Buffer:
         for _ in self._operators:
             data = _.apply(data)
         return data
-
-    def add_transform(self, step: DataOperator):
-        if step is not None:
-            if isinstance(step, PipelineOperator):
-                self._operators.extend(step._operators)
-            else:
-                self._operators.append(step)
-
-    def clear(self):
-        self._operators.clear()
 
 
 class _MixedSource(DataSource):

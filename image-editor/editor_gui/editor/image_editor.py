@@ -92,8 +92,7 @@ class ImageEditor(tk.Frame):
     def read_data(self):
         if self.data is None:
             source = self.layer_editor.source_editor.get_source()
-            pipe = self.layer_editor.transform_editor.get_transform()
-            self.data = pipe(source).get_buffer(None, None)
+            self.data = source.get_buffer(None, None)
         return self.data
 
     def viewport_size(self):

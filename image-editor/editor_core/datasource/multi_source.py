@@ -13,3 +13,6 @@ class MultiSource(DataSource):
 
     def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
         return BlendMixer()([_.get_buffer(offset, size) for _ in self.layers])
+
+    def __repr__(self):
+        return repr(self.layers)

@@ -40,7 +40,7 @@ class VisuEditor(tk.LabelFrame):
             # histr = (histr - histr.min()) / histr.max()
             self.ax[i].plot(bins[:-1], hist, color=col, label=col)
             self.ax[i].legend()
-            self.ax[i].axis('off')
+            # self.ax[i].axis('off')
             self.ax[i].margins(0.01)
         self.fig.tight_layout()
 
