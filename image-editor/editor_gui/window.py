@@ -2,8 +2,8 @@ import tkinter as ttk
 from tkinter import messagebox
 from typing import Mapping, Union, Callable
 
-from editor_gui.dataset.dataset_editor import DatasetEditor
-from editor_gui.dataset.text_editor import TextEditor
+from editor_gui.dataset_editor import DatasetEditor
+from editor_gui.text_editor import TextEditor
 from editor_gui.events import IMAGE_OPEN_BUS, DATASET_OPEN_BUS, TEXT_OPEN_BUS
 from editor_gui.image.image_editor import ImageEditor
 from editor_gui.project_browser import ProjectBrowser

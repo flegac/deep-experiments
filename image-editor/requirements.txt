@@ -9,3 +9,4 @@ rx
 functional
 scikit-learn
 imghdr
+pygments
