@@ -47,4 +47,4 @@ def test_complex_operators():
         ]) | op1
     )
     print()
-    print(graph.configure([np.zeros((3, 3))]).get_buffer(None, None))
+    print(graph.configure([np.zeros((3, 3))]).get_buffer())

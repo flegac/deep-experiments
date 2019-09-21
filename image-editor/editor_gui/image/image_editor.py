@@ -4,7 +4,7 @@ import tkinter as tk
 # https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257
 # basic version :
 # https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse
-from editor_core.viewport import ViewportTransformer
+from editor_core.viewport import ViewportOperator
 from editor_gui.image.layer_editor import LayerEditor
 from editor_gui.utils.hidden_scrollbar import HiddenScrollbar
 
@@ -43,7 +43,7 @@ class ImageEditor(tk.Frame):
         self.data = None
         self.image = None
         self.image_id = None
-        self.viewport = ViewportTransformer(self.viewport_size)
+        self.viewport = ViewportOperator(self.viewport_size)
 
         # help
         self.debug_id = self.canvas.create_text(5, 60, anchor='nw', text='')
@@ -88,7 +88,7 @@ class ImageEditor(tk.Frame):
     def read_data(self, reset=False):
         if self.data is None or reset:
             source = self.layer_editor.source_editor.get_source()
-            self.data = source.get_buffer(None, None)
+            self.data = source.get_buffer()
         return self.data
 
     def viewport_size(self):
@@ -116,7 +116,7 @@ class ImageEditor(tk.Frame):
         if self.image_id:
             self.canvas.delete(self.image_id)
 
-        data = self.viewport(self.read_data())
+        data = self.viewport.apply(self.read_data())
 
         self.image = ImageTk.PhotoImage(image=Image.fromarray(data))
         self.image_id = self.canvas.create_image((0, 0), anchor=tk.NW, image=self.image)

@@ -1,7 +1,7 @@
 import os
 
 from editor_gui.config import EDITOR_CONFIG
-from editor_gui.events import PROJECT_OPEN_BUS, IMAGE_OPEN_BUS
+from editor_gui.event_bus import PROJECT_OPEN_BUS, IMAGE_OPEN_BUS
 from editor_gui.utils.ui_utils import dir_selection, file_selection
 from editor_gui.window import Win
 

@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import numpy as np
 
 from editor_api.data.buffer import Buffer
@@ -7,7 +5,7 @@ from editor_api.data.data_core import DataSource, DataOperator, VariableSource, 
 
 
 class EmptySource(DataSource):
-    def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
+    def get_buffer(self) -> Buffer:
         return np.zeros((1, 1, 3))
 
 

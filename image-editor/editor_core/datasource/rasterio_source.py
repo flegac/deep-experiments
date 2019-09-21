@@ -1,5 +1,4 @@
 import os
-from typing import Tuple
 
 import rasterio
 
@@ -19,8 +18,8 @@ class RasterioSource(DataSource):
                 #     # resampling=Resampling.bilinear
                 # )
 
-    def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
-        return self.data[offset[1]:offset[0], size[1]:size[0]]
+    def get_buffer(self) -> Buffer:
+        return self.data
 
     def __repr__(self):
         return os.path.basename(self.path)

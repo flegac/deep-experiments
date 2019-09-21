@@ -4,7 +4,7 @@ from typing import Mapping, Union, Callable
 
 from editor_gui.dataset_editor import DatasetEditor
 from editor_gui.text_editor import TextEditor
-from editor_gui.events import IMAGE_OPEN_BUS, DATASET_OPEN_BUS, TEXT_OPEN_BUS
+from editor_gui.event_bus import IMAGE_OPEN_BUS, DATASET_OPEN_BUS, TEXT_OPEN_BUS
 from editor_gui.image.image_editor import ImageEditor
 from editor_gui.project_browser import ProjectBrowser
 from editor_gui.utils.frame_manager import FrameManager

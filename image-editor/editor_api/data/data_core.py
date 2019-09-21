@@ -1,11 +1,11 @@
 import abc
-from typing import Tuple, Callable, List, Union
+from typing import Callable, List, Union
 
 from editor_api.data.buffer import Buffer
 
 
 class DataSource(abc.ABC):
-    def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
+    def get_buffer(self) -> Buffer:
         raise NotImplementedError()
 
     def __or__(self, operator: 'DataOperator') -> 'DataSource':
@@ -19,10 +19,10 @@ class VariableSource(DataSource):
     def __init__(self, value: Union[DataSource, Buffer] = None):
         self.value: Union[DataSource, Buffer] = value
 
-    def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
+    def get_buffer(self) -> Buffer:
         if isinstance(self.value, Buffer):
             return self.value
-        return self.value.get_buffer(offset, size)
+        return self.value.get_buffer()
 
 
 class DataOperator(Callable[[DataSource], DataSource]):
@@ -56,12 +56,13 @@ class DataWorkflow(DataSource):
         self._workflow = workflow
 
     def configure(self, values: List[Union[DataSource, Buffer]]):
+        assert len(values) == len(self.config)
         for i, _ in enumerate(values):
             self.config[i].value = _
         return self
 
-    def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
-        return self._workflow.get_buffer(offset, size)
+    def get_buffer(self) -> Buffer:
+        return self._workflow.get_buffer()
 
 
 class PipelineOperator(DataOperator):
@@ -94,8 +95,8 @@ class _ComplexSource(DataSource):
         self._operator = operator
         self._source = source
 
-    def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
-        return self._operator.apply(self._source.get_buffer(offset, size))
+    def get_buffer(self) -> Buffer:
+        return self._operator.apply(self._source.get_buffer())
 
 
 class _MixedSource(DataSource):
@@ -103,9 +104,9 @@ class _MixedSource(DataSource):
         self._operator = operator
         self._sources = sources
 
-    def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]):
+    def get_buffer(self):
         buffers = [
-            _.get_buffer(offset, size)
+            _.get_buffer(self)
             for _ in self._sources
         ]
         return self._operator(buffers)

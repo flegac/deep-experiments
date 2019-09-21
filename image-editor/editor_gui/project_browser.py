@@ -3,7 +3,7 @@ import os
 import tkinter as tk
 from idlelib.tree import ScrolledCanvas, FileTreeItem, TreeNode
 
-from editor_gui.events import PROJECT_OPEN_BUS, IMAGE_OPEN_BUS, DATASET_OPEN_BUS, TEXT_OPEN_BUS
+from editor_gui.event_bus import PROJECT_OPEN_BUS, IMAGE_OPEN_BUS, DATASET_OPEN_BUS, TEXT_OPEN_BUS
 
 
 class ProjectBrowser(tk.LabelFrame):

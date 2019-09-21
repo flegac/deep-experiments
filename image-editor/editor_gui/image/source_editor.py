@@ -24,7 +24,7 @@ class SourceEditor(tk.LabelFrame):
 
     def open(self, path: str = None):
         if path is None:
-            path = file_selection()
+            path = file_selection()[0]
         self.source = FileSource.from_rgb(path)
         self.on_update()
 

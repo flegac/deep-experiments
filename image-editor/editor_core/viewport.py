@@ -8,7 +8,7 @@ from editor_api.data.data_core import Buffer, DataOperator
 ViewportProvider = Callable[[], Tuple[int, int]]
 
 
-class ViewportTransformer(DataOperator):
+class ViewportOperator(DataOperator):
     def __init__(self, viewport_provider: ViewportProvider):
         self.viewport_provider = viewport_provider
         self.zoom_factor = 1.
@@ -25,7 +25,7 @@ class ViewportTransformer(DataOperator):
     def get_offset(self):
         return self.x, self.y
 
-    def __call__(self, data: Buffer) -> Buffer:
+    def apply(self, data: Buffer) -> Buffer:
         width, height = self.viewport_provider()
         img_width = data.shape[1]
         img_height = data.shape[0]
