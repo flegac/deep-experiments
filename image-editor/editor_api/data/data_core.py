@@ -12,11 +12,35 @@ class DataSource(abc.ABC):
         return _ComplexSource(operator, self)
 
     def __repr__(self):
-        return str(self.__class__).replace('Source', '')
+        return self.__class__.__name__.replace('Source', '')
+
+
+class DataOperator(object):
+    def apply(self, data: Buffer) -> Buffer:
+        raise NotImplementedError()
+
+    def __or__(self, other: 'DataOperator') -> 'DataOperator':
+        return PipelineOperator([self, other])
+
+    def __repr__(self):
+        return self.__class__.__name__.replace('Operator', '')
+
+
+class _ComplexSource(DataSource):
+    def __init__(self, operator: DataOperator, source: DataSource):
+        if isinstance(source, _ComplexSource):
+            operator = source._operator | operator
+            source = source._source
+        self._operator = operator
+        self._source = source
+
+    def get_buffer(self) -> Buffer:
+        return self._operator.apply(self._source.get_buffer())
 
 
 class VariableSource(DataSource):
-    def __init__(self, value: Union[DataSource, Buffer] = None):
+    def __init__(self, name: str, value: Union[DataSource, Buffer] = None):
+        self.name = name
         self.value: Union[DataSource, Buffer] = value
 
     def get_buffer(self) -> Buffer:
@@ -24,19 +48,8 @@ class VariableSource(DataSource):
             return self.value
         return self.value.get_buffer()
 
-
-class DataOperator(Callable[[DataSource], DataSource]):
-    def apply(self, data: Buffer) -> Buffer:
-        raise NotImplementedError()
-
-    def __or__(self, other: 'DataOperator') -> 'DataOperator':
-        return PipelineOperator([self, other])
-
-    def __call__(self, source: DataSource) -> DataSource:
-        return _ComplexSource(self, source)
-
     def __repr__(self):
-        return self.__class__.__name__.replace('Operator', '')
+        return '{}={}'.format(self.name, self.value)
 
 
 class DataMixer(Callable[[List[DataSource]], DataSource]):
@@ -51,18 +64,21 @@ class DataMixer(Callable[[List[DataSource]], DataSource]):
 
 
 class DataWorkflow(DataSource):
-    def __init__(self, config: List[VariableSource], workflow: DataSource):
-        self.config = config
+    def __init__(self, variables: List[VariableSource], workflow: DataSource):
+        self.variables = variables
         self._workflow = workflow
 
     def configure(self, values: List[Union[DataSource, Buffer]]):
-        assert len(values) == len(self.config)
+        assert len(values) == len(self.variables)
         for i, _ in enumerate(values):
-            self.config[i].value = _
+            self.variables[i].value = _
         return self
 
     def get_buffer(self) -> Buffer:
         return self._workflow.get_buffer()
+
+    def __repr__(self):
+        return 'Workflow[{}]'.format(self._workflow)
 
 
 class PipelineOperator(DataOperator):
@@ -87,18 +103,6 @@ class PipelineOperator(DataOperator):
         return data
 
 
-class _ComplexSource(DataSource):
-    def __init__(self, operator: DataOperator, source: DataSource):
-        if isinstance(source, _ComplexSource):
-            operator = source._operator | operator
-            source = source._source
-        self._operator = operator
-        self._source = source
-
-    def get_buffer(self) -> Buffer:
-        return self._operator.apply(self._source.get_buffer())
-
-
 class _MixedSource(DataSource):
     def __init__(self, operator: Callable[[List[Buffer]], Buffer], sources: List[DataSource]):
         self._operator = operator
@@ -106,7 +110,7 @@ class _MixedSource(DataSource):
 
     def get_buffer(self):
         buffers = [
-            _.get_buffer(self)
+            _.get_buffer()
             for _ in self._sources
         ]
         return self._operator(buffers)

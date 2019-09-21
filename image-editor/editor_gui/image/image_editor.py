@@ -1,9 +1,9 @@
 import tkinter as tk
 
-# advanced version :
-# https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257
-# basic version :
-# https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse
+from PIL import ImageTk, Image
+from rx import operators
+from rx.subject import Subject
+
 from editor_core.viewport import ViewportOperator
 from editor_gui.image.layer_editor import LayerEditor
 from editor_gui.utils.hidden_scrollbar import HiddenScrollbar
@@ -11,15 +11,17 @@ from editor_gui.utils.hidden_scrollbar import HiddenScrollbar
 
 class ImageEditor(tk.Frame):
     ZOOM_SPEED = 0.75
+    MAX_REDRAW_PER_SEC = 24
 
     def __init__(self, master: tk.Widget, name: str, path: str = None):
         tk.Frame.__init__(self, master)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        # TODO: this is the next change
-        # ON_VIEWPORT_CHANGE.subscribe(on_next=lambda _: self.on_viewport_change)
-        # ON_SOURCE_CHANGE.subscribe(on_next=lambda _: self.on_source_change)
+        self.redraw_bus = Subject()
+        self.redraw_bus.pipe(
+            operators.throttle_first(1. / ImageEditor.MAX_REDRAW_PER_SEC)
+        ).subscribe(on_next=lambda _: self.redraw_canvas())
 
         self.name = name
 
@@ -73,9 +75,9 @@ class ImageEditor(tk.Frame):
         dx = (self.mouse_x - event.x)
         dy = (self.mouse_y - event.y)
         self.viewport.move(dx, dy)
-        self.on_viewport_change()
         self.mouse_x = event.x
         self.mouse_y = event.y
+        self.redraw_bus.on_next({})
 
     def zoom(self, event):
         # Respond to Linux (event.num) or Windows (event.delta) wheel event
@@ -83,7 +85,7 @@ class ImageEditor(tk.Frame):
             self.viewport.zoom(self.ZOOM_SPEED)
         if event.num == 4 or event.delta == 120:
             self.viewport.zoom(1 / self.ZOOM_SPEED)
-        self.on_viewport_change()
+        self.redraw_bus.on_next({})
 
     def read_data(self, reset=False):
         if self.data is None or reset:
@@ -105,13 +107,9 @@ class ImageEditor(tk.Frame):
             max=data.max()
         )
         self.layer_editor.visu_editor.update_data(label, data)
-        self.redraw_canvas()
-
-    def on_viewport_change(self):
-        self.redraw_canvas()
+        self.redraw_bus.on_next(None)
 
     def redraw_canvas(self):
-        from PIL import ImageTk, Image
 
         if self.image_id:
             self.canvas.delete(self.image_id)

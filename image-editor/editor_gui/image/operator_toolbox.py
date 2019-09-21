@@ -6,7 +6,7 @@ from editor_gui.config import EDITOR_CONFIG
 
 
 class OperatorToolbox(tk.LabelFrame):
-    def __init__(self, master: tk.Widget, callback: Callable[[DataOperator], None], undo_callback: Callable[[], None]):
+    def __init__(self, master: tk.Widget, callback: Callable[[DataOperator], None]):
         tk.LabelFrame.__init__(self, master, text='operator')
 
         operators = EDITOR_CONFIG.operators()
@@ -26,12 +26,6 @@ class OperatorToolbox(tk.LabelFrame):
                 command=_callback(operators[i])
             )
             button.pack(fill='both', expand=True, side=tk.TOP)
-
-        tk.Button(
-            self,
-            text='undo',
-            command=undo_callback
-        ).pack(fill='both', expand=True, side=tk.BOTTOM)
 
 
 def _test_class_loader(cls):

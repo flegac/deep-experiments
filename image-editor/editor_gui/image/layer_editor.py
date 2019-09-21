@@ -12,10 +12,11 @@ class LayerEditor(tk.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.source_editor = SourceEditor(self, on_update)
+        self.source_editor = SourceEditor(self)
         self.source_editor.grid(row=0, sticky='new')
+        self.source_editor.update_bus.subscribe(on_next=lambda _: on_update())
 
-        self.transform_editor = OperatorToolbox(self, self.source_editor.push_operator, self.source_editor.pop_operator)
+        self.transform_editor = OperatorToolbox(self, self.source_editor.push_operator)
         self.transform_editor.grid(row=1, sticky='sew')
 
         self.visu_editor = VisuEditor(self)

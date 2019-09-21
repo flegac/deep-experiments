@@ -3,15 +3,15 @@ import os
 from pathlib import Path
 
 from editor_api.plugin import Plugin
-from editor_plugins.image_filter.plugin import ImageFilterPlugin
-from editor_plugins.morphology.plugin import MorphologyPlugin
-from editor_plugins.tiling.plugin import TilingPlugin
 
 DEFAULT_CONFIG = {
+    'default_project': None,
     'file_browser_path': '/',
     'project_browser_path': '/'
 }
-DEFAULT_CONFIG_PATH = str(Path.home() / '.my_editor/config.json')
+DEFAULT_ROOT_PATH = Path.home() / '.my_editor'
+
+DEFAULT_CONFIG_PATH = DEFAULT_ROOT_PATH / 'config.json'
 
 
 class EditorConfig(Plugin):
@@ -19,13 +19,12 @@ class EditorConfig(Plugin):
     def from_path(path: str):
         return EditorConfig(path)
 
-    def __init__(self, config_path: str = DEFAULT_CONFIG_PATH):
+    def __init__(self, config_path: str = None):
         super().__init__()
-        self.config_path = config_path
-
+        self.config_path = config_path or str(DEFAULT_CONFIG_PATH)
         self.config = DEFAULT_CONFIG
-        if os.path.exists(config_path):
-            with open(config_path) as _:
+        if os.path.exists(self.config_path):
+            with open(self.config_path) as _:
                 self.config = json.load(_)
 
     def config_path_is_valid(self, param: str):
@@ -39,6 +38,3 @@ class EditorConfig(Plugin):
 
 
 EDITOR_CONFIG = EditorConfig()
-EDITOR_CONFIG.extend(ImageFilterPlugin())
-EDITOR_CONFIG.extend(MorphologyPlugin())
-EDITOR_CONFIG.extend(TilingPlugin())

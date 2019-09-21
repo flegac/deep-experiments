@@ -2,12 +2,16 @@ import tkinter as tk
 
 try:
     from pygments import lex
-    from pygments.lexers import guess_lexer_for_filename
+    from pygments.lexers import guess_lexer_for_filename, guess_lexer
     from pygments.styles import get_style_by_name
 
     SYNTAXIC_COLORING = True
+    print('syntax coloring is OK')
+
 except Exception as e:
     print(e)
+    print('syntax coloring is not active')
+
     SYNTAXIC_COLORING = False
 
 
@@ -39,7 +43,8 @@ class TextEditor(tk.LabelFrame):
     def syn(self, path: str):
         self.editor.mark_set("range_start", "1.0")
         data = self.editor.get("1.0", "end-1c")
-        lexer = guess_lexer_for_filename(path, data)
+        # lexer = guess_lexer_for_filename(path, data)
+        lexer = guess_lexer(data)
         print('using lexer : {}'.format(lexer))
         for token, content in lex(data, lexer):
             self.editor.mark_set("range_end", "range_start + %dc" % len(content))

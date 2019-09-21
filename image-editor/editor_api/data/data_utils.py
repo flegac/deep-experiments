@@ -21,5 +21,5 @@ class DataUtils:
     pipeline = PipelineOperator()
 
     @staticmethod
-    def var_source() -> VariableSource:
-        return VariableSource()
+    def var_source(name: str) -> VariableSource:
+        return VariableSource(name)

@@ -12,6 +12,7 @@ class FrameManager(tk.LabelFrame):
         super().__init__(master, text=name)
 
         self.notebook = ttk.Notebook(self)
+        self.notebook.enable_traversal()
         self.notebook.pack(fill='both', expand='yes')
 
     def register(self, bus: Observable, editor: EditorProvider):
@@ -21,7 +22,7 @@ class FrameManager(tk.LabelFrame):
 
     def create(self, name: str, data_path: str, on_create: EditorProvider):
         frame = ttk.Frame(self.notebook)
-        self.notebook.add(frame, text=name)
+        self.notebook.add(frame, text=name, underline=0)
         self.notebook.select(frame)
 
         item = on_create(frame, name, data_path)

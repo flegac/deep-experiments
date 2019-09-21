@@ -1,15 +1,10 @@
-from typing import Tuple, List
+from typing import List
 
 import numpy as np
 
-from editor_api.data.data_core import DataSource, Buffer, DataOperator, DataMixer
+from editor_api.data.data_core import Buffer, DataOperator, DataMixer
 from editor_api.data.data_core import DataWorkflow
-from editor_api.data.data_core.data_utils import DummySource
-
-
-class DS(DataSource):
-    def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
-        return np.zeros(2, 2)
+from editor_api.data.data_utils import DataUtils
 
 
 class Op(DataOperator):
@@ -26,25 +21,26 @@ class Mix(DataMixer):
 
 
 # sources & operators
-s = DummySource()
-op1 = Op()
-op2 = op1 | op1
-op3 = op2 | op1
+s = DataUtils.var_source('x')
+op = Op()
 mix = Mix()
 
 
 def test_complex_operators():
     b123 = mix([
-        op2(s),
-        op3(s),
-        op1(s)
+        s | (op | op | op),
+        s | (op | op | op),
+        s | op
     ])
+    workflow = mix([
+        b123 | op | op,
+        s | (op | op)
+    ]) | op
+
     graph = DataWorkflow(
-        config=[s],
-        workflow=mix([
-            b123 | op2,
-            op2(s)
-        ]) | op1
+        variables=[s],
+        workflow=workflow
     )
     print()
+    print(graph)
     print(graph.configure([np.zeros((3, 3))]).get_buffer())
