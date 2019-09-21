@@ -1,9 +1,9 @@
 import tkinter as tk
 from typing import Callable
 
-from editor_gui.image.operator_toolbox import OperatorToolbox
-from editor_gui.image.source_editor import SourceEditor
-from editor_gui.image.visu_editor import VisuEditor
+from editor_gui.editors.image.operator_toolbox import OperatorToolbox
+from editor_gui.editors.image.source_editor import SourceEditor
+from editor_gui.editors.image.visu_editor import VisuEditor
 
 
 class LayerEditor(tk.Frame):

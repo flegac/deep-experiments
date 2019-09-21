@@ -5,7 +5,7 @@ from rx import operators
 from rx.subject import Subject
 
 from editor_core.viewport import ViewportOperator
-from editor_gui.image.layer_editor import LayerEditor
+from editor_gui.editors.image.layer_editor import LayerEditor
 from editor_gui.utils.hidden_scrollbar import HiddenScrollbar
 
 

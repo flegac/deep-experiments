@@ -1,9 +1,14 @@
+from dataclasses import dataclass, field
+
 from rx.subject import Subject
 
 PROJECT_OPEN_BUS = Subject()
-IMAGE_OPEN_BUS = Subject()
-DATASET_OPEN_BUS = Subject()
-TEXT_OPEN_BUS = Subject()
 
-ON_VIEWPORT_CHANGE = Subject()
-ON_SOURCE_CHANGE = Subject()
+FILE_OPEN_BUS = Subject()
+
+
+@dataclass
+class OpenFileEvent:
+    editor_type: str = field(default=None)
+    name: str = field(default=None)
+    path: str = field(default=None)

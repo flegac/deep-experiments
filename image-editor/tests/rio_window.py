@@ -3,6 +3,8 @@ import concurrent.futures
 import rasterio
 from rasterio._example import compute
 
+def compute(data):
+    return data
 
 def main(infile, outfile, num_workers=4):
     with rasterio.Env():

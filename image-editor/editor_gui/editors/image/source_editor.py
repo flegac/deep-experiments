@@ -22,20 +22,11 @@ class SourceEditor(tk.LabelFrame):
         tk.Button(
             self,
             text='Open',
-            command=self.open
+            command=lambda: self.open(file_selection()[0])
         ).pack(fill="both", expand=True, side=tk.BOTTOM)
 
-        tk.Button(
-            self,
-            text='Reset',
-            command=self.reset
-        ).pack(fill='both', expand=True, side=tk.BOTTOM)
-
     def open(self, path: str = None):
-        if path is None:
-            path = file_selection()[0]
         self.source = FileSource.from_rgb(path)
-
         self.update_bus.on_next(None)
 
     def reset(self):
@@ -78,5 +69,8 @@ class SourceEditor(tk.LabelFrame):
                 for step in self.pipeline.pipeline
             ]
         ]
+        if len(self.buttons) > 1:
+            self.buttons.append(tk.Button(self, text='Reset', command=self.reset))
+
         for _ in self.buttons:
             _.pack(fill="both", expand=True, side=tk.TOP)

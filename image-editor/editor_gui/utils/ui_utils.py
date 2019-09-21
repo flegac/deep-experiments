@@ -3,7 +3,7 @@ import tkinter as tk
 import tkinter.filedialog
 from typing import Mapping, Union, Callable
 
-from editor_gui.config import EDITOR_CONFIG
+from editor_model.editor import Editor, EditorManager
 
 MenuConfig = Mapping[str, Union[str, Mapping[str, str]]]
 
@@ -31,19 +31,50 @@ def add_popup(widget, menu: tk.Menu):
     widget.bind('<Button-3>', popup)
 
 
-def dir_selection():
+def select_project(editor: Editor):
+    path = tkinter.filedialog.askopenfilename(
+        initialdir=editor.root_path,
+        title="Select project",
+        filetypes=[
+            ('project files', 'project.json'),
+            ('all files', '.*'),
+        ]
+    )
+    return os.path.basename(os.path.dirname(path))
+
+
+def dir_selection(editor: Editor):
     path = tkinter.filedialog.askdirectory(
-        initialdir=EDITOR_CONFIG.config.get('project_browser_path'),
+        initialdir=editor.browser_path,
     )
 
-    __update_browser_config('project_browser_path', path)
+    __update_browser_config(editor, path)
 
     return path
 
 
-def file_selection():
+def file_selection(editor: Editor):
+    path = tkinter.filedialog.askopenfilename(
+        initialdir=editor.browser_path,
+        title="Open image",
+        filetypes=[
+            ('all files', '.*'),
+            ('csv files', '.csv'),
+            ('tiff files', '.tif'),
+            ('png files', '.png'),
+            ('Jpeg files', '.jpg'),
+
+        ]
+    )
+    if path is not None:
+        __update_browser_config(editor, os.path.dirname(path))
+
+    return path
+
+
+def files_selection(editor: Editor):
     paths = tkinter.filedialog.askopenfilenames(
-        initialdir=EDITOR_CONFIG.config.get('file_browser_path'),
+        initialdir=editor.browser_path,
         title="Open image",
         filetypes=[
             ('all files', '.*'),
@@ -55,18 +86,15 @@ def file_selection():
         ]
     )
     if len(paths) > 0:
-        __update_browser_config('file_browser_path', os.path.dirname(paths[0]))
+        __update_browser_config(editor, os.path.dirname(paths[0]))
 
     return paths
 
 
-def __update_browser_config(param: str, path: str):
+def __update_browser_config(editor: Editor, path: str):
     if path is None or len(path) == 0:
         return
-    EDITOR_CONFIG.config[param] = path
 
-    if not EDITOR_CONFIG.config_path_is_valid('project_browser_path'):
-        EDITOR_CONFIG.config['project_browser_path'] = path
-    if not EDITOR_CONFIG.config_path_is_valid('file_browser_path'):
-        EDITOR_CONFIG.config['file_browser_path'] = path
-    EDITOR_CONFIG.save_config()
+    editor.browser_path = path
+
+    EditorManager.save(editor)

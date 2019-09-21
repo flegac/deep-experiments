@@ -2,14 +2,14 @@ import tkinter as tk
 from typing import Callable
 
 from editor_api.data.data_core import DataOperator
-from editor_gui.config import EDITOR_CONFIG
+from editor_model.editor import EditorManager
 
 
 class OperatorToolbox(tk.LabelFrame):
     def __init__(self, master: tk.Widget, callback: Callable[[DataOperator], None]):
         tk.LabelFrame.__init__(self, master, text='operator')
 
-        operators = EDITOR_CONFIG.operators()
+        operators = EditorManager.plugin.operators()
 
         for i in range(len(operators)):
             _ = operators[i]()
