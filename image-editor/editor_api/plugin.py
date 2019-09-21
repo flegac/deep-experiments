@@ -1,7 +1,7 @@
 import abc
 from typing import List
 
-from editor_api.data import DataOperator
+from editor_api.data.data_core import DataOperator
 from editor_api.process import DataProcessFactory
 
 

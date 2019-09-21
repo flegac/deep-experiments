@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from editor_api.data import DataSource, Buffer
+from editor_api.data.data_core import DataSource, Buffer
 from editor_core.blend_mixer import BlendMixer
 
 

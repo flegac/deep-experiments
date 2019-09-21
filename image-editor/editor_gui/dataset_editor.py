@@ -22,5 +22,3 @@ class DatasetEditor(tk.LabelFrame):
     def open_dataset(self, path: str):
         self.table.importCSV(path)
         self.table.redraw()
-
-

@@ -2,8 +2,9 @@ from typing import Tuple, List
 
 import numpy as np
 
-from editor_api.data import DataSource, Buffer, DataOperator, DataMixer
-from editor_api.data_workflow import DummySource, DataWorkflow
+from editor_api.data.data_core import DataSource, Buffer, DataOperator, DataMixer
+from editor_api.data.data_core import DataWorkflow
+from editor_api.data.data_core.data_utils import DummySource
 
 
 class DS(DataSource):

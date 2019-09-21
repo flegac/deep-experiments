@@ -1,4 +1,5 @@
-from editor_api.data import DataOperator, Buffer
+from editor_api.data.data_core import Buffer
+from editor_api.data.data_core import DataOperator
 
 
 class NormalizeOperator(DataOperator):
@@ -7,5 +8,3 @@ class NormalizeOperator(DataOperator):
         data = data - data.min()
         data = 255 * (data / max(1, data.max()))
         return data.astype('uint8')
-
-

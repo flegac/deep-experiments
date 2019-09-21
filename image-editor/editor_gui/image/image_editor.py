@@ -1,13 +1,10 @@
 import tkinter as tk
 
-from PIL import ImageTk, Image
-
 # advanced version :
 # https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257
 # basic version :
 # https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse
 from editor_core.viewport import ViewportTransformer
-from editor_gui.events import ON_VIEWPORT_CHANGE, ON_SOURCE_CHANGE
 from editor_gui.image.layer_editor import LayerEditor
 from editor_gui.utils.hidden_scrollbar import HiddenScrollbar
 
@@ -20,6 +17,7 @@ class ImageEditor(tk.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
+        # TODO: this is the next change
         # ON_VIEWPORT_CHANGE.subscribe(on_next=lambda _: self.on_viewport_change)
         # ON_SOURCE_CHANGE.subscribe(on_next=lambda _: self.on_source_change)
 
@@ -113,6 +111,8 @@ class ImageEditor(tk.Frame):
         self.redraw_canvas()
 
     def redraw_canvas(self):
+        from PIL import ImageTk, Image
+
         if self.image_id:
             self.canvas.delete(self.image_id)
 

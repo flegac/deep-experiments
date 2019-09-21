@@ -1,7 +1,8 @@
 import tkinter as tk
 from typing import Callable
 
-from editor_api.data import DataSource, IdentityOperator, EmptySource, PipelineOperator, DataOperator
+from editor_api.data.data_core import DataOperator, DataSource, PipelineOperator
+from editor_api.data.data_utils import EmptySource, DataUtils
 from editor_core.file_source import FileSource
 from editor_gui.utils.ui_utils import file_selection
 from editor_plugins.image_filter.operators.normalize import NormalizeOperator
@@ -11,7 +12,7 @@ class SourceEditor(tk.LabelFrame):
     def __init__(self, master: tk.Widget, on_update: Callable[[], None]):
         tk.LabelFrame.__init__(self, master, text='sources')
         self.source = EmptySource()
-        self.pipeline: PipelineOperator = IdentityOperator() | NormalizeOperator()
+        self.pipeline: PipelineOperator = DataUtils.identity | NormalizeOperator()
         self.buttons: tk.Widget = []
         self._on_update = on_update
 

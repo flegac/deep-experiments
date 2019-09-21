@@ -1,7 +1,7 @@
 import tkinter as tk
 from typing import Callable
 
-from editor_api.data import DataOperator
+from editor_api.data.data_core import DataOperator
 from editor_gui.config import EDITOR_CONFIG
 
 

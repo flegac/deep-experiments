@@ -1,5 +1,3 @@
-import cv2
-
 from editor_core.datasource.opencv_source import OpencvSource
 from editor_core.datasource.rasterio_source import RasterioSource
 
@@ -7,11 +5,11 @@ from editor_core.datasource.rasterio_source import RasterioSource
 class FileSource(object):
     @staticmethod
     def from_gray(path: str):
-        return OpencvSource(path, cv2.IMREAD_GRAYSCALE)
+        return OpencvSource.from_gray(path)
 
     @staticmethod
     def from_rgb(path: str):
-        return OpencvSource(path, cv2.IMREAD_COLOR)
+        return OpencvSource.from_rgb(path)
         # return RasterioSource(path)
 
     @staticmethod

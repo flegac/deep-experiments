@@ -3,10 +3,18 @@ from typing import Tuple
 
 import cv2
 
-from editor_api.data import DataSource, Buffer
+from editor_api.data.data_core import DataSource, Buffer
 
 
 class OpencvSource(DataSource):
+    @staticmethod
+    def from_gray(path: str):
+        return OpencvSource(path, cv2.IMREAD_GRAYSCALE)
+
+    @staticmethod
+    def from_rgb(path: str):
+        return OpencvSource(path, cv2.IMREAD_COLOR)
+
     def __init__(self, path: str, cv2_color_type: int):
         self.path = path
         self.cv2_color_type = cv2_color_type

@@ -1,7 +1,8 @@
 import numpy as np
 from skimage import exposure
 
-from editor_api.data import DataOperator, Buffer
+from editor_api.data.buffer import Buffer
+from editor_api.data.data_core import DataOperator
 
 
 class ContrastStretchingOperator(DataOperator):

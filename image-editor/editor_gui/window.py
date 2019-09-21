@@ -15,6 +15,8 @@ MenuConfig = Mapping[str, Union[str, Mapping[str, str]]]
 class Win(ttk.Tk):
     def __init__(self):
         super().__init__()
+        self.iconbitmap('')
+
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
         self.geometry('{}x{}+5+5'.format(w - 20, h - 150))
         self.protocol("WM_DELETE_WINDOW", self._on_exit)

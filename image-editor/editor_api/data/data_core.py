@@ -1,13 +1,10 @@
 import abc
-from typing import Callable, Tuple, List
+from typing import Tuple, Callable, List, Union
 
-import numpy as np
-
-Buffer = np.ndarray
+from editor_api.data.buffer import Buffer
 
 
 class DataSource(abc.ABC):
-
     def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
         raise NotImplementedError()
 
@@ -18,10 +15,14 @@ class DataSource(abc.ABC):
         return str(self.__class__).replace('Source', '')
 
 
-class EmptySource(DataSource):
+class VariableSource(DataSource):
+    def __init__(self, value: Union[DataSource, Buffer] = None):
+        self.value: Union[DataSource, Buffer] = value
 
     def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
-        return np.zeros((1, 1, 3))
+        if isinstance(self.value, Buffer):
+            return self.value
+        return self.value.get_buffer(offset, size)
 
 
 class DataOperator(Callable[[DataSource], DataSource]):
@@ -38,11 +39,6 @@ class DataOperator(Callable[[DataSource], DataSource]):
         return self.__class__.__name__.replace('Operator', '')
 
 
-class IdentityOperator(DataOperator):
-    def apply(self, data: Buffer) -> Buffer:
-        return data
-
-
 class DataMixer(Callable[[List[DataSource]], DataSource]):
     def apply(self, data: List[Buffer]) -> Buffer:
         raise NotImplementedError()
@@ -54,16 +50,18 @@ class DataMixer(Callable[[List[DataSource]], DataSource]):
         return str(type(self)).replace('Mixer', '')
 
 
-class _ComplexSource(DataSource):
-    def __init__(self, operator: DataOperator, source: DataSource):
-        if isinstance(source, _ComplexSource):
-            operator = source._operator | operator
-            source = source._source
-        self._operator = operator
-        self._source = source
+class DataWorkflow(DataSource):
+    def __init__(self, config: List[VariableSource], workflow: DataSource):
+        self.config = config
+        self._workflow = workflow
+
+    def configure(self, values: List[Union[DataSource, Buffer]]):
+        for i, _ in enumerate(values):
+            self.config[i].value = _
+        return self
 
     def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
-        return self._operator.apply(self._source.get_buffer(offset, size))
+        return self._workflow.get_buffer(offset, size)
 
 
 class PipelineOperator(DataOperator):
@@ -71,7 +69,7 @@ class PipelineOperator(DataOperator):
         self._operators = []
         if operators is not None:
             for step in operators:
-                if step is None or isinstance(step, IdentityOperator):
+                if step is None:
                     continue
                 if isinstance(step, PipelineOperator):
                     self._operators.extend(step.pipeline)
@@ -86,6 +84,18 @@ class PipelineOperator(DataOperator):
         for _ in self._operators:
             data = _.apply(data)
         return data
+
+
+class _ComplexSource(DataSource):
+    def __init__(self, operator: DataOperator, source: DataSource):
+        if isinstance(source, _ComplexSource):
+            operator = source._operator | operator
+            source = source._source
+        self._operator = operator
+        self._source = source
+
+    def get_buffer(self, offset: Tuple[int, int], size: Tuple[int, int]) -> Buffer:
+        return self._operator.apply(self._source.get_buffer(offset, size))
 
 
 class _MixedSource(DataSource):

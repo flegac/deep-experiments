@@ -1,6 +1,6 @@
 import cv2
 
-from editor_api.data import DataOperator, Buffer
+from editor_api.data.data_core import Buffer, DataOperator
 
 
 class EdgeDetectionOperator(DataOperator):

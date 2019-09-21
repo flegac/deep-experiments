@@ -1,8 +1,14 @@
 import tkinter as tk
 
-from pygments import lex
-from pygments.lexers import guess_lexer_for_filename
-from pygments.styles import get_style_by_name
+try:
+    from pygments import lex
+    from pygments.lexers import guess_lexer_for_filename
+    from pygments.styles import get_style_by_name
+
+    SYNTAXIC_COLORING = True
+except Exception as e:
+    print(e)
+    SYNTAXIC_COLORING = False
 
 
 class TextEditor(tk.LabelFrame):
@@ -27,7 +33,8 @@ class TextEditor(tk.LabelFrame):
         with open(path) as _:
             text = _.read()
         self.editor.insert('1.0', text)
-        self.syn(path)
+        if SYNTAXIC_COLORING:
+            self.syn(path)
 
     def syn(self, path: str):
         self.editor.mark_set("range_start", "1.0")
