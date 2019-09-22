@@ -3,7 +3,7 @@ import tkinter as tk
 from rx.subject import Subject
 
 from editor_api.data.data_core import DataOperator, DataSource, PipelineOperator
-from editor_api.data.data_utils import EmptySource
+from editor_api.data.data_utils import EmptySource, DataUtils
 from editor_core.file_source import FileSource
 from editor_gui.file_select import ask_open_image
 from editor_plugins.image_filter.operators.normalize import NormalizeOperator
@@ -24,6 +24,8 @@ class SourceEditor(tk.LabelFrame):
             text='Open',
             command=lambda: self.open(ask_open_image())
         ).pack(fill="both", expand=True, side=tk.BOTTOM)
+
+        self.the_source = DataUtils.var_source('')
 
     def open(self, path: str = None):
         self.source = FileSource.from_rgb(path)
@@ -48,9 +50,12 @@ class SourceEditor(tk.LabelFrame):
         self.update_bus.on_next(None)
 
     def get_source(self) -> DataSource:
-        return self.source | self.pipeline
+        self.the_source.value = self.source | self.pipeline
+        return self.the_source
 
     def redraw_pipeline(self, event=None):
+        self.the_source.value = self.source | self.pipeline
+
         for _ in self.buttons:
             _.destroy()
 

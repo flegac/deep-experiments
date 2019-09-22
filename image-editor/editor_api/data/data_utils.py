@@ -6,7 +6,7 @@ from editor_api.data.data_core import DataSource, DataOperator, VariableSource, 
 
 class EmptySource(DataSource):
     def get_buffer(self) -> Buffer:
-        return np.zeros((1, 1, 3))
+        return np.zeros((10, 10, 3)).astype('uint8')
 
 
 class IdentityOperator(DataOperator):

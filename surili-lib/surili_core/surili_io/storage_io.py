@@ -1,6 +1,8 @@
 import os
 import tempfile
 
+from google.cloud import storage
+
 from surili_core.utils import shell
 from surili_core.worker import Worker
 from surili_core.workspace import Workspace
@@ -33,8 +35,19 @@ class StorageExport(Worker):
     def run(self, ws: Workspace):
         temporary_file = ws.root.archive()
         try:
-            full_storage_path = '{}/{}'.format(self.storage_path, os.path.basename(temporary_file))
-            shell(GSUTIL_COPY_COMMAND.format(source_path=temporary_file, target_path=full_storage_path)).wait()
+            # full_storage_path = '{}/{}'.format(self.storage_path, os.path.basename(temporary_file))
+            # shell(GSUTIL_COPY_COMMAND.format(source_path=temporary_file, target_path=full_storage_path)).wait()
+            # time.sleep(10)
+
+            storage_client = storage.Client()
+            bucket = storage_client.get_bucket(self.storage_path)
+            blob = bucket.blob(os.path.basename(temporary_file))
+
+            blob.upload_from_filename(temporary_file)
+            print('File {} uploaded to {}.'.format(
+                temporary_file,
+                os.path.basename(temporary_file)))
+
         finally:
             os.remove(temporary_file)
 
