@@ -1,7 +1,8 @@
 import random
 from typing import Optional
-import yaml
+
 import numpy as np
+import yaml
 
 
 class TrainParameters(object):
@@ -19,7 +20,7 @@ class TrainParameters(object):
     def __init__(self, params: Optional[dict] = None):
         self.params = params if params else dict()
 
-    def get(self, name):
+    def get(self, name: str):
         return TrainParameters(self.params[name])
 
     def set_builder(self, builder):

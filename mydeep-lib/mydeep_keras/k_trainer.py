@@ -64,12 +64,11 @@ class KerasTrainer(Worker):
                 TensorBoard(
                     log_dir=ws.path_to('logs'),
                     histogram_freq=0,
-                    batch_size=32,
-                    write_graph=True,
+                    batch_size=batch_size,
+                    write_graph=False,
                     write_grads=False,
                     write_images=False,
                 ),
-
                 CSVLogger(
                     ws.path_to('training_logs.csv'),
                     append=False),
