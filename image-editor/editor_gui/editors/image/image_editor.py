@@ -119,3 +119,10 @@ class ImageEditor(tk.Frame):
         self.image = ImageTk.PhotoImage(image=Image.fromarray(data))
         self.image_id = self.canvas.create_image((0, 0), anchor=tk.NW, image=self.image)
         self.canvas.lower(self.image_id)  # set it into background
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    editor = ImageEditor(root, None, None)
+    editor.pack()
+    root.mainloop()

@@ -5,7 +5,7 @@ from rx.subject import Subject
 from editor_api.data.data_core import DataOperator, DataSource, PipelineOperator
 from editor_api.data.data_utils import EmptySource
 from editor_core.file_source import FileSource
-from editor_gui.utils.ui_utils import file_selection
+from editor_gui.file_select import ask_open_image
 from editor_plugins.image_filter.operators.normalize import NormalizeOperator
 
 
@@ -22,7 +22,7 @@ class SourceEditor(tk.LabelFrame):
         tk.Button(
             self,
             text='Open',
-            command=lambda: self.open(file_selection()[0])
+            command=lambda: self.open(ask_open_image())
         ).pack(fill="both", expand=True, side=tk.BOTTOM)
 
     def open(self, path: str = None):
@@ -74,3 +74,11 @@ class SourceEditor(tk.LabelFrame):
 
         for _ in self.buttons:
             _.pack(fill="both", expand=True, side=tk.TOP)
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    editor = SourceEditor(root)
+    editor.pack(fill="both", expand=True, side=tk.BOTTOM)
+
+    root.mainloop()

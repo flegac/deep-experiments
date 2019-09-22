@@ -1,9 +1,9 @@
 import tkinter as tk
 from typing import Callable
 
-from editor_gui.editors.image.operator_toolbox import OperatorToolbox
-from editor_gui.editors.image.source_editor import SourceEditor
 from editor_gui.editors.image.visu_editor import VisuEditor
+from editor_gui.editors.image.source_editor import SourceEditor
+from editor_gui.editors.image.operator_toolbox import OperatorToolbox
 
 
 class LayerEditor(tk.Frame):
@@ -21,3 +21,10 @@ class LayerEditor(tk.Frame):
 
         self.visu_editor = VisuEditor(self)
         self.visu_editor.grid(row=2, column=0, sticky='sew')
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    editor = LayerEditor(root, lambda: None)
+    editor.pack()
+    root.mainloop()

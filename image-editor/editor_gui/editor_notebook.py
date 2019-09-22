@@ -8,7 +8,7 @@ from typing import Callable, Any
 from editor_gui.editors.dataset_editor import DatasetEditor
 from editor_gui.editors.image.image_editor import ImageEditor
 from editor_gui.editors.text_editor import TextEditor
-from editor_gui.event_bus import FILE_OPEN_BUS, OpenFileEvent
+from editor_gui.event_bus import OPEN_FILE_BUS, OpenFileEvent
 
 EditorProvider = Callable[[tk.Widget, str, str], Any]
 
@@ -22,12 +22,12 @@ EDITORS = {
 class EditorNotebook(tk.LabelFrame):
     def __init__(self, master: tk.Widget, name: str):
         super().__init__(master, text=name)
-        FILE_OPEN_BUS.subscribe(on_next=lambda event: self.open_editor(**asdict(event)))
+        OPEN_FILE_BUS.subscribe(on_next=lambda event: self.open_editor(**asdict(event)))
 
         self.notebook = ttk.Notebook(self)
         self.notebook.enable_traversal()
         self.notebook.pack(fill='both', expand='yes')
-        FILE_OPEN_BUS.on_next(OpenFileEvent('image', name='editor'))
+        OPEN_FILE_BUS.on_next(OpenFileEvent('image', name='editor'))
 
     def open_editor(self, editor_type: str, name: str, path: str):
         if editor_type is not None:
@@ -49,3 +49,10 @@ class EditorNotebook(tk.LabelFrame):
 
         item = on_create(frame, name, data_path)
         item.pack(fill='both', expand=True)
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    editor = EditorNotebook(root, 'notebook')
+    editor.pack()
+    root.mainloop()

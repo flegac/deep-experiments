@@ -22,3 +22,10 @@ class DatasetEditor(tk.LabelFrame):
     def open_dataset(self, path: str):
         self.table.importCSV(path)
         self.table.redraw()
+
+
+if __name__ == '__main__':
+    root = tk.Tk(className=" Just another Text Editor")
+    editor = DatasetEditor(root, None, None)
+    editor.pack()
+    root.mainloop()

@@ -2,7 +2,7 @@ import tkinter as tk
 from typing import Callable
 
 from editor_api.data.data_core import DataOperator
-from editor_model.editor import EditorManager
+from editor_core.config.editor import EditorManager
 
 
 class OperatorToolbox(tk.LabelFrame):
@@ -33,3 +33,10 @@ def _test_class_loader(cls):
         return cls()
     except:
         return None
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    editor = OperatorToolbox(root, lambda _: None)
+    editor.pack(expand=True, fill=tk.BOTH)
+    root.mainloop()

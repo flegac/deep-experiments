@@ -28,18 +28,19 @@ class Editor:
 
 class EditorManager(object):
     plugin = Plugin()
+    config: Editor = None
 
     @staticmethod
-    def load():
+    def load() -> Editor:
         try:
             with EDITOR_CONFIG_PATH.open() as _:
                 data = json.load(_)
-                return Editor.Schema().load(data)
+                EditorManager.editor = Editor.Schema().load(data)
         except Exception as e:
             print('an error occured :' + str(e))
-            editor = Editor()
-            EditorManager.save(editor)
-            return editor
+            EditorManager.editor = Editor()
+            EditorManager.save(EditorManager.editor)
+        return EditorManager.editor
 
     @staticmethod
     def save(config: Editor):

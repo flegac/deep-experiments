@@ -45,3 +45,11 @@ class VisuEditor(tk.LabelFrame):
         self.fig.tight_layout()
 
         self.fig.canvas.draw()
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    editor = VisuEditor(root)
+    editor.update_data('toto', np.zeros((20, 20, 3)))
+    editor.pack()
+    root.mainloop()

@@ -108,11 +108,11 @@ class Icon:
 
     def __init__(self, name):
         self.name = name
-        self.canvas = self.label = self.id = None
+        self.canvas = self.label = self.win_id = None
 
     def attach(self, canvas, x=10, y=10):
         if canvas is self.canvas:
-            self.canvas.coords(self.id, x, y)
+            self.canvas.coords(self.win_id, x, y)
             return
         if self.canvas:
             self.detach()
@@ -120,20 +120,20 @@ class Icon:
             return
         label = tkinter.Label(canvas, text=self.name,
                               borderwidth=2, relief="raised")
-        id = canvas.create_window(x, y, window=label, anchor="nw")
+        win_id = canvas.create_window(x, y, window=label, anchor="nw")
         self.canvas = canvas
         self.label = label
-        self.id = id
+        self.win_id = win_id
         label.bind("<ButtonPress>", self.press)
 
     def detach(self):
         canvas = self.canvas
         if not canvas:
             return
-        id = self.id
+        win_id = self.win_id
         label = self.label
-        self.canvas = self.label = self.id = None
-        canvas.delete(id)
+        self.canvas = self.label = self.win_id = None
+        canvas.delete(win_id)
         label.destroy()
 
     def press(self, event):
@@ -142,14 +142,14 @@ class Icon:
             self.x_off = event.x
             self.y_off = event.y
             # where the widget is relative to the canvas:
-            self.x_orig, self.y_orig = self.canvas.coords(self.id)
+            self.x_orig, self.y_orig = self.canvas.coords(self.win_id)
 
     def move(self, event):
         x, y = self.where(self.canvas, event)
-        self.canvas.coords(self.id, x, y)
+        self.canvas.coords(self.win_id, x, y)
 
     def putback(self):
-        self.canvas.coords(self.id, self.x_orig, self.y_orig)
+        self.canvas.coords(self.win_id, self.x_orig, self.y_orig)
 
     def where(self, canvas, event):
         # where the corner of the canvas is relative to the screen:

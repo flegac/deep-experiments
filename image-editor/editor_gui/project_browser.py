@@ -3,21 +3,21 @@ import tkinter as tk
 from idlelib.tree import ScrolledCanvas, FileTreeItem, TreeNode, TreeItem
 from typing import List
 
-from editor_gui.event_bus import PROJECT_OPEN_BUS, FILE_OPEN_BUS, OpenFileEvent
-from editor_gui.utils.ui_utils import dir_selection, select_project
-from editor_model.editor import EditorManager
-from editor_model.project import Project, ProjectManager
+from editor_gui.event_bus import OPEN_PROJECT_BUS, OPEN_FILE_BUS, OpenFileEvent
+from editor_gui.file_select import ask_open_project, ask_dir_selection
+from editor_core.config.editor import EditorManager
+from editor_core.config.project import Project, ProjectManager
 
 
 class ProjectBrowser(tk.LabelFrame):
     def __init__(self, master: tk.Widget, manager: ProjectManager):
         super().__init__(master, text="project")
         self.manager = manager
-        PROJECT_OPEN_BUS.subscribe(on_next=self.open_project)
+        OPEN_PROJECT_BUS.subscribe(on_next=self.open_project)
         self.project: Project = None
         self.canvas = None
 
-        button = tk.Button(self, text='open', command=lambda: self.open_project(select_project(self.manager.config)))
+        button = tk.Button(self, text='open', command=lambda: self.open_project(ask_open_project(self.manager.config)))
         button.pack(expand=False, fill=tk.X, side=tk.TOP)
 
         button = tk.Button(self, text='add dataset', command=lambda: self.add_path(self.project.datasets))
@@ -25,11 +25,11 @@ class ProjectBrowser(tk.LabelFrame):
 
         button = tk.Button(self, text='add source', command=lambda: self.add_path(self.project.sources))
         button.pack(expand=False, fill=tk.X, side=tk.TOP)
-        PROJECT_OPEN_BUS.on_next(manager.config.project)
+        OPEN_PROJECT_BUS.on_next(manager.config.project)
 
     def add_path(self, target: List[str], path: str = None):
         if path is None:
-            path = dir_selection(self.manager.config)
+            path = ask_dir_selection(self.manager.config)
         if path == '':
             print('could not open project :' + str(path))
             return
@@ -65,7 +65,7 @@ class MyTreeNode(TreeNode):
 
         if isinstance(self.item, FileTreeItem):
             path = str(self.item.path)
-            FILE_OPEN_BUS.on_next(OpenFileEvent(path=path))
+            OPEN_FILE_BUS.on_next(OpenFileEvent(path=path))
 
 
 class MultiRootFileTreeItem(TreeItem):

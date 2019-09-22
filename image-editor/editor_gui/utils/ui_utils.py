@@ -1,9 +1,5 @@
-import os
 import tkinter as tk
-import tkinter.filedialog
 from typing import Mapping, Union, Callable
-
-from editor_model.editor import Editor, EditorManager
 
 MenuConfig = Mapping[str, Union[str, Mapping[str, str]]]
 
@@ -29,72 +25,3 @@ def add_popup(widget, menu: tk.Menu):
             menu.grab_release()
 
     widget.bind('<Button-3>', popup)
-
-
-def select_project(editor: Editor):
-    path = tkinter.filedialog.askopenfilename(
-        initialdir=editor.root_path,
-        title="Select project",
-        filetypes=[
-            ('project files', 'project.json'),
-            ('all files', '.*'),
-        ]
-    )
-    return os.path.basename(os.path.dirname(path))
-
-
-def dir_selection(editor: Editor):
-    path = tkinter.filedialog.askdirectory(
-        initialdir=editor.browser_path,
-    )
-
-    __update_browser_config(editor, path)
-
-    return path
-
-
-def file_selection(editor: Editor):
-    path = tkinter.filedialog.askopenfilename(
-        initialdir=editor.browser_path,
-        title="Open image",
-        filetypes=[
-            ('all files', '.*'),
-            ('csv files', '.csv'),
-            ('tiff files', '.tif'),
-            ('png files', '.png'),
-            ('Jpeg files', '.jpg'),
-
-        ]
-    )
-    if path is not None:
-        __update_browser_config(editor, os.path.dirname(path))
-
-    return path
-
-
-def files_selection(editor: Editor):
-    paths = tkinter.filedialog.askopenfilenames(
-        initialdir=editor.browser_path,
-        title="Open image",
-        filetypes=[
-            ('all files', '.*'),
-            ('csv files', '.csv'),
-            ('tiff files', '.tif'),
-            ('png files', '.png'),
-            ('Jpeg files', '.jpg'),
-
-        ]
-    )
-    if len(paths) > 0:
-        __update_browser_config(editor, os.path.dirname(paths[0]))
-
-    return paths
-
-
-def __update_browser_config(editor: Editor, path: str):
-    if path is None or len(path) == 0:
-        return
-
-    editor.browser_path = path
-
-    EditorManager.save(editor)

@@ -2,9 +2,15 @@ from dataclasses import dataclass, field
 
 from rx.subject import Subject
 
-PROJECT_OPEN_BUS = Subject()
+OPEN_PROJECT_BUS = Subject()
 
-FILE_OPEN_BUS = Subject()
+
+@dataclass
+class OpenProjectEvent:
+    name: str = field(default=None)
+
+
+OPEN_FILE_BUS = Subject()
 
 
 @dataclass

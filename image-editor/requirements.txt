@@ -13,6 +13,5 @@ opencv-python
 imutils
 pygments
 
-rasterio
 
 

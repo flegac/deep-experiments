@@ -7,7 +7,7 @@ from typing import List
 from marshmallow import EXCLUDE
 from marshmallow_dataclass import dataclass
 
-from editor_model.editor import Editor, EditorManager
+from editor_core.config.editor import Editor, EditorManager
 
 
 @dataclass
