@@ -1,7 +1,9 @@
+import multiprocessing
 import time
 
 import rx
 from rx import operators as ops
+from rx.scheduler import ThreadPoolScheduler
 
 
 def toto():
@@ -26,3 +28,27 @@ def toto():
 
     while True:
         pass
+
+
+optimal_thread_count = multiprocessing.cpu_count()
+pool_scheduler = ThreadPoolScheduler(optimal_thread_count)
+
+
+def create(label):
+    def generator(observer, scheduler):
+        while True:
+            time.sleep(.7)
+            observer.on_next(label)
+
+    return generator
+
+
+rx.create(create('toto')).pipe(
+    ops.subscribe_on(pool_scheduler),
+
+    ops.merge(rx.create(create('tata'))),
+
+).subscribe(print)
+
+while True:
+    pass
