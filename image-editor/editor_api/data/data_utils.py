@@ -9,12 +9,18 @@ class EmptySource(DataSource):
         return np.zeros((10, 10, 3)).astype('uint8')
 
 
+class RandomSource(DataSource):
+    def get_buffer(self) -> Buffer:
+        return (np.random.rand(128, 128, 3) * 255).astype('uint8')
+
+
 class IdentityOperator(DataOperator):
     def apply(self, data: Buffer) -> Buffer:
         return data
 
 
 class DataUtils:
+    random_source = RandomSource()
     empty_source = EmptySource()
     identity = IdentityOperator()
 
