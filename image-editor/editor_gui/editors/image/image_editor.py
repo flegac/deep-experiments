@@ -21,8 +21,6 @@ class ImageEditor(tk.Frame):
         self.layer_editor = LayerEditor(self, self.view.on_source_change)
         self.layer_editor.grid(row=0, column=1, sticky='nsew')
 
-        self.view.source = self.layer_editor.source_editor.get_source()
-
         if path is not None:
             self.layer_editor.source_editor.open(path)
 

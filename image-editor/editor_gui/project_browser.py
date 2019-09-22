@@ -17,7 +17,7 @@ class ProjectBrowser(tk.LabelFrame):
         self.project: Project = None
         self.canvas = None
 
-        button = tk.Button(self, text='open', command=lambda: self.open_project(ask_open_project(self.manager.config)))
+        button = tk.Button(self, text='open', command=lambda: self.open_project(ask_open_project()))
         button.pack(expand=False, fill=tk.X, side=tk.TOP)
 
         button = tk.Button(self, text='add dataset', command=lambda: self.add_path(self.project.datasets))
@@ -29,7 +29,7 @@ class ProjectBrowser(tk.LabelFrame):
 
     def add_path(self, target: List[str], path: str = None):
         if path is None:
-            path = ask_dir_selection(self.manager.config)
+            path = ask_dir_selection()
         if path == '':
             print('could not open project :' + str(path))
             return

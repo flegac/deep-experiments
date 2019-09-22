@@ -13,7 +13,6 @@ from editor_gui.utils.ui_utils import build_menu
 class EditorWindow(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.editor_config = EditorManager.load()
         self.iconbitmap('')
 
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
@@ -24,7 +23,7 @@ class EditorWindow(tk.Tk):
         frame = tk.PanedWindow(orient=tk.HORIZONTAL)
         frame.pack(fill=tk.BOTH, expand=1)
 
-        self.project_browser = ProjectBrowser(frame, ProjectManager(self.editor_config))
+        self.project_browser = ProjectBrowser(frame, ProjectManager())
         frame.add(self.project_browser)
 
         self.notebook = EditorNotebook(frame, name='editor')
@@ -36,14 +35,14 @@ class EditorWindow(tk.Tk):
                 'New image': lambda: OPEN_FILE_BUS.on_next(
                     OpenFileEvent('image', name='editor')),
                 'Open image': lambda: OPEN_FILE_BUS.on_next(
-                    OpenFileEvent('image', path=ask_open_image(self.editor_config))),
+                    OpenFileEvent('image', path=ask_open_image())),
 
                 'New data': lambda: OPEN_FILE_BUS.on_next(
                     OpenFileEvent('data', name='data')),
                 'Open data': lambda: OPEN_FILE_BUS.on_next(
-                    OpenFileEvent('data', path=ask_open_dataset(self.editor_config))),
+                    OpenFileEvent('data', path=ask_open_dataset())),
 
-                'Open project': lambda: OPEN_PROJECT_BUS.on_next(ask_open_project(self.editor_config)),
+                'Open project': lambda: OPEN_PROJECT_BUS.on_next(ask_open_project()),
 
                 'Exit': self._on_exit
 

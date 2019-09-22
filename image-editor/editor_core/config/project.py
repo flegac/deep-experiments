@@ -7,7 +7,7 @@ from typing import List
 from marshmallow import EXCLUDE
 from marshmallow_dataclass import dataclass
 
-from editor_core.config.editor import Editor, EditorManager
+from editor_core.config.editor import EditorManager
 
 
 @dataclass
@@ -24,8 +24,8 @@ class Project:
 
 
 class ProjectManager(object):
-    def __init__(self, config: Editor):
-        self.config = config
+    def __init__(self):
+        self.config = EditorManager.load()
 
     def list(self):
         return [_.parent.name for _ in self.config.root_path.glob('*/project.json')]
@@ -59,7 +59,7 @@ class ProjectManager(object):
 
 
 if __name__ == '__main__':
-    manager = ProjectManager(EditorManager.load())
+    manager = ProjectManager()
     print(manager.list())
     prj = manager.load('toto')
     print(prj)

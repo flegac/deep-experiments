@@ -3,7 +3,7 @@ import tkinter as tk
 from rx.subject import Subject
 
 from editor_api.data.data_core import DataOperator, DataSource, PipelineOperator
-from editor_api.data.data_utils import EmptySource, DataUtils
+from editor_api.data.data_utils import EmptySource
 from editor_core.file_source import FileSource
 from editor_gui.file_select import ask_open_image
 from editor_plugins.image_filter.operators.normalize import NormalizeOperator
@@ -14,10 +14,11 @@ class SourceEditor(tk.LabelFrame):
         tk.LabelFrame.__init__(self, master, text='source')
         self.source = EmptySource()
         self.pipeline: PipelineOperator = PipelineOperator([NormalizeOperator()])
-        self.buttons: tk.Widget = []
 
-        self.update_bus = Subject()
-        self.update_bus.subscribe(on_next=self.redraw_pipeline)
+        self.widgets: tk.Widget = []
+
+        self.source_change_bus = Subject()
+        self.source_change_bus.subscribe(on_next=self.redraw_pipeline)
 
         tk.Button(
             self,
@@ -25,38 +26,36 @@ class SourceEditor(tk.LabelFrame):
             command=lambda: self.open(ask_open_image())
         ).pack(fill="both", expand=True, side=tk.BOTTOM)
 
-        self.the_source = DataUtils.var_source('')
-
     def open(self, path: str = None):
         self.source = FileSource.from_rgb(path)
-        self.update_bus.on_next(None)
+        self._post_new_source()
 
     def reset(self):
         self.pipeline = PipelineOperator()
-        self.update_bus.on_next(None)
+        self._post_new_source()
 
     def push_operator(self, op: DataOperator):
         self.pipeline = self.pipeline | op()
-        self.update_bus.on_next(None)
+        self._post_new_source()
 
     def pop_operator(self):
         self.pipeline = PipelineOperator(self.pipeline.pipeline[:-1])
-        self.update_bus.on_next(None)
+        self._post_new_source()
 
     def remove_operator(self, op: DataOperator):
         pipe = self.pipeline.pipeline
         pipe.remove(op)
         self.pipeline = PipelineOperator(pipe)
-        self.update_bus.on_next(None)
+        self._post_new_source()
 
     def get_source(self) -> DataSource:
-        self.the_source.value = self.source | self.pipeline
-        return self.the_source
+        return self.source | self.pipeline
 
-    def redraw_pipeline(self, event=None):
-        self.the_source.value = self.source | self.pipeline
+    def _post_new_source(self):
+        self.source_change_bus.on_next(self.get_source())
 
-        for _ in self.buttons:
+    def redraw_pipeline(self, source=DataSource):
+        for _ in self.widgets:
             _.destroy()
 
         editor = self
@@ -67,23 +66,23 @@ class SourceEditor(tk.LabelFrame):
 
             return run
 
-        self.buttons = [
+        self.widgets = [
             tk.Label(self, text=str(self.source)),
             *[
                 tk.Button(self, text=str(step), command=_callback(step))
                 for step in self.pipeline.pipeline
             ]
         ]
-        if len(self.buttons) > 1:
-            self.buttons.append(tk.Button(self, text='Reset', command=self.reset))
+        if len(self.widgets) > 1:
+            self.widgets.append(tk.Button(self, text='Reset', command=self.reset))
 
-        for _ in self.buttons:
+        for _ in self.widgets:
             _.pack(fill="both", expand=True, side=tk.TOP)
 
 
 if __name__ == '__main__':
     root = tk.Tk()
-    editor = SourceEditor(root)
-    editor.pack(fill="both", expand=True, side=tk.BOTTOM)
+    widget = SourceEditor(root)
+    widget.pack(fill="both", expand=True, side=tk.BOTTOM)
 
     root.mainloop()

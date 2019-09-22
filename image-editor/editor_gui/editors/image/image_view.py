@@ -4,6 +4,7 @@ from PIL import ImageTk, Image
 from rx import operators
 from rx.subject import Subject
 
+from editor_api.data.data_core import DataSource
 from editor_api.data.data_utils import DataUtils
 from editor_core.viewport import ViewportOperator
 from editor_gui.utils.hidden_scrollbar import HiddenScrollbar
@@ -36,8 +37,7 @@ class ImageView(tk.Frame):
         self.canvas.configure(yscrollcommand=vbar.set, xscrollcommand=hbar.set)
 
         # image
-        self.source = None
-        self.data = None
+        self.data = DataUtils.empty_source.get_buffer()
         self.image = None
         self.image_id = None
         self.viewport = ViewportOperator(self.viewport_size)
@@ -79,9 +79,9 @@ class ImageView(tk.Frame):
             self.viewport.zoom(1 / self.ZOOM_SPEED)
         self.redraw_bus.on_next({})
 
-    def read_data(self, reset=False):
-        if self.data is None or reset:
-            self.data = self.source.get_buffer()
+    def read_data(self, data_source: DataSource = None):
+        if data_source is not None:
+            self.data = data_source.get_buffer()
         return self.data
 
     def viewport_size(self):
@@ -89,8 +89,8 @@ class ImageView(tk.Frame):
         h = self.canvas.winfo_height()
         return w, h
 
-    def on_source_change(self):
-        self.read_data(reset=True)
+    def on_source_change(self, source: DataSource):
+        self.read_data(source)
         self.redraw_bus.on_next(None)
 
     def redraw_canvas(self):
@@ -98,7 +98,8 @@ class ImageView(tk.Frame):
         if self.image_id:
             self.canvas.delete(self.image_id)
 
-        data = self.viewport.apply(self.read_data())
+        raw_data = self.read_data()
+        data = self.viewport.apply(raw_data)
 
         self.image = ImageTk.PhotoImage(image=Image.fromarray(data))
         self.image_id = self.canvas.create_image((0, 0), anchor=tk.NW, image=self.image)
@@ -107,6 +108,7 @@ class ImageView(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    editor = ImageView(root, DataUtils.empty_source)
+    editor = ImageView(root)
+    editor.on_source_change(DataUtils.empty_source)
     editor.pack(fill='both', expand=True)
     root.mainloop()

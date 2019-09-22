@@ -2,10 +2,13 @@ import os
 import tkinter.filedialog
 from typing import List, Tuple
 
-from editor_core.config.editor import Editor, EditorManager
+from editor_core.config.editor import EditorManager
 
 
-def ask_open_project(editor: Editor):
+def ask_open_project():
+    #TODO: only display project names ?
+    editor = EditorManager.load()
+
     path = tkinter.filedialog.askopenfilename(
         initialdir=editor.root_path,
         title="Select project",
@@ -17,8 +20,8 @@ def ask_open_project(editor: Editor):
     return os.path.basename(os.path.dirname(path))
 
 
-def ask_open_image(editor: Editor):
-    return ask_open_file(editor, 'Open image', [
+def ask_open_image():
+    return ask_open_file('Open image', [
         ('all files', '.*'),
         ('tiff files', '.tif'),
         ('png files', '.png'),
@@ -26,14 +29,16 @@ def ask_open_image(editor: Editor):
     ])
 
 
-def ask_open_dataset(editor: Editor):
-    return ask_open_file(editor, 'Open image', [
+def ask_open_dataset():
+    return ask_open_file('Open image', [
         ('all files', '.*'),
         ('csv files', '.csv'),
     ])
 
 
-def ask_dir_selection(editor: Editor):
+def ask_dir_selection():
+    editor = EditorManager.load()
+
     path = tkinter.filedialog.askdirectory(
         initialdir=editor.browser_path,
     )
@@ -45,7 +50,9 @@ def ask_dir_selection(editor: Editor):
     return path
 
 
-def ask_open_file(editor: Editor, title: str, filetypes: List[Tuple[str, str]]):
+def ask_open_file(title: str, filetypes: List[Tuple[str, str]]):
+    editor = EditorManager.load()
+
     path: str = tkinter.filedialog.askopenfilename(
         initialdir=editor.browser_path,
         title=title,
@@ -58,7 +65,9 @@ def ask_open_file(editor: Editor, title: str, filetypes: List[Tuple[str, str]]):
     return path
 
 
-def ask_open_files(editor: Editor, title: str, filetypes: List[Tuple[str, str]]):
+def ask_open_files(title: str, filetypes: List[Tuple[str, str]]):
+    editor = EditorManager.load()
+
     paths = tkinter.filedialog.askopenfilenames(
         initialdir=editor.browser_path,
         title=title,
