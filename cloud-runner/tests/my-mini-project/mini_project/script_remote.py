@@ -5,7 +5,7 @@ from cloud_runner.cluster.google_cluster import GoogleCluster
 from cloud_runner.cluster.google_utils import cpu_config
 
 ScriptRunner(
-    creation_sleep_time=30,
+    creation_sleep_time=60,
     script_relative_path='my-mini-project/mini_project/script_local.py',
     config_relative_path='my-mini-project/mini_project/config.json',
     configs=[{

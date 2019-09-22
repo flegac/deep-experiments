@@ -20,7 +20,7 @@ def cpu_config():
         # disk
         '--boot-disk-type=pd-ssd',
         # '--boot-disk-size=50Go',
-        '--scopes=storage-full,compute-rw',
+        '--scopes=storage-full',
 
         # optional
         '--preemptible',
