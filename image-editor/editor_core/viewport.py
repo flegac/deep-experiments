@@ -31,7 +31,6 @@ class ViewportOperator(DataOperator):
         w_target, h_target = self.viewport_provider()
         if self.output_buffer is None or self.output_buffer.shape[:2] != (h_target, w_target):
             self.output_buffer = np.zeros((h_target, w_target, data.shape[2])).astype('uint8')
-            print('NEW BUFFER : {}'.format(self.output_buffer.shape))
         else:
             self.output_buffer.fill(0)
 
@@ -52,8 +51,8 @@ class ViewportOperator(DataOperator):
         hh = min(h_target, floor(h * self.zoom_factor))
         crop_data = cv2.resize(crop_data, (ww, hh))
 
-        x = int((w_target - crop_data.shape[1]) / 2)
-        y = int((h_target - crop_data.shape[0]) / 2)
+        x = int((w_target - ww) / 2)
+        y = int((h_target - hh) / 2)
 
         self.output_buffer[y:y + crop_data.shape[0], x:x + crop_data.shape[1]] = crop_data
 
