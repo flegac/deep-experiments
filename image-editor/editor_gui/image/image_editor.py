@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from editor_gui.editors.image.layer_editor import LayerEditor
-from editor_gui.editors.image.view.image_view import ImageView
+from editor_gui.image.layer_editor import LayerEditor
+from editor_gui.image.view.image_view import ImageView
 
 
 class ImageEditor(tk.Frame):

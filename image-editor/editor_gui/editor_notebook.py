@@ -5,9 +5,9 @@ from dataclasses import asdict
 from tkinter import ttk
 from typing import Callable, Any
 
-from editor_gui.editors.dataset_editor import DatasetEditor
-from editor_gui.editors.image.image_editor import ImageEditor
-from editor_gui.editors.text_editor import TextEditor
+from editor_gui.dataframe.dataset_editor import DatasetEditor
+from editor_gui.image.image_editor import ImageEditor
+from editor_gui.text.text_editor import TextEditor
 from editor_gui.event_bus import OPEN_FILE_BUS, OpenFileEvent
 
 EditorProvider = Callable[[tk.Widget, str, str], Any]

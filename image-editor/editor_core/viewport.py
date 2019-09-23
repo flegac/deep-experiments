@@ -1,7 +1,8 @@
-from math import ceil
+from math import ceil, floor
 from typing import Callable, Tuple
 
 import cv2
+import numpy as np
 
 from editor_api.data.data_core import Buffer, DataOperator
 
@@ -14,6 +15,7 @@ class ViewportOperator(DataOperator):
         self.zoom_factor = 1.
         self.x = 0
         self.y = 0
+        self.output_buffer = None
 
     def zoom(self, factor: float):
         self.zoom_factor *= factor
@@ -26,24 +28,36 @@ class ViewportOperator(DataOperator):
         return self.x, self.y
 
     def apply(self, data: Buffer) -> Buffer:
-        width, height = self.viewport_provider()
-        img_width = data.shape[1]
-        img_height = data.shape[0]
+        w_target, h_target = self.viewport_provider()
+        if self.output_buffer is None or self.output_buffer.shape[:2] != (h_target, w_target):
+            self.output_buffer = np.zeros((h_target, w_target, data.shape[2])).astype('uint8')
+            print('NEW BUFFER : {}'.format(self.output_buffer.shape))
+        else:
+            self.output_buffer.fill(0)
 
-        aspect = width / height
+        w_source = data.shape[1]
+        h_source = data.shape[0]
 
-        self.zoom_factor = max(self.zoom_factor, width / img_width if aspect > 1 else height / img_height)
+        self.zoom_factor = max(self.zoom_factor, min(w_target / w_source, h_target / h_source))
 
-        w = min(img_width, ceil(width / self.zoom_factor))
-        h = min(img_height, ceil(height / self.zoom_factor))
+        w = min(w_source, ceil(w_target / self.zoom_factor))
+        h = min(h_source, ceil(h_target / self.zoom_factor))
 
-        self.x = min(max(self.x, 0), img_width - w)
-        self.y = min(max(self.y, 0), img_height - h)
+        self.x = min(max(self.x, 0), w_source - w)
+        self.y = min(max(self.y, 0), h_source - h)
 
         crop_data = data[self.y:self.y + h, self.x:self.x + w]
 
-        data = cv2.resize(crop_data, (width, height))
-        return data
+        ww = min(w_target, floor(w * self.zoom_factor))
+        hh = min(h_target, floor(h * self.zoom_factor))
+        crop_data = cv2.resize(crop_data, (ww, hh))
+
+        x = int((w_target - crop_data.shape[1]) / 2)
+        y = int((h_target - crop_data.shape[0]) / 2)
+
+        self.output_buffer[y:y + crop_data.shape[0], x:x + crop_data.shape[1]] = crop_data
+
+        return self.output_buffer
 
     def __repr__(self) -> str:
         return 'Viewport[Z={}]({},{})'.format(self.zoom_factor, self.x, self.y)
