@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from editor_api.data.data_core import DataSource
+from editor_api.data.data_utils import DataUtils
+
 
 class VisuEditor(tk.LabelFrame):
     def __init__(self, master: tk.Widget):
@@ -24,9 +27,9 @@ class VisuEditor(tk.LabelFrame):
         self.label = tk.Label(self, textvariable=self.text)
         self.label.pack(side=tk.BOTTOM, fill=tk.BOTH)
 
-    def update_data(self, label: str, data: np.ndarray):
-
+    def update_data(self, label: str, source: DataSource):
         self.text.set(label)
+        data = source.get_buffer()
 
         if len(data.shape) == 2:
             return
@@ -50,6 +53,6 @@ class VisuEditor(tk.LabelFrame):
 if __name__ == '__main__':
     root = tk.Tk()
     editor = VisuEditor(root)
-    editor.update_data('toto', np.zeros((20, 20, 3)))
+    editor.update_data('toto', DataUtils.random_source)
     editor.pack()
     root.mainloop()

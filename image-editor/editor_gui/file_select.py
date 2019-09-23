@@ -6,7 +6,7 @@ from editor_core.config.editor import EditorManager
 
 
 def ask_open_project():
-    #TODO: only display project names ?
+    # TODO: only display project names ?
     editor = EditorManager.load()
 
     path = tkinter.filedialog.askopenfilename(
@@ -50,7 +50,27 @@ def ask_dir_selection():
     return path
 
 
-def ask_open_file(title: str, filetypes: List[Tuple[str, str]]):
+def ask_save_file(title: str = 'Save', filetypes: List[Tuple[str, str]] = None):
+    if filetypes is None:
+        filetypes = [('all files', '.*')]
+    editor = EditorManager.load()
+
+    path: str = tkinter.filedialog.asksaveasfilename(
+        initialdir=editor.browser_path,
+        title=title,
+        filetypes=filetypes
+    )
+
+    if path is not None and len(path) > 0:
+        editor.browser_path = os.path.dirname(path)
+        EditorManager.save(editor)
+
+    return path
+
+
+def ask_open_file(title: str = 'Open', filetypes: List[Tuple[str, str]] = None):
+    if filetypes is None:
+        filetypes = [('all files', '.*')]
     editor = EditorManager.load()
 
     path: str = tkinter.filedialog.askopenfilename(

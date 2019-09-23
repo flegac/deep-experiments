@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from editor_gui.editors.image.image_view import ImageView
 from editor_gui.editors.image.layer_editor import LayerEditor
+from editor_gui.editors.image.view.image_view import ImageView
 
 
 class ImageEditor(tk.Frame):
@@ -18,11 +18,12 @@ class ImageEditor(tk.Frame):
         self.view.grid(row=0, column=0, sticky='nsew')
 
         # editors
-        self.layer_editor = LayerEditor(self, self.view.on_source_change)
+        self.layer_editor = LayerEditor(self)
         self.layer_editor.grid(row=0, column=1, sticky='nsew')
+        self.layer_editor.source_editor.source_change_bus.subscribe(on_next= self.view.on_source_change)
 
         if path is not None:
-            self.layer_editor.source_editor.open(path)
+            self.layer_editor.source_editor.open_image(path)
 
 
 if __name__ == '__main__':

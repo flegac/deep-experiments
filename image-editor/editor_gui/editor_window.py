@@ -16,7 +16,7 @@ class EditorWindow(tk.Tk):
         self.iconbitmap('')
 
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
-        self.geometry('{}x{}+5+5'.format(w - 20, h - 150))
+        self.geometry('{}x{}+0+0'.format(w - 150, h - 150))
         self.protocol("WM_DELETE_WINDOW", self._on_exit)
         self.init_menu()
 

@@ -1,34 +1,39 @@
 import tkinter as tk
+from typing import List
 
+import cv2
 from rx.subject import Subject
 
 from editor_api.data.data_core import DataOperator, DataSource, PipelineOperator
 from editor_api.data.data_utils import EmptySource
 from editor_core.file_source import FileSource
-from editor_gui.file_select import ask_open_image
 from editor_plugins.image_filter.operators.normalize import NormalizeOperator
 
 
 class SourceEditor(tk.LabelFrame):
     def __init__(self, master: tk.Widget):
-        tk.LabelFrame.__init__(self, master, text='source')
-        self.source = EmptySource()
+        tk.LabelFrame.__init__(self, master, text='source', width=100, height=50)
+        self._source = EmptySource()
         self.pipeline: PipelineOperator = PipelineOperator([NormalizeOperator()])
 
-        self.widgets: tk.Widget = []
-
+        self.widgets: List[tk.Widget] = []
         self.source_change_bus = Subject()
         self.source_change_bus.subscribe(on_next=self.redraw_pipeline)
+        self.redraw_pipeline()
 
-        tk.Button(
-            self,
-            text='Open',
-            command=lambda: self.open(ask_open_image())
-        ).pack(fill="both", expand=True, side=tk.BOTTOM)
-
-    def open(self, path: str = None):
-        self.source = FileSource.from_rgb(path)
+    def open_image(self, path: str = None):
+        if path is None or path == '':
+            return
+        self._source = FileSource.from_rgb(path)
         self._post_new_source()
+
+    def save_image(self, path: str = None):
+        if path is None or path == '':
+            return
+        print('save to {}'.format(path))
+        img = self.get_source().get_buffer()
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(path, img)
 
     def reset(self):
         self.pipeline = PipelineOperator()
@@ -49,7 +54,7 @@ class SourceEditor(tk.LabelFrame):
         self._post_new_source()
 
     def get_source(self) -> DataSource:
-        return self.source | self.pipeline
+        return self._source | self.pipeline
 
     def _post_new_source(self):
         self.source_change_bus.on_next(self.get_source())
@@ -67,7 +72,7 @@ class SourceEditor(tk.LabelFrame):
             return run
 
         self.widgets = [
-            tk.Label(self, text=str(self.source)),
+            tk.Label(self, text=str(self._source)),
             *[
                 tk.Button(self, text=str(step), command=_callback(step))
                 for step in self.pipeline.pipeline

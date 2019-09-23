@@ -7,7 +7,7 @@ from editor_core.config.editor import EditorManager
 
 class OperatorToolbox(tk.LabelFrame):
     def __init__(self, master: tk.Widget, callback: Callable[[DataOperator], None]):
-        tk.LabelFrame.__init__(self, master, text='operator')
+        tk.LabelFrame.__init__(self, master, text='operator', width=100, height=50)
 
         operators = EditorManager.plugin.operators()
 
