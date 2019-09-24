@@ -16,7 +16,7 @@ class DataSource(abc.ABC):
 
 
 class DataOperator(object):
-    def apply(self, data: Buffer) -> Buffer:
+    def apply(self, source: Buffer) -> Buffer:
         raise NotImplementedError()
 
     def __or__(self, other: 'DataOperator') -> 'DataOperator':
@@ -97,10 +97,10 @@ class PipelineOperator(DataOperator):
     def pipeline(self):
         return self._operators
 
-    def apply(self, data: Buffer) -> Buffer:
+    def apply(self, source: Buffer) -> Buffer:
         for _ in self._operators:
-            data = _.apply(data)
-        return data
+            source = _.apply(source)
+        return source
 
 
 class _MixedSource(DataSource):

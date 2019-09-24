@@ -1,0 +1,37 @@
+import tkinter as tk
+
+from editor_core.image.gui.image_control_panel import ImageControlPanel
+from editor_core.image.gui.image_view import ImageView
+
+
+class ImageEditor(tk.Frame):
+    ZOOM_SPEED = 0.75
+    MAX_REDRAW_PER_SEC = 24
+
+    def __init__(self, master: tk.Widget, name: str = None, path: str = None):
+        tk.Frame.__init__(self, master)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        # view
+        self.view = ImageView(self)
+        self.view.grid(row=0, column=0, sticky='nsew')
+
+        # editors
+        self.control_panel = ImageControlPanel(self)
+        self.control_panel.grid(row=0, column=1, sticky='nsew')
+        self.control_panel.source_editor.update_bus.subscribe(on_next=self.view.redraw)
+
+        box_painter = self.control_panel.box.box_painter
+        box_painter.update_bus.subscribe(on_next=lambda _: self.view.redraw(self.control_panel.source_editor.source | box_painter))
+        self.view.canvas.bind_all('a', lambda _: box_painter.create_box(self.view.mouse_image_coords()))
+
+        if path is not None:
+            self.control_panel.source_editor.open_image(path)
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    editor = ImageEditor(root)
+    editor.pack(fill='both', expand=True)
+    root.mainloop()

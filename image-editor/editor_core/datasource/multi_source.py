@@ -2,7 +2,7 @@ from typing import List
 
 from editor_api.data.buffer import Buffer
 from editor_api.data.data_core import DataSource
-from editor_core.blend_mixer import BlendMixer
+from editor_core.dataoperator.blend_mixer import BlendMixer
 
 
 class MultiSource(DataSource):

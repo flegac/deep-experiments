@@ -8,8 +8,8 @@ from editor_api.data.data_utils import DataUtils
 
 
 class Op(DataOperator):
-    def apply(self, data: Buffer) -> Buffer:
-        return data + 1
+    def apply(self, source: Buffer) -> Buffer:
+        return source + 1
 
 
 class Mix(DataMixer):

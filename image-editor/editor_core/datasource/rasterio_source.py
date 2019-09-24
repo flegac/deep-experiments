@@ -3,7 +3,7 @@ import os
 import rasterio
 
 from editor_api.data.data_core import DataSource, Buffer
-from editor_core.utils import rasterio_to_opencv
+from editor_core.datasource.utils import rasterio_to_opencv
 
 
 class RasterioSource(DataSource):

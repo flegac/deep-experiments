@@ -15,8 +15,8 @@ class RandomSource(DataSource):
 
 
 class IdentityOperator(DataOperator):
-    def apply(self, data: Buffer) -> Buffer:
-        return data
+    def apply(self, source: Buffer) -> Buffer:
+        return source
 
 
 class DataUtils:

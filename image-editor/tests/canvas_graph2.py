@@ -10,9 +10,10 @@ class Vertex(object):
         self.y = y
         self.size = 10
         self.edges: List[Vertex] = []
+        self.fid = None
 
     def draw(self, w):
-        w.create_rectangle(
+        self.fid = w.create_rectangle(
             self.x - self.size,
             self.y - self.size,
             self.x + self.size,
@@ -67,6 +68,7 @@ class CanvasDnD(tk.Frame):
         canvas.tag_bind("DnD", "<Leave>", self.leave)
         self.canvas = canvas
 
+        self.widgets = []
         self.draw_callback = None
 
     def down(self, event):
@@ -98,9 +100,7 @@ class CanvasDnD(tk.Frame):
             self.up(event)
         else:
             self.dragged = event.time
-        # if self.draw_callback is not None:
-        #     self.canvas.delete('all')
-        #     self.draw_callback(self.canvas)
+        self._redraw()
 
     def up(self, event):
         event.widget.unbind("<Motion>")
@@ -110,6 +110,11 @@ class CanvasDnD(tk.Frame):
             event.widget.itemconfigure(tk.CURRENT, fill="blue")
             self.master.update()
             time.sleep(.1)
+
+    def _redraw(self):
+        if self.draw_callback is not None:
+            self.canvas.delete('all')
+            self.widgets = self.draw_callback(self.canvas)
 
 
 def main2():
