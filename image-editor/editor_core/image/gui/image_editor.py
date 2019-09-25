@@ -22,10 +22,10 @@ class ImageEditor(tk.Frame):
         self.control_panel.grid(row=0, column=1, sticky='nsew')
         self.control_panel.source_editor.update_bus.subscribe(on_next=self.view.request_update)
 
-        tag_box = self.control_panel.box.tag_box
-        tag_box.update_bus.subscribe(
+        tag_box = self.control_panel.box.source
+        self.control_panel.box.update_bus.subscribe(
             on_next=lambda _: self.view.request_update(tag_box.as_source(self.control_panel.source_editor.source)))
-        self.view.canvas.bind_all('a', lambda _: tag_box.create_box(self.view.mouse_image_coords()))
+        self.view.canvas.bind_all('a', lambda _: self.control_panel.box.create_box(self.view.mouse_image_coords()))
 
         if path is not None:
             self.control_panel.source_editor.open_image(path)
