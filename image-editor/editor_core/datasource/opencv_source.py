@@ -2,7 +2,8 @@ import os
 
 import cv2
 
-from editor_api.data.data_core import DataSource, Buffer
+from editor_api.data.data_mixer import Buffer
+from editor_api.data.data_source import DataSource
 
 
 class OpencvSource(DataSource):

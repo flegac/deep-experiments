@@ -3,7 +3,7 @@ from typing import List
 import cv2
 import numpy as np
 
-from editor_api.data.data_core import DataMixer, Buffer
+from editor_api.data.data_mixer import DataMixer, Buffer
 
 
 class BlendMixer(DataMixer):

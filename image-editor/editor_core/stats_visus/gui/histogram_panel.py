@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from editor_api.data.data_core import DataSource
+from editor_api.data.data_source import DataSource
 from editor_api.data.data_utils import DataUtils
 
 

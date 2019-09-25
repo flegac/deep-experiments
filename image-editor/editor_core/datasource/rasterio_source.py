@@ -2,7 +2,8 @@ import os
 
 import rasterio
 
-from editor_api.data.data_core import DataSource, Buffer
+from editor_api.data.data_mixer import Buffer
+from editor_api.data.data_source import DataSource
 from editor_core.datasource.utils import rasterio_to_opencv
 
 

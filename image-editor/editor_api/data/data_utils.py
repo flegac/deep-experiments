@@ -1,7 +1,10 @@
+from typing import Union
+
 import numpy as np
 
 from editor_api.data.buffer import Buffer
-from editor_api.data.data_core import DataSource, DataOperator, VariableSource, PipelineOperator
+from editor_api.data.data_operator import DataOperator, PipelineOperator
+from editor_api.data.data_source import DataSource
 
 
 class EmptySource(DataSource):
@@ -19,11 +22,25 @@ class IdentityOperator(DataOperator):
         return source
 
 
-class DataUtils:
-    random_source = RandomSource()
-    empty_source = EmptySource()
-    identity = IdentityOperator()
+class VariableSource(DataSource):
+    def __init__(self, name: str, value: Union[DataSource, Buffer] = None):
+        self.name = name
+        self.value: Union[DataSource, Buffer] = value
 
+    def get_buffer(self) -> Buffer:
+        if isinstance(self.value, Buffer):
+            return self.value
+        return self.value.get_buffer()
+
+    def __repr__(self):
+        return '{}={}'.format(self.name, self.value)
+
+
+class DataUtils:
+    empty_source = EmptySource()
+    random_source = RandomSource()
+
+    identity = IdentityOperator()
     pipeline = PipelineOperator()
 
     @staticmethod

@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 
-from editor_api.data.data_core import Buffer
-from editor_api.data.data_core import DataOperator
+from editor_api.data.data_mixer import Buffer
+from editor_api.data.data_operator import DataOperator
 
 
 class DilateOperator(DataOperator):

@@ -4,7 +4,7 @@ import rx.operators as ops
 from PIL import ImageTk, Image
 from rx.subject import Subject
 
-from editor_api.data.data_core import DataSource
+from editor_api.data.data_source import DataSource
 from editor_api.data.data_utils import DataUtils
 from editor_core.image.gui.view_controller import ViewController
 

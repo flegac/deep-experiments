@@ -4,7 +4,8 @@ from typing import Callable, Tuple
 import cv2
 import numpy as np
 
-from editor_api.data.data_core import Buffer, DataOperator
+from editor_api.data.data_mixer import Buffer
+from editor_api.data.data_operator import DataOperator
 
 ViewportProvider = Callable[[], Tuple[int, int]]
 

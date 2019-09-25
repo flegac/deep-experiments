@@ -2,8 +2,9 @@ from typing import List
 
 import numpy as np
 
-from editor_api.data.data_core import Buffer, DataOperator, DataMixer
-from editor_api.data.data_core import DataWorkflow
+from editor_api.data.data_mixer import Buffer, DataMixer
+from editor_api.data.data_operator import DataOperator
+from editor_api.data.data_graph import DataGraph, seq
 from editor_api.data.data_utils import DataUtils
 
 
@@ -27,20 +28,21 @@ mix = Mix()
 
 
 def test_complex_operators():
-    b123 = mix([
-        s | (op | op | op),
-        s | (op | op | op),
-        s | op
+    b123 = (mix, [
+        (op, (op, (op, s))),
+        (op, (op, s)),
+        (op, s)
     ])
-    workflow = mix([
-        b123 | op | op,
-        s | (op | op)
-    ]) | op
 
-    graph = DataWorkflow(
+    full = (op, (mix, [
+        (op, (op, b123)),
+        (op, (op, s))
+    ]))
+
+    graph = DataGraph(
         variables=[s],
-        workflow=workflow
+        root_node=full
     )
     print()
     print(graph)
-    print(graph.configure([np.zeros((3, 3))]).get_buffer())
+    print(graph.configure([np.zeros((3, 3))]).as_source().get_buffer())

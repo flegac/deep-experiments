@@ -1,4 +1,4 @@
-from editor_api.data.data_core import Buffer
+from editor_api.data.data_mixer import Buffer
 
 import numpy as np
 

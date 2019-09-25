@@ -5,7 +5,7 @@ import pandas as pd
 from rx.subject import Subject
 
 from editor_api.data.buffer import Buffer
-from editor_api.data.data_core import DataOperator
+from editor_api.data.data_operator import DataOperator
 
 
 class TagBoxManager(DataOperator):

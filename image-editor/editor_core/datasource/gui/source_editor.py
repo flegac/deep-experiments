@@ -4,7 +4,8 @@ from typing import List
 import cv2
 from rx.subject import Subject
 
-from editor_api.data.data_core import DataOperator, DataSource, PipelineOperator
+from editor_api.data.data_operator import DataOperator, PipelineOperator
+from editor_api.data.data_source import DataSource
 from editor_api.data.data_utils import EmptySource
 from editor_core.datasource.file_source import FileSource
 from editor_core.files.gui.file_toolbox import FileToolbox
@@ -27,12 +28,13 @@ class SourceEditor(tk.LabelFrame):
 
     @property
     def source(self) -> DataSource:
-        return self._source | self.pipeline
+        return self.pipeline.as_source(self._source)
 
     @property
     def source_descriptor(self):
         buffer = self.source.get_buffer()
-        return '{name} {shape[1]}x{shape[0]} {type}'.format(name=str(self._source), shape=buffer.shape,
+        return '{name} {shape[1]}x{shape[0]} {type}'.format(name=str(self._source),
+                                                            shape=buffer.shape,
                                                             type=buffer.dtype)
 
     def open_image(self, path: str = None):
