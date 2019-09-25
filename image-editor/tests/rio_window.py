@@ -12,7 +12,7 @@ def main(infile, outfile, num_workers=4):
 
             with rasterio.open(outfile, "w", **profile) as dst:
                 windows = [window for ij, window in dst.block_windows()]
-                data_gen = (src.get_buffer(window=window) for window in windows)
+                data_gen = (src.get_data(window=window) for window in windows)
                 with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
                     for window, result in zip(windows, executor.map(compute, data_gen)):
                         dst.write(result, window=window,

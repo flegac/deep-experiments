@@ -24,7 +24,7 @@ class HistogramPanel(tk.LabelFrame):
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH)
 
     def update_data(self, source: DataSource):
-        data = source.get_buffer()
+        data = source.get_data()
 
         if len(data.shape) == 2:
             return

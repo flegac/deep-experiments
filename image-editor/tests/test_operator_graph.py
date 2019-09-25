@@ -45,4 +45,4 @@ def test_complex_operators():
     )
     print()
     print(graph)
-    print(graph.configure([np.zeros((3, 3))]).as_source().get_buffer())
+    print(graph.configure([np.zeros((3, 3))]).as_source().get_data())

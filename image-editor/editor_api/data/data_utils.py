@@ -4,15 +4,15 @@ import numpy as np
 
 from editor_api.data.buffer import Buffer
 from editor_api.data.data_operator import DataOperator, PipelineOperator
-from editor_api.data.data_source import DataSource
+from editor_api.data.data_source import DataSource, ImageSource
 
 
-class EmptySource(DataSource):
+class EmptySource(ImageSource):
     def get_buffer(self) -> Buffer:
         return np.zeros((10, 10, 3)).astype('uint8')
 
 
-class RandomSource(DataSource):
+class RandomSource(ImageSource):
     def get_buffer(self) -> Buffer:
         return (np.random.rand(128, 128, 3) * 255).astype('uint8')
 
@@ -22,15 +22,15 @@ class IdentityOperator(DataOperator):
         return source
 
 
-class VariableSource(DataSource):
-    def __init__(self, name: str, value: Union[DataSource, Buffer] = None):
+class VariableSource(ImageSource):
+    def __init__(self, name: str, value: Union[ImageSource, Buffer] = None):
         self.name = name
-        self.value: Union[DataSource, Buffer] = value
+        self.value: Union[ImageSource, Buffer] = value
 
     def get_buffer(self) -> Buffer:
         if isinstance(self.value, Buffer):
             return self.value
-        return self.value.get_buffer()
+        return self.value.get_data()
 
     def __repr__(self):
         return '{}={}'.format(self.name, self.value)

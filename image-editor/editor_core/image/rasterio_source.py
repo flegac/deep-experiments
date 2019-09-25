@@ -3,16 +3,16 @@ import os
 import rasterio
 
 from editor_api.data.data_mixer import Buffer
-from editor_api.data.data_source import DataSource
-from editor_core.datasource.utils import rasterio_to_opencv
+from editor_api.data.data_source import ImageSource
+from editor_core.image.utils import rasterio_to_opencv
 
 
-class RasterioSource(DataSource):
+class RasterioSource(ImageSource):
     def __init__(self, path: str):
         self.path = path
         with rasterio.Env():
             with rasterio.open(self.path) as data:
-                self.data = rasterio_to_opencv(data.get_buffer())
+                self.data = rasterio_to_opencv(data.get_data())
                 # data.read(
                 #     window=Window(*offset[::-1], *size),
                 #     # out_shape=(self.data.height * 2, self.data.width * 2, self.data.count),

@@ -7,12 +7,12 @@ from rx.subject import Subject
 from editor_api.data.data_operator import DataOperator, PipelineOperator
 from editor_api.data.data_source import DataSource
 from editor_api.data.data_utils import EmptySource
-from editor_core.datasource.file_source import FileSource
+from editor_core.image.file_source import FileSource
 from editor_core.files.gui.file_toolbox import FileToolbox
 from editor_core.dataoperator.normalize import NormalizeOperator
 
 
-class SourceEditor(tk.LabelFrame):
+class ImageSourceEditor(tk.LabelFrame):
     def __init__(self, master: tk.Widget):
         tk.LabelFrame.__init__(self, master, text='source', width=100, height=50)
         self._source = EmptySource()
@@ -24,7 +24,7 @@ class SourceEditor(tk.LabelFrame):
         self.widgets: List[tk.Widget] = []
         self.update_bus = Subject()
         self.update_bus.subscribe(on_next=self._redraw)
-        self._redraw()
+        self.request_update()
 
     @property
     def source(self) -> DataSource:
@@ -32,7 +32,7 @@ class SourceEditor(tk.LabelFrame):
 
     @property
     def source_descriptor(self):
-        buffer = self.source.get_buffer()
+        buffer = self.source.get_data()
         return '{name} {shape[1]}x{shape[0]} {type}'.format(name=str(self._source),
                                                             shape=buffer.shape,
                                                             type=buffer.dtype)
@@ -41,35 +41,35 @@ class SourceEditor(tk.LabelFrame):
         if path is None or path == '':
             return
         self._source = FileSource.from_rgb(path)
-        self.redraw()
+        self.request_update()
 
     def save_image(self, path: str = None):
         if path is None or path == '':
             return
         print('save to {}'.format(path))
-        img = self.source.get_buffer()
+        img = self.source.get_data()
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.imwrite(path, img)
 
     def reset(self):
         self.pipeline = PipelineOperator()
-        self.redraw()
+        self.request_update()
 
     def push_operator(self, op: DataOperator):
         self.pipeline = self.pipeline | op()
-        self.redraw()
+        self.request_update()
 
     def pop_operator(self):
         self.pipeline = PipelineOperator(self.pipeline.pipeline[:-1])
-        self.redraw()
+        self.request_update()
 
     def remove_operator(self, op: DataOperator):
         pipe = self.pipeline.pipeline
         pipe.remove(op)
         self.pipeline = PipelineOperator(pipe)
-        self.redraw()
+        self.request_update()
 
-    def redraw(self):
+    def request_update(self):
         self.update_bus.on_next(self.source)
 
     def _redraw(self, source=DataSource):
@@ -100,7 +100,7 @@ class SourceEditor(tk.LabelFrame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    widget = SourceEditor(root)
+    widget = ImageSourceEditor(root)
     widget.pack(fill="both", expand=True, side=tk.BOTTOM)
 
     root.mainloop()

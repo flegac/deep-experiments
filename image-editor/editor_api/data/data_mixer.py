@@ -20,9 +20,9 @@ class _MixedSource(DataSource):
         self._operator = operator
         self._sources = sources
 
-    def get_buffer(self):
+    def get_data(self):
         buffers = [
-            _.get_buffer()
+            _.get_data()
             for _ in self._sources
         ]
         return self._operator(buffers)

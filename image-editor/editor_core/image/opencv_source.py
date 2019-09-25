@@ -3,10 +3,10 @@ import os
 import cv2
 
 from editor_api.data.data_mixer import Buffer
-from editor_api.data.data_source import DataSource
+from editor_api.data.data_source import ImageSource
 
 
-class OpencvSource(DataSource):
+class OpencvSource(ImageSource):
     @staticmethod
     def from_gray(path: str):
         return OpencvSource(path, cv2.IMREAD_GRAYSCALE)

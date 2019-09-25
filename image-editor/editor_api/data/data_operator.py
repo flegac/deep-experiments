@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Any
 
 from editor_api.data.buffer import Buffer
 from editor_api.data.data_source import DataSource
 
 
 class DataOperator(object):
-    def apply(self, source: Buffer) -> Buffer:
+    def apply(self, source: DataSource) -> Any:
         raise NotImplementedError()
 
     def as_source(self, source: DataSource) -> DataSource:
@@ -48,5 +48,5 @@ class _ComplexSource(DataSource):
         self._operator = operator
         self._source = source
 
-    def get_buffer(self) -> Buffer:
-        return self._operator.apply(self._source.get_buffer())
+    def get_data(self) -> Buffer:
+        return self._operator.apply(self._source.get_data())

@@ -28,7 +28,7 @@ class ImageView(tk.Frame):
         self.data = None
         self.image_id = None
 
-        self.viewport_controller = ViewController(self.canvas, self.redraw)
+        self.viewport_controller = ViewController(self.canvas, self.request_update)
 
         # Bind events to the Canvas
         self.canvas.bind('<Configure>', lambda _: self._redraw(None))
@@ -38,14 +38,14 @@ class ImageView(tk.Frame):
     def mouse_image_coords(self):
         return self.viewport_controller.mouse_image_coords()
 
-    def redraw(self, source: DataSource = None):
+    def request_update(self, source: DataSource = None):
         if not isinstance(source, DataSource):
             source = None
         self._redraw_bus.on_next(source)
 
     def _redraw(self, source: DataSource = None):
         if source is not None:
-            self.data = source.get_buffer()
+            self.data = source.get_data()
         if self.image_id:
             self.canvas.delete(self.image_id)
         if self.data is None:
@@ -61,6 +61,6 @@ class ImageView(tk.Frame):
 if __name__ == '__main__':
     root = tk.Tk()
     editor = ImageView(root)
-    editor.redraw(DataUtils.random_source)
+    editor.request_update(DataUtils.random_source)
     editor.pack(fill='both', expand=True)
     root.mainloop()

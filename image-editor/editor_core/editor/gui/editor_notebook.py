@@ -5,7 +5,7 @@ from dataclasses import asdict
 from tkinter import ttk
 from typing import Callable, Any
 
-from editor_core.dataframe.gui.dataset_editor import DatasetEditor
+from editor_core.table.gui.table_editor import TableEditor
 from editor_core.image.gui.image_editor import ImageEditor
 from editor_core.text.gui.text_editor import TextEditor
 from editor_core.editor.event_bus import OPEN_FILE_BUS, OpenFileEvent
@@ -13,7 +13,7 @@ from editor_core.editor.event_bus import OPEN_FILE_BUS, OpenFileEvent
 EditorProvider = Callable[[tk.Widget, str, str], Any]
 
 EDITORS = {
-    'dataset': DatasetEditor,
+    'dataset': TableEditor,
     'image': ImageEditor,
     'text': TextEditor
 }
@@ -33,7 +33,7 @@ class EditorNotebook(tk.LabelFrame):
         if editor_type is not None:
             self._create_editor(name, path, EDITORS[editor_type])
         elif path.endswith('.csv'):
-            self._create_editor(name, path, DatasetEditor)
+            self._create_editor(name, path, TableEditor)
         elif imghdr.what(path) is not None:
             self._create_editor(name, path, ImageEditor)
         elif path.endswith('.txt') or path.endswith('.json') or path.endswith('.py'):

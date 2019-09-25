@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from editor_core.stats_visus.gui.histogram_panel import HistogramPanel
-from editor_core.datasource.gui.source_editor import SourceEditor
 from editor_core.dataoperator.gui.operator_toolbox import OperatorToolbox
+from editor_core.image.gui.image_source_editor import ImageSourceEditor
+from editor_core.stats_visus.gui.histogram_panel import HistogramPanel
 from editor_core.tagging.gui.box_tag_panel import BoxTagPanel
 
 
@@ -10,7 +10,7 @@ class ImageControlPanel(tk.Frame):
     def __init__(self, master: tk.Widget):
         tk.Frame.__init__(self, master)
 
-        self.source_editor = SourceEditor(self)
+        self.source_editor = ImageSourceEditor(self)
         self.source_editor.pack(fill='both', expand=True, side=tk.TOP)
 
         self.transform_editor = OperatorToolbox(self, self.source_editor.push_operator)

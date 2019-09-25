@@ -20,11 +20,12 @@ class ImageEditor(tk.Frame):
         # editors
         self.control_panel = ImageControlPanel(self)
         self.control_panel.grid(row=0, column=1, sticky='nsew')
-        self.control_panel.source_editor.update_bus.subscribe(on_next=self.view.redraw)
+        self.control_panel.source_editor.update_bus.subscribe(on_next=self.view.request_update)
 
-        box_painter = self.control_panel.box.box_painter
-        box_painter.update_bus.subscribe(on_next=lambda _: self.view.redraw(self.control_panel.source_editor.source | box_painter))
-        self.view.canvas.bind_all('a', lambda _: box_painter.create_box(self.view.mouse_image_coords()))
+        tag_box = self.control_panel.box.tag_box
+        tag_box.update_bus.subscribe(
+            on_next=lambda _: self.view.request_update(tag_box.as_source(self.control_panel.source_editor.source)))
+        self.view.canvas.bind_all('a', lambda _: tag_box.create_box(self.view.mouse_image_coords()))
 
         if path is not None:
             self.control_panel.source_editor.open_image(path)

@@ -1,5 +1,5 @@
-from editor_core.datasource.opencv_source import OpencvSource
-from editor_core.datasource.rasterio_source import RasterioSource
+from editor_core.image.opencv_source import OpencvSource
+from editor_core.image.rasterio_source import RasterioSource
 
 
 class FileSource(object):
