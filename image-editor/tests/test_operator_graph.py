@@ -2,10 +2,10 @@ from typing import List
 
 import numpy as np
 
-from editor_api.data.data_mixer import Buffer, DataMixer
-from editor_api.data.data_operator import DataOperator
-from editor_api.data.data_graph import DataGraph, seq
-from editor_api.data.data_utils import DataUtils
+from data_toolbox.data.data_mixer import Buffer, DataMixer
+from data_toolbox.data.data_operator import DataOperator
+from data_toolbox.data.data_graph import DataGraph
+from data_toolbox.buffer.buffer_factory import ImageFactory
 
 
 class Op(DataOperator):
@@ -22,7 +22,7 @@ class Mix(DataMixer):
 
 
 # sources & operators
-s = DataUtils.var_source('x')
+s = ImageFactory.variable('x')
 op = Op()
 mix = Mix()
 
