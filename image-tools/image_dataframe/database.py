@@ -1,6 +1,7 @@
 import glob
 import os
 import uuid
+from typing import List
 
 import cv2
 import numpy as np
@@ -13,18 +14,15 @@ from sklearn.pipeline import Pipeline
 from image_clustering.tiler import GridTiler, Box
 
 
-def df_from_path(path: str):
-    y = glob.glob('{}/*_mask.tif'.format(path))
-    x1 = [_.replace('_mask.tif', '_0.tif') for _ in y]
-    x2 = [_.replace('_mask.tif', '_1.tif') for _ in y]
-    return pd.DataFrame({
+def tile_dataframe(y_paths: List[str], tiler: GridTiler):
+    x1 = [_.replace('_mask.tif', '_0.tif') for _ in y_paths]
+    x2 = [_.replace('_mask.tif', '_1.tif') for _ in y_paths]
+    df = pd.DataFrame({
         'x1': x1,
         'x2': x2,
-        'y': y
+        'y': y_paths
     })
 
-
-def tile_dataframe(df: pd.DataFrame, tiler: GridTiler):
     print('tiling ...')
 
     def build_row(row):
@@ -63,16 +61,23 @@ def tile_dataframe(df: pd.DataFrame, tiler: GridTiler):
 
 
 class Clustering(object):
+    @staticmethod
+    def from_file(path: str):
+        return Clustering(path)
+
     def __init__(self, path: str, df: pd.DataFrame = None, n_clusters: int = 10):
-        self.n_clusters = n_clusters
         self.path = path
         if os.path.exists(path):
             self.pipeline = load(path)
         else:
             self.pipeline = Pipeline(steps=[
-                ('clustering', KMeans(n_clusters=n_clusters, n_init=20)),
+                ('clustering', KMeans(n_clusters=n_clusters, n_init=20, random_state=0)),
             ])
             self.fit(df)
+
+    @property
+    def n_clusters(self):
+        return self.pipeline['clustering'].n_clusters
 
     def predict(self, dataset: pd.DataFrame):
         print('predict ...')
@@ -90,39 +95,42 @@ class Clustering(object):
         box = Box.from_limits(*row[3:7])
         x1 = cv2.imread(row[0])
         x2 = cv2.imread(row[1])
-        return np.hstack((box.cut(x1), box.cut(x2)))
+        return np.hstack((box.crop(x1), box.crop(x2)))
 
+
+images_path = glob.glob('../../feat-detection/detection/images/*_mask.png')
 
 os.makedirs('data', exist_ok=True)
 dataset_path = 'data/dataset.csv'
 tile_size = 64
-stride = 128
+stride = 16
+n_clusters = 8
 
 if os.path.exists(dataset_path):
     df = pd.read_csv(dataset_path)
 else:
     df = tile_dataframe(
-        df=df_from_path('../../feat-detection/detection/images'),
+        y_paths=images_path,
         tiler=GridTiler(tile_size=tile_size, stride=stride)
     )
     df.to_csv(dataset_path, index=False)
 
 dataset = df[['avg_b', 'avg_g', 'avg_r', 'std_b', 'std_g', 'std_r']]
-model = Clustering('data/model.joblib', dataset)
+model = Clustering('data/model.joblib', dataset, n_clusters=n_clusters)
 model.save()
 df['k'] = model.predict(dataset)
 
 for i in range(model.n_clusters):
     print('tiles[{}] : {}'.format(i, len(df[df.k == i][df.tagged > 0].values)))
+    df[df.k == i].to_csv('data/dataset_{}.csv'.format(i))
 
 for i in range(model.n_clusters):
     base = 'data/{}'.format(i)
     os.makedirs(base, exist_ok=True)
-
-    for _ in df[df.k == i][df.tagged > 0].sample(n=50, replace=True).values:
+    for _ in df[df.k == i][df.tagged > 0].sample(n=250).values:
         box = Box.from_limits(*_[3:7])
-        img1 = box.cut(cv2.imread(_[0]))
-        img2 = box.cut(cv2.imread(_[1]))
-        img3 = box.cut(cv2.imread(_[2], cv2.IMREAD_COLOR) * 255).astype('uint8')
+        img1 = box.crop(cv2.imread(_[0]))
+        img2 = box.crop(cv2.imread(_[1]))
+        img3 = box.crop(cv2.imread(_[2], cv2.IMREAD_COLOR) * 255).astype('uint8')
         if img1.shape[:2] == (tile_size, tile_size):
             cv2.imwrite(os.path.join(base, str(uuid.uuid4()) + '.png'), np.hstack((img1, img2, img3)))

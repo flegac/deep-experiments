@@ -6,8 +6,10 @@ from typing import List, Any, Callable
 from rx.subject import Subject
 
 from data_editor.editor_config import EditorManager
+from data_editor.project.source_browser import SourceBrowser
 from data_editor.project_config import ProjectConfig, ProjectManager
 from data_editor.utils.file_select import ask_open_project, ask_dir_selection
+from data_editor.utils.source_loader import load_source
 
 
 class ProjectBrowser(tk.LabelFrame):
@@ -20,7 +22,6 @@ class ProjectBrowser(tk.LabelFrame):
 
         self.project: ProjectConfig = None
         self.canvas = None
-        self.on_open = on_open
 
         button = tk.Button(self, text='open', command=lambda: self.open_project(ask_open_project()))
         button.pack(expand=False, fill=tk.X, side=tk.TOP)
@@ -30,6 +31,10 @@ class ProjectBrowser(tk.LabelFrame):
 
         button = tk.Button(self, text='add source', command=lambda: self.add_path(self.project.sources))
         button.pack(expand=False, fill=tk.X, side=tk.TOP)
+
+        self.source_browser = SourceBrowser(self, on_open)
+        self.source_browser.pack(expand=False, fill=tk.X, side=tk.BOTTOM)
+
         self.request_update(manager.config.project)
 
     def add_path(self, target: List[str], path: str = None):
@@ -56,7 +61,9 @@ class ProjectBrowser(tk.LabelFrame):
         sc = ScrolledCanvas(self, bg="white", highlightthickness=0, takefocus=1, width=200)
         sc.frame.pack(expand=True, fill="both", side=tk.BOTTOM)
 
-        node = MyTreeNodeFactory.new_class(self.on_open)(sc.canvas, None, ProjectTreeItem(self.project))
+        node = MyTreeNodeFactory.new_class(lambda _: self.source_browser.add_source(load_source(_)))(sc.canvas, None,
+                                                                                                     ProjectTreeItem(
+                                                                                                         self.project))
         node.expand()
 
         return sc.frame

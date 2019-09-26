@@ -8,31 +8,27 @@ from data_toolbox.table.table_source import TableSource
 
 
 class TableEditor(tk.LabelFrame):
-    def __init__(self, master: tk.Widget, name: str = None, path: str = None):
+    def __init__(self, master: tk.Widget, name: str = None, source: TableSource = None):
         super().__init__(master, text="data", width=300)
-
-        self.source = TableSource(columns=['A', 'B', 'C', 'D'])
-        self.source.add_row([0, 0, 0, 0])
 
         self.table = Table(
             self,
-            dataframe=self.source.get_table(),
             showtoolbar=True,
             showstatusbar=True,
         )
         self.table.show()
 
-        if path is not None:
-            self.open_dataset(path)
+        self.open_dataset(source)
 
     def ask_redraw(self, data: pd.DataFrame):
         self.table.model.df = data
         self.table.redraw()
 
-    def open_dataset(self, path: str):
-        self.source.load(path)
-        self.table.model.df = self.source.get_table()
-        self.table.redraw()
+    def open_dataset(self, source: TableSource):
+        if source is not None:
+            self.source = source
+            self.table.model.df = self.source.get_table()
+            self.table.redraw()
 
 
 if __name__ == '__main__':

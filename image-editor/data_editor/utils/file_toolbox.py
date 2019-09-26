@@ -2,25 +2,16 @@ import tkinter as tk
 from typing import Callable, Any
 
 from data_editor.utils.file_select import ask_open_image, ask_save_file
+from data_editor.utils.generic_toolbox import GenericToolbox
 
 
-class FileToolbox(tk.Frame):
+class FileToolbox(GenericToolbox):
+
     def __init__(self, master: tk.Widget, open_func: Callable[[str], Any], save_func: Callable[[str], Any]):
-        tk.Frame.__init__(self, master)
-
-        button = tk.Button(
-            self,
-            text='Open',
-            command=lambda: open_func(ask_open_image())
-        )
-        button.pack(fill='both', expand=True, side=tk.LEFT)
-
-        button = tk.Button(
-            self,
-            text='Save',
-            command=lambda: save_func(ask_save_file())
-        )
-        button.pack(fill='both', expand=True, side=tk.RIGHT)
+        super().__init__(master, {
+            'Open': lambda: open_func(ask_open_image()),
+            'Save': lambda: save_func(ask_save_file())
+        })
 
 
 if __name__ == '__main__':

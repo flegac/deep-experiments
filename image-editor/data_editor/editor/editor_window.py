@@ -1,3 +1,4 @@
+import imghdr
 import tkinter as tk
 from tkinter import messagebox
 
@@ -7,6 +8,8 @@ from data_editor.project.project_browser import ProjectBrowser
 from data_editor.project_config import ProjectManager
 from data_editor.utils.file_select import ask_open_project, ask_open_image, ask_open_dataset
 from data_editor.utils.ui_utils import build_menu
+from data_toolbox.buffer.buffer_factory import ImageFactory
+from data_toolbox.table.table_source import TableSource
 
 
 class EditorWindow(tk.Tk):
@@ -24,7 +27,7 @@ class EditorWindow(tk.Tk):
 
         self.project_browser = ProjectBrowser(
             frame, ProjectManager(),
-            on_open=lambda path: self.notebook.request_update(path=path))
+            on_open=lambda path: self.notebook.request_update(path))
         frame.add(self.project_browser)
 
         self.notebook = EditorNotebook(frame, name='editor')
@@ -33,11 +36,11 @@ class EditorWindow(tk.Tk):
     def init_menu(self):
         menu = {
             'File': {
-                'New image': lambda: self.notebook.request_update('image', name='editor'),
-                'Open image': lambda: self.notebook.request_update('image', path=ask_open_image()),
+                'New image': lambda: self.notebook.request_update(ImageFactory.empty),
+                'Open image': lambda: self.notebook.request_update(ImageFactory.from_rgb(ask_open_image())),
 
-                'New data': lambda: self.notebook.request_update('dataset', name='data'),
-                'Open data': lambda: self.notebook.request_update('dataset', path=ask_open_dataset()),
+                'New data': lambda: self.notebook.request_update(TableSource()),
+                'Open data': lambda: self.notebook.request_update(TableSource().load(ask_open_dataset())),
 
                 'Open project': lambda: self.project_browser.request_update(ask_open_project()),
 

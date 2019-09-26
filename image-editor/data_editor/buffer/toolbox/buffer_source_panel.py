@@ -4,20 +4,21 @@ from typing import List
 import cv2
 from rx.subject import Subject
 
+from data_editor.utils.file_toolbox import FileToolbox
+from data_toolbox.buffer.buffer_factory import EmptySource, ImageFactory
+from data_toolbox.buffer.operator.normalize import NormalizeOperator
+from data_toolbox.buffer.source.buffer_source import BufferSource
 from data_toolbox.data.data_operator import DataOperator, PipeOperator
 from data_toolbox.data.data_source import DataSource
-from data_toolbox.buffer.buffer_factory import EmptySource, ImageFactory
-from data_editor.utils.file_toolbox import FileToolbox
-from data_toolbox.buffer.operator.normalize import NormalizeOperator
 
 
 class BufferSourcePanel(tk.LabelFrame):
     def __init__(self, master: tk.Widget):
-        tk.LabelFrame.__init__(self, master, text='source', width=100, height=50)
+        tk.LabelFrame.__init__(self, master, text='buffer', width=100, height=50)
         self._source = EmptySource()
         self.pipeline: PipeOperator = PipeOperator([NormalizeOperator()])
 
-        self.file_box = FileToolbox(self, self.open_image, self.save_image)
+        self.file_box = FileToolbox(self, lambda _: self.open_image(ImageFactory.from_rgb(_)), self.save_image)
         self.file_box.pack(expand=True, fill='both', side=tk.BOTTOM)
 
         self.widgets: List[tk.Widget] = []
@@ -36,10 +37,10 @@ class BufferSourcePanel(tk.LabelFrame):
                                                             shape=buffer.shape,
                                                             type=buffer.dtype)
 
-    def open_image(self, path: str = None):
-        if path is None or path == '':
+    def open_image(self, source: BufferSource = None):
+        if source is None:
             return
-        self._source = ImageFactory.from_rgb(path)
+        self._source = source
         self.request_update()
 
     def save_image(self, path: str = None):
