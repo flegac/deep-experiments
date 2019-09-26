@@ -11,7 +11,7 @@ from data_editor.utils.file_toolbox import FileToolbox
 from data_toolbox.buffer.operator.normalize import NormalizeOperator
 
 
-class ImageSourcePanel(tk.LabelFrame):
+class BufferSourcePanel(tk.LabelFrame):
     def __init__(self, master: tk.Widget):
         tk.LabelFrame.__init__(self, master, text='source', width=100, height=50)
         self._source = EmptySource()
@@ -99,7 +99,7 @@ class ImageSourcePanel(tk.LabelFrame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    widget = ImageSourcePanel(root)
+    widget = BufferSourcePanel(root)
     widget.pack(fill="both", expand=True, side=tk.BOTTOM)
 
     root.mainloop()
