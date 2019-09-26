@@ -1,4 +1,3 @@
-import imghdr
 import tkinter as tk
 from tkinter import messagebox
 
@@ -54,6 +53,10 @@ class EditorWindow(tk.Tk):
                 str(_()): {}
                 for _ in EditorManager.plugin.operators()
             },
+            'Mixer': {
+                'Blend': {}
+            },
+
             'Help': {
                 'Help': self.help,
                 'About': {}

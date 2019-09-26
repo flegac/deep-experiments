@@ -21,7 +21,6 @@ class ProjectBrowser(tk.LabelFrame):
         self.manager = manager
 
         self.project: ProjectConfig = None
-        self.canvas = None
 
         button = tk.Button(self, text='open', command=lambda: self.open_project(ask_open_project()))
         button.pack(expand=False, fill=tk.X, side=tk.TOP)
@@ -32,8 +31,23 @@ class ProjectBrowser(tk.LabelFrame):
         button = tk.Button(self, text='add source', command=lambda: self.add_path(self.project.sources))
         button.pack(expand=False, fill=tk.X, side=tk.TOP)
 
+        self.canvas = ScrolledCanvas(self, bg="white", highlightthickness=0, takefocus=1, width=250)
+
+        def zoom(event):
+            # Respond to Linux (event.num) or Windows (event.delta) wheel event
+            if event.num == 5 or event.delta == -120:
+                self.canvas.canvas.yview_scroll(1, "unit")
+            if event.num == 4 or event.delta == 120:
+                self.canvas.canvas.yview_scroll(-1, "unit")
+
+        self.canvas.canvas.bind('<Button-4>', zoom)
+        self.canvas.canvas.bind('<Button-5>', zoom)
+        self.canvas.canvas.bind('<MouseWheel>', zoom)
+
+        self.canvas.frame.pack(expand=False, fill=tk.X, side=tk.TOP)
+
         self.source_browser = SourceBrowser(self, on_open)
-        self.source_browser.pack(expand=False, fill=tk.X, side=tk.BOTTOM)
+        self.source_browser.pack(expand=False, fill=tk.X, side=tk.TOP)
 
         self.request_update(manager.config.project)
 
@@ -44,7 +58,7 @@ class ProjectBrowser(tk.LabelFrame):
             print('could not open project :' + str(path))
             return
         target.append(path)
-        self.canvas = self.redraw_explorer()
+        self.redraw_explorer()
         self.manager.save(self.project)
 
     def open_project(self, path: str = None):
@@ -52,21 +66,15 @@ class ProjectBrowser(tk.LabelFrame):
         self.manager.save(self.project)
         self.manager.config.project = self.project.name
         EditorManager.save(self.manager.config)
-        self.canvas = self.redraw_explorer()
+        self.redraw_explorer()
 
     def redraw_explorer(self):
-        if self.canvas is not None:
-            self.canvas.destroy()
-
-        sc = ScrolledCanvas(self, bg="white", highlightthickness=0, takefocus=1, width=200)
-        sc.frame.pack(expand=True, fill="both", side=tk.BOTTOM)
-
-        node = MyTreeNodeFactory.new_class(lambda _: self.source_browser.add_source(load_source(_)))(sc.canvas, None,
-                                                                                                     ProjectTreeItem(
-                                                                                                         self.project))
+        node = MyTreeNodeFactory.new_class(lambda _: self.source_browser.add_source(load_source(_)))(
+            self.canvas.canvas,
+            None,
+            ProjectTreeItem(self.project)
+        )
         node.expand()
-
-        return sc.frame
 
     def request_update(self, project_name: str):
         self.update_bus.on_next(project_name)
@@ -160,11 +168,13 @@ class ProjectTreeItem(TreeItem):
         sources = self.project.sources
         sources.sort(key=os.path.normcase)
 
-        return [
+        children = [
             FileTreeItem(self.project.workspace),
             MultiRootFileTreeItem('datasets', self.project.datasets),
             MultiRootFileTreeItem('sources', self.project.sources),
         ]
+
+        return children
 
 
 if __name__ == '__main__':

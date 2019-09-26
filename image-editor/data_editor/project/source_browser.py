@@ -10,9 +10,9 @@ from data_toolbox.data.data_source import DataSource
 from data_toolbox.table.table_source import TableSource
 
 
-class SourceBrowser(tk.Frame):
+class SourceBrowser(tk.LabelFrame):
     def __init__(self, master: tk.Widget, on_open: Callable[[BufferSource], Any] = None):
-        tk.Frame.__init__(self, master)
+        tk.LabelFrame.__init__(self,  master,text='ttt')
         self.update_bus = Subject()
         self.update_bus.subscribe(on_next=self._redraw)
 
@@ -23,7 +23,7 @@ class SourceBrowser(tk.Frame):
             'merge': self.merge_action,
             'close': self.close_action,
             'view': lambda: None,
-        }).pack(expand=True, fill='both', side=tk.BOTTOM)
+        }).pack(expand=False, fill=tk.X, side=tk.BOTTOM)
 
         self._widgets: List[tk.Widget] = []
         self._checkboxes: Dict[DataSource, tk.IntVar] = dict()
@@ -76,7 +76,7 @@ class SourceBrowser(tk.Frame):
 
     def _create_source_group(self, label: str, sources: List[DataSource]):
         frame = tk.LabelFrame(self, text=label, width=100, height=25)
-        frame.pack(fill="both", expand=True, side=tk.TOP)
+        frame.pack(fill=tk.X, expand=False, side=tk.TOP)
         for source in sources:
             widget, var = self._create_source_widget(frame, source)
             self._checkboxes[source] = var

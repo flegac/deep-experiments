@@ -1,24 +1,23 @@
 import tkinter as tk
 from typing import Callable
 
-from data_toolbox.data.data_operator import DataOperator
 from data_editor.editor_config import EditorManager
+from data_toolbox.data.data_operator import DataOperator
 
 
 class OperatorToolbox(tk.LabelFrame):
     def __init__(self, master: tk.Widget, callback: Callable[[DataOperator], None]):
         tk.LabelFrame.__init__(self, master, text='operator', width=100, height=50)
 
-        operators = EditorManager.plugin.operators()
+        def _callback(op: DataOperator):
+            def run():
+                callback(op)
 
+            return run
+
+        operators = EditorManager.plugin.operators()
         for i in range(len(operators)):
             _ = operators[i]()
-
-            def _callback(op: DataOperator):
-                def run():
-                    callback(op)
-
-                return run
 
             button = tk.Button(
                 self,

@@ -11,22 +11,17 @@ class ImageControlPanel(tk.Frame):
         tk.Frame.__init__(self, master)
 
         self.source_editor = BufferSourcePanel(self)
-        self.source_editor.pack(fill='both', expand=True, side=tk.TOP)
+        self.source_editor.pack(fill=tk.X, expand=False, side=tk.TOP)
 
         self.transform_editor = OperatorToolbox(self, self.source_editor.push_operator)
-        self.transform_editor.pack(fill='both', expand=True, side=tk.TOP)
-
-        self.visu_editor = HistogramPanel(self)
-        self.visu_editor.pack(fill='both', expand=True, side=tk.TOP)
+        self.transform_editor.pack(fill=tk.X, expand=False, side=tk.TOP)
 
         self.box = BoxTagPanel(self)
-        self.box.pack(fill='both', expand=True, side=tk.TOP)
+        self.box.pack(fill=tk.X, expand=False, side=tk.TOP)
 
-        self.text = tk.StringVar()
-        self.label = tk.Label(self, textvariable=self.text)
-        self.label.pack(fill='both', expand=True, side=tk.TOP)
+        self.visu_editor = HistogramPanel(self)
+        self.visu_editor.pack(fill='both', expand=False, side=tk.BOTTOM)
 
-        self.source_editor.update_bus.subscribe(on_next=lambda _: self.text.set(self.source_editor.source_descriptor))
         self.source_editor.update_bus.subscribe(on_next=lambda _: self.visu_editor.update_data(_))
 
 
