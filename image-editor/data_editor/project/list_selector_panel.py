@@ -3,7 +3,7 @@ from typing import List, Dict, Callable, Any, Set
 
 from rx.subject import Subject
 
-from data_editor.utils.generic_toolbox import GenericToolbox
+from data_editor.utils.toolbox import Toolbox
 from data_toolbox.buffer.source.buffer_source import BufferSource
 from data_toolbox.data.data_source import DataSource
 
@@ -11,7 +11,7 @@ from data_toolbox.data.data_source import DataSource
 class ListSelectorPanel(tk.Frame):
     def __init__(self, master: tk.Widget,
                  name: str,
-                 toolbox_provider: 'Callable[[ListSelectorPanel], GenericToolbox]',
+                 toolbox_provider: 'Callable[[ListSelectorPanel], Toolbox]',
                  on_open: Callable[[BufferSource], Any] = None):
         tk.Frame.__init__(self, master)
         self.update_bus = Subject()
@@ -96,7 +96,7 @@ class ListSelectorPanel(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    ListSelectorPanel(root, 'selector', lambda _: GenericToolbox(_, {
+    ListSelectorPanel(root, 'selector', lambda _: Toolbox(_, {
         'test1': lambda: None,
         'test2': lambda: None
     }), None).pack(fill="both", expand=True, side=tk.BOTTOM)

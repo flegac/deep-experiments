@@ -3,8 +3,9 @@ from typing import List, Dict, Callable, Any, Set
 
 from rx.subject import Subject
 
-from data_editor.utils.generic_toolbox import GenericToolbox
+from data_editor.utils.toolbox import Toolbox
 from data_toolbox.buffer.mixer.blend_mixer import BlendMixer
+from data_toolbox.buffer.mixer.compare_mixer import CompareMixer
 from data_toolbox.buffer.source.buffer_source import BufferSource
 from data_toolbox.data.data_source import DataSource
 from data_toolbox.table.table_source import TableSource
@@ -12,15 +13,16 @@ from data_toolbox.table.table_source import TableSource
 
 class SourceBrowser(tk.LabelFrame):
     def __init__(self, master: tk.Widget, on_open: Callable[[BufferSource], Any] = None):
-        tk.LabelFrame.__init__(self,  master,text='ttt')
+        tk.LabelFrame.__init__(self, master, text='ttt')
         self.update_bus = Subject()
         self.update_bus.subscribe(on_next=self._redraw)
 
         self._sources: Set[DataSource] = set()
 
         # action box
-        GenericToolbox(self, {
+        Toolbox(self, {
             'merge': self.merge_action,
+            'compare': self.compare_action,
             'close': self.close_action,
             'view': lambda: None,
         }).pack(expand=False, fill=tk.X, side=tk.BOTTOM)
@@ -57,6 +59,12 @@ class SourceBrowser(tk.LabelFrame):
             source = BlendMixer().as_source(selected)
             self.add_source(source)
 
+    def compare_action(self):
+        selected = self.get_selection()
+        if len(selected) > 0:
+            source = CompareMixer().as_source(selected)
+            self.add_source(source)
+
     def request_update(self):
         self.update_bus.on_next(None)
 
@@ -73,7 +81,6 @@ class SourceBrowser(tk.LabelFrame):
         self._create_source_group('tables', tables)
         self._create_source_group('undefined', undefined)
 
-
     def _create_source_group(self, label: str, sources: List[DataSource]):
         frame = tk.LabelFrame(self, text=label, width=100, height=25)
         frame.pack(fill=tk.X, expand=False, side=tk.TOP)
@@ -81,7 +88,8 @@ class SourceBrowser(tk.LabelFrame):
             widget, var = self._create_source_widget(frame, source)
             self._checkboxes[source] = var
         self._widgets.append(frame)
-
+        import os
+        os.path.abspath(os.path.curdir)
     def _create_source_widget(self, parent: tk.Frame, source: BufferSource):
         var = tk.IntVar()
 

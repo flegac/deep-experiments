@@ -1,9 +1,11 @@
+import tkinter
 import tkinter as tk
+from tkinter.colorchooser import askcolor
 from typing import Tuple
 
 from rx.subject import Subject
 
-from data_editor.utils.file_toolbox import FileToolbox
+from data_editor.utils.toolbox import FileToolbox
 from data_toolbox.tagging.box_tag_source import BoxTagSource
 
 
@@ -38,7 +40,17 @@ class BoxTagPanel(tk.LabelFrame):
             command=self.request_update
         )
         button.pack(fill='both', expand=True, side=tk.BOTTOM)
+
+        button = tk.Button(
+            self,
+            text='Color',
+            command=self.choose_color
+        )
+        button.pack(fill='both', expand=True, side=tk.BOTTOM)
         self._redraw()
+
+    def choose_color(self):
+        rgb_color, web_color = askcolor(parent=self, initialcolor=(255, 0, 0))
 
     def create_box(self, center: Tuple[int, int]):
         self.source.add_box(center, self.brush_size, tag=-1)

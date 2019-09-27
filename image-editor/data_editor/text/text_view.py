@@ -15,9 +15,9 @@ except Exception as e:
     SYNTAXIC_COLORING = False
 
 
-class TextEditor(tk.LabelFrame):
-    def __init__(self, master: tk.Widget, name: str, path: str):
-        super().__init__(master, text="data", width=300)
+class TextView(tk.Frame):
+    def __init__(self, master: tk.Widget):
+        super().__init__(master, width=300)
 
         import tkinter as tk
         from tkinter.scrolledtext import ScrolledText
@@ -30,8 +30,6 @@ class TextEditor(tk.LabelFrame):
                 self.editor.tag_configure(str(k[0]), foreground='#' + color)
 
         self.editor.pack()
-        if path is not None:
-            self.open_text(path)
 
     def open_text(self, path: str):
         with open(path) as _:

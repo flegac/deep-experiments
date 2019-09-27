@@ -7,9 +7,9 @@ from pandastable import Table
 from data_toolbox.table.table_source import TableSource
 
 
-class TableEditor(tk.LabelFrame):
+class TableView(tk.Frame):
     def __init__(self, master: tk.Widget, name: str = None, source: TableSource = None):
-        super().__init__(master, text="data", width=300)
+        super().__init__(master, width=300)
 
         self.table = Table(
             self,
@@ -33,6 +33,6 @@ class TableEditor(tk.LabelFrame):
 
 if __name__ == '__main__':
     root = tk.Tk(className=" Just another Text Editor")
-    editor = TableEditor(root)
+    editor = TableView(root)
     editor.pack()
     root.mainloop()

@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from data_editor.buffer.toolbox.buffer_operator_panel import BufferOperatorPanel
 from data_editor.buffer.toolbox.buffer_operator_toolbox import OperatorToolbox
 from data_editor.buffer.toolbox.buffer_source_panel import BufferSourcePanel
 from data_editor.buffer.toolbox.histogram_panel import HistogramPanel
@@ -10,10 +11,11 @@ class ImageControlPanel(tk.Frame):
     def __init__(self, master: tk.Widget):
         tk.Frame.__init__(self, master)
 
-        self.source_editor = BufferSourcePanel(self)
-        self.source_editor.pack(fill=tk.X, expand=False, side=tk.TOP)
-
-        self.transform_editor = OperatorToolbox(self, self.source_editor.push_operator)
+        self.source = BufferSourcePanel(self)
+        self.source.pack(fill=tk.X, expand=False, side=tk.TOP)
+        self.operator = BufferOperatorPanel(self)
+        self.source.pack(fill=tk.X, expand=False, side=tk.TOP)
+        self.transform_editor = OperatorToolbox(self, self.operator.push_operator)
         self.transform_editor.pack(fill=tk.X, expand=False, side=tk.TOP)
 
         self.box = BoxTagPanel(self)
@@ -22,7 +24,7 @@ class ImageControlPanel(tk.Frame):
         self.visu_editor = HistogramPanel(self)
         self.visu_editor.pack(fill='both', expand=False, side=tk.BOTTOM)
 
-        self.source_editor.update_bus.subscribe(on_next=lambda _: self.visu_editor.update_data(_))
+        self.source.update_bus.subscribe(on_next=lambda _: self.visu_editor.update_data(_))
 
 
 if __name__ == '__main__':

@@ -7,8 +7,8 @@ from dataclasses import dataclass, field
 from rx.subject import Subject
 
 from data_editor.buffer.image_editor import ImageEditor
-from data_editor.table.table_editor import TableEditor
-from data_editor.text.text_editor import TextEditor
+from data_editor.table.table_view import TableView
+from data_editor.text.text_view import TextView
 from data_toolbox.buffer.buffer_factory import ImageFactory
 from data_toolbox.buffer.source.buffer_source import BufferSource
 from data_toolbox.data.data_source import DataSource
@@ -17,7 +17,7 @@ from data_toolbox.table.table_source import TableSource
 EditorProvider = Callable[[tk.Widget, str, str], Any]
 
 EDITORS = {
-    'dataset': TableEditor,
+    'dataset': TableView,
     'image': ImageEditor
 }
 
@@ -38,10 +38,10 @@ class EditorNotebook(tk.LabelFrame):
         if isinstance(source, BufferSource):
             factory = ImageEditor
         elif isinstance(source, TableSource):
-            factory = TableEditor
+            factory = TableView
         elif isinstance(source, str):
             # TODO: create TextSource --> source is a path to a file here :(
-            factory = TextEditor
+            factory = TextView
         else:
             raise ValueError('unsupported file format !')
 

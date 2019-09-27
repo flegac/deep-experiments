@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 from data_editor.editor.editor_notebook import EditorNotebook
+from data_editor.editor.editor_panel import EditorPanel
 from data_editor.editor_config import EditorManager
 from data_editor.project.project_browser import ProjectBrowser
 from data_editor.project_config import ProjectManager
@@ -26,10 +27,12 @@ class EditorWindow(tk.Tk):
 
         self.project_browser = ProjectBrowser(
             frame, ProjectManager(),
-            on_open=lambda path: self.notebook.request_update(path))
+            on_open=lambda path: self.notebook.request_view_update(path))
         frame.add(self.project_browser)
 
-        self.notebook = EditorNotebook(frame, name='editor')
+        self.notebook = EditorPanel(frame, name='editor')
+
+        # self.notebook = EditorNotebook(frame, name='editor')
         frame.add(self.notebook)
 
     def init_menu(self):

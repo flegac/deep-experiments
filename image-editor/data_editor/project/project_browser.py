@@ -1,3 +1,4 @@
+import imghdr
 import os
 import tkinter as tk
 from idlelib.tree import ScrolledCanvas, FileTreeItem, TreeNode, TreeItem
@@ -10,7 +11,8 @@ from data_editor.editor_config import EditorManager
 from data_editor.project.source_browser import SourceBrowser
 from data_editor.project_config import ProjectConfig, ProjectManager
 from data_editor.utils.file_select import ask_open_project, ask_dir_selection
-from data_editor.utils.source_loader import load_source
+from data_toolbox.buffer.buffer_factory import ImageFactory
+from data_toolbox.table.table_source import TableSource
 
 
 class ProjectBrowser(tk.LabelFrame):
@@ -189,6 +191,20 @@ class ProjectTreeItem(TreeItem):
         ]
 
         return children
+
+
+def load_source(path: str):
+    if os.path.isdir(path):
+        return
+    if path.endswith('.csv'):
+        return TableSource().load(path)
+    elif imghdr.what(path) is not None:
+        return ImageFactory.from_rgb(path)
+    elif path.endswith('.txt') or path.endswith('.json') or path.endswith('.py'):
+        # TODO create TextSource
+        return path
+    else:
+        raise ValueError('unsupported file format !')
 
 
 if __name__ == '__main__':

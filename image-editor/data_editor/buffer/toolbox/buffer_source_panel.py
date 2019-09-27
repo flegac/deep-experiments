@@ -4,8 +4,7 @@ import cv2
 from rx.subject import Subject
 
 from data_editor.project.list_selector_panel import ListSelectorPanel
-from data_editor.utils.file_toolbox import FileToolbox
-from data_editor.utils.generic_toolbox import GenericToolbox
+from data_editor.utils.toolbox import Toolbox, FileToolbox
 from data_toolbox.buffer.buffer_factory import EmptySource, ImageFactory
 from data_toolbox.buffer.operator.normalize import NormalizeOperator
 from data_toolbox.buffer.source.buffer_source import BufferSource
@@ -25,7 +24,7 @@ class BufferSourcePanel(tk.LabelFrame):
         label = tk.Label(self, textvariable=self.text)
         label.pack(fill='both', expand=True, side=tk.TOP)
 
-        self.pipeline_panel = ListSelectorPanel(self, 'operators', lambda _: GenericToolbox(_, {
+        self.pipeline_panel = ListSelectorPanel(self, 'operators', lambda _: Toolbox(_, {
             'Clear': lambda: (_.remove_selected(), self.request_update()),
         }), None)
         self.pipeline_panel.pack(fill="both", expand=True, side=tk.TOP)
@@ -36,6 +35,10 @@ class BufferSourcePanel(tk.LabelFrame):
             expand=True, fill='both', side=tk.BOTTOM)
 
         self.request_update()
+
+    @property
+    def operator(self) -> DataOperator:
+        return PipeOperator(self.pipeline_panel.items)
 
     @property
     def source(self) -> DataSource:

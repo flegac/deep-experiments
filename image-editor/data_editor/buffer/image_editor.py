@@ -1,8 +1,11 @@
 import tkinter as tk
 
-from data_editor.buffer.image_control_panel import ImageControlPanel
+from data_editor.editor.control_panel import ImageControlPanel
 from data_editor.buffer.image_view import ImageView
+from data_editor.table.table_view import TableView
+from data_editor.text.text_view import TextView
 from data_toolbox.buffer.source.buffer_source import BufferSource
+from data_toolbox.data_types import DataType
 
 
 class ImageEditor(tk.Frame):
@@ -21,14 +24,18 @@ class ImageEditor(tk.Frame):
         # editors
         self.control_panel = ImageControlPanel(self)
         self.control_panel.grid(row=0, column=1, sticky='nsew')
-        self.control_panel.source_editor.update_bus.subscribe(on_next=self.view.request_update)
+        self.control_panel.source.update_bus.subscribe(on_next=self.view.request_update)
 
         tag_box = self.control_panel.box.source
         self.control_panel.box.update_bus.subscribe(
-            on_next=lambda _: self.view.request_update(tag_box.as_source(self.control_panel.source_editor.source)))
+            on_next=lambda _: self.view.request_update(tag_box.as_source(self.control_panel.source.source)))
         self.view.canvas.bind_all('a', lambda _: self.control_panel.box.create_box(self.view.mouse_image_coords()))
 
-        self.control_panel.source_editor.open_image(source)
+        self.control_panel.source.open_image(source)
+
+    def show_buffer(self, source: BufferSource):
+        self.view.destroy()
+        self.view = ImageEditor(self)
 
 
 if __name__ == '__main__':
