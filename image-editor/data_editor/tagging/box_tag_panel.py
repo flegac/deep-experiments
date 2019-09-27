@@ -1,7 +1,6 @@
-import tkinter
 import tkinter as tk
 from tkinter.colorchooser import askcolor
-from typing import Tuple
+from typing import Tuple, Callable, Any
 
 from rx.subject import Subject
 
@@ -12,52 +11,52 @@ from data_toolbox.tagging.box_tag_source import BoxTagSource
 class BoxTagPanel(tk.LabelFrame):
     def __init__(self, master: tk.Widget):
         tk.LabelFrame.__init__(self, master, text='tags')
-        self.update_bus = Subject()
-        self.update_bus.subscribe(on_next=self._redraw)
+        self._observer = Subject()
+        self.subscribe(self._redraw)
 
         self.source = BoxTagSource()
         self.brush_size = 8
-
         self.text = tk.StringVar()
-        label = tk.Label(self, textvariable=self.text)
-        label.pack(fill='both', expand=True, side=tk.TOP)
 
-        self.file_box = FileToolbox(self,
-                                    lambda path: (self.source.load(path), self.request_update()),
-                                    lambda path: self.source.save(path))
-        self.file_box.pack(expand=True, fill='both', side=tk.BOTTOM)
+        tk.Label(self, textvariable=self.text).pack(fill='both', expand=True, side=tk.TOP)
 
-        button = tk.Button(
+        FileToolbox(
+            self,
+            lambda path: (self.source.load(path), self._request_update()),
+            lambda path: self.source.save(path)
+        ).pack(expand=True, fill='both', side=tk.BOTTOM)
+
+        tk.Button(
             self,
             text='Clear',
-            command=lambda: (self.source.clear(), self.request_update())
-        )
-        button.pack(fill='both', expand=True, side=tk.LEFT)
+            command=lambda: (self.source.clear(), self._request_update())
+        ).pack(fill='both', expand=True, side=tk.LEFT)
 
-        button = tk.Button(
+        tk.Button(
             self,
             text='Refresh',
-            command=self.request_update
-        )
-        button.pack(fill='both', expand=True, side=tk.BOTTOM)
+            command=self._request_update
+        ).pack(fill='both', expand=True, side=tk.BOTTOM)
 
-        button = tk.Button(
+        tk.Button(
             self,
             text='Color',
             command=self.choose_color
-        )
-        button.pack(fill='both', expand=True, side=tk.BOTTOM)
+        ).pack(fill='both', expand=True, side=tk.BOTTOM)
         self._redraw()
+
+    def subscribe(self, on_next: Callable[[Any], None]):
+        self._observer.subscribe(on_next)
 
     def choose_color(self):
         rgb_color, web_color = askcolor(parent=self, initialcolor=(255, 0, 0))
 
     def create_box(self, center: Tuple[int, int]):
         self.source.add_box(center, self.brush_size, tag=-1)
-        self.request_update()
+        self._request_update()
 
-    def request_update(self):
-        self.update_bus.on_next(self.source)
+    def _request_update(self):
+        self._observer.on_next(self.source)
 
     def _redraw(self, event=None):
         self.text.set('{} items'.format(self.source.get_table().shape[0]))

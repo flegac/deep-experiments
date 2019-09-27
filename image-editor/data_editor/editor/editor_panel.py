@@ -1,8 +1,8 @@
 import imghdr
 import tkinter as tk
 
-from data_editor.editor.control_panel import ImageControlPanel
 from data_editor.buffer.image_view import ImageView
+from data_editor.editor.control_panel import ImageControlPanel
 from data_editor.table.table_view import TableView
 from data_editor.text.text_view import TextView
 from data_toolbox.buffer.buffer_factory import ImageFactory
@@ -28,21 +28,20 @@ class EditorPanel(tk.Frame):
             DataType.TEXT: TextView(self)
         }
 
-        self.view = self.views[DataType.TABLE]
+        self.view = self.views[DataType.BUFFER]
         self.view.grid(row=0, column=0, sticky='nsew')
 
         # editors
         self.control_panel = ImageControlPanel(self)
         self.control_panel.grid(row=0, column=1, sticky='nsew')
-        self.control_panel.source.update_bus.subscribe(on_next=self.request_view_update)
+        # self.control_panel.subscribe(on_next=self.request_view_update)
 
-        tag_box = self.control_panel.box.source
-        self.control_panel.box.update_bus.subscribe(
-            on_next=lambda _: self.request_view_update(tag_box.as_source(self.control_panel.source.source)))
+        self.control_panel.subscribe(
+            on_next=lambda _: self.view.set_source(self.control_panel.get_full_source()))
         self.views[DataType.BUFFER].canvas.bind_all('a', lambda _: self.control_panel.box.create_box(
             self.view.mouse_image_coords()))
 
-        self.control_panel.source.open_image(source)
+        self.control_panel.source.set_source(source)
 
     def request_view_update(self, source: DataSource):
         self.view.grid_forget()
@@ -61,11 +60,10 @@ class EditorPanel(tk.Frame):
             self.view = self.views[DataType.TABLE]
             self.view.open_dataset(source)
         if isinstance(source, BufferSource):
-            source = self.control_panel.source.operator.as_source(source)
-            source = self.control_panel.box.source.as_source(source)
-
             self.view = self.views[DataType.BUFFER]
-            self.view.request_update(source)
+            # self.view.request_update(source)
+            self.control_panel.source.set_source(source)
+
         if isinstance(source, str):
             self.view = self.views[DataType.TEXT]
             self.view.open_text(source)

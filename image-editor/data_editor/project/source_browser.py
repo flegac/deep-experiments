@@ -11,9 +11,9 @@ from data_toolbox.data.data_source import DataSource
 from data_toolbox.table.table_source import TableSource
 
 
-class SourceBrowser(tk.LabelFrame):
+class SourceBrowser(tk.Frame):
     def __init__(self, master: tk.Widget, on_open: Callable[[BufferSource], Any] = None):
-        tk.LabelFrame.__init__(self, master, text='ttt')
+        tk.Frame.__init__(self, master)
         self.update_bus = Subject()
         self.update_bus.subscribe(on_next=self._redraw)
 
@@ -90,6 +90,7 @@ class SourceBrowser(tk.LabelFrame):
         self._widgets.append(frame)
         import os
         os.path.abspath(os.path.curdir)
+
     def _create_source_widget(self, parent: tk.Frame, source: BufferSource):
         var = tk.IntVar()
 

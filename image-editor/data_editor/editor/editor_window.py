@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
 
-from data_editor.editor.editor_notebook import EditorNotebook
 from data_editor.editor.editor_panel import EditorPanel
 from data_editor.editor_config import EditorManager
 from data_editor.project.project_browser import ProjectBrowser
@@ -27,25 +26,23 @@ class EditorWindow(tk.Tk):
 
         self.project_browser = ProjectBrowser(
             frame, ProjectManager(),
-            on_open=lambda path: self.notebook.request_view_update(path))
+            on_open=lambda path: self.editor.request_view_update(path))
         frame.add(self.project_browser)
 
-        self.notebook = EditorPanel(frame, name='editor')
-
-        # self.notebook = EditorNotebook(frame, name='editor')
-        frame.add(self.notebook)
+        self.editor = EditorPanel(frame, name='editor')
+        frame.add(self.editor)
 
     def init_menu(self):
         menu = {
             'File': {
-                'New image': lambda: self.notebook.request_update(ImageFactory.empty),
-                'Open image': lambda: self.notebook.request_update(ImageFactory.from_rgb(ask_open_image())),
+                'New image': lambda: self.editor.request_view_update(ImageFactory.empty),
+                'Open image': lambda: self.editor.request_view_update(ImageFactory.from_rgb(ask_open_image())),
 
-                'New data': lambda: self.notebook.request_update(TableSource()),
-                'Open data': lambda: self.notebook.request_update(TableSource().load(ask_open_dataset())),
+                'New data': lambda: self.editor.request_view_update(TableSource()),
+                'Open data': lambda: self.editor.request_view_update(TableSource().load(ask_open_dataset())),
 
                 'New project': lambda: self.project_browser.create_project(),
-                'Open project': lambda: self.project_browser.request_update(ask_open_project()),
+                'Open project': lambda: self.project_browser.request_view_update(ask_open_project()),
 
                 'Exit': self._on_exit
 

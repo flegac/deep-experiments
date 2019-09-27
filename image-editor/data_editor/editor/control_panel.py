@@ -1,10 +1,12 @@
 import tkinter as tk
+from typing import Callable, Any
 
-from data_editor.buffer.toolbox.buffer_operator_panel import BufferOperatorPanel
-from data_editor.buffer.toolbox.buffer_operator_toolbox import OperatorToolbox
-from data_editor.buffer.toolbox.buffer_source_panel import BufferSourcePanel
-from data_editor.buffer.toolbox.histogram_panel import HistogramPanel
+from data_editor.buffer.buffer_operator_panel import BufferOperatorPanel
+from data_editor.buffer.buffer_operator_toolbox import OperatorToolbox
+from data_editor.buffer.buffer_source_panel import BufferSourcePanel
+from data_editor.buffer.histogram_panel import HistogramPanel
 from data_editor.tagging.box_tag_panel import BoxTagPanel
+from data_toolbox.buffer.source.buffer_source import BufferSource
 
 
 class ImageControlPanel(tk.Frame):
@@ -14,9 +16,9 @@ class ImageControlPanel(tk.Frame):
         self.source = BufferSourcePanel(self)
         self.source.pack(fill=tk.X, expand=False, side=tk.TOP)
         self.operator = BufferOperatorPanel(self)
-        self.source.pack(fill=tk.X, expand=False, side=tk.TOP)
-        self.transform_editor = OperatorToolbox(self, self.operator.push_operator)
-        self.transform_editor.pack(fill=tk.X, expand=False, side=tk.TOP)
+        self.operator.pack(fill=tk.X, expand=False, side=tk.TOP)
+        self.operator_toolbox = OperatorToolbox(self, lambda _: self.operator.push_operator(_))
+        self.operator_toolbox.pack(fill=tk.X, expand=False, side=tk.TOP)
 
         self.box = BoxTagPanel(self)
         self.box.pack(fill=tk.X, expand=False, side=tk.TOP)
@@ -24,7 +26,22 @@ class ImageControlPanel(tk.Frame):
         self.visu_editor = HistogramPanel(self)
         self.visu_editor.pack(fill='both', expand=False, side=tk.BOTTOM)
 
-        self.source.update_bus.subscribe(on_next=lambda _: self.visu_editor.update_data(_))
+        self.subscribe(on_next=lambda _: self.visu_editor.update_data(self.get_processed_source()))
+
+    def get_processed_source(self) -> BufferSource:
+        raw_source = self.source.source
+        processed_source = self.operator.operator.as_source(raw_source)
+        return processed_source
+
+    def get_full_source(self) -> BufferSource:
+        processed_source = self.get_processed_source()
+        tagged_source = self.box.source.as_source(processed_source)
+        return tagged_source
+
+    def subscribe(self, on_next: Callable[[Any], None]):
+        self.source.subscribe(on_next)
+        self.operator.subscribe(on_next)
+        self.box.subscribe(on_next)
 
 
 if __name__ == '__main__':

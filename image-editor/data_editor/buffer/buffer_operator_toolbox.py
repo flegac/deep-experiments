@@ -1,6 +1,8 @@
 import tkinter as tk
 from typing import Callable
 
+from rx.subject import Subject
+
 from data_editor.editor_config import EditorManager
 from data_toolbox.data.data_operator import DataOperator
 

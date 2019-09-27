@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from data_toolbox.data.data_source import DataSource
 from data_toolbox.buffer.buffer_factory import ImageFactory
+from data_toolbox.buffer.source.buffer_source import BufferSource
 
 
 class HistogramPanel(tk.LabelFrame):
@@ -23,7 +23,7 @@ class HistogramPanel(tk.LabelFrame):
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH)
 
-    def update_data(self, source: DataSource):
+    def update_data(self, source: BufferSource):
         data = source.get_data()
 
         if len(data.shape) == 2:

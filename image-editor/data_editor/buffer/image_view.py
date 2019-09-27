@@ -14,8 +14,8 @@ class ImageView(tk.Frame):
 
     def __init__(self, master: tk.Widget):
         tk.Frame.__init__(self, master)
-        self._redraw_bus = Subject()
-        self._redraw_bus.pipe(
+        self._source_change_bus = Subject()
+        self._source_change_bus.pipe(
             ops.throttle_first(1. / ImageView.MAX_REDRAW_PER_SEC),
             # ops.debounce(1. / ImageView.MAX_REDRAW_PER_SEC),
         ).subscribe(on_next=lambda _: self._redraw(_))
@@ -28,7 +28,7 @@ class ImageView(tk.Frame):
         self.data = None
         self.image_id = None
 
-        self.viewport_controller = ViewController(self.canvas, self.request_update)
+        self.viewport_controller = ViewController(self.canvas, self.set_source)
 
         # Bind events to the Canvas
         self.canvas.bind('<Configure>', lambda _: self._redraw(None))
@@ -38,10 +38,8 @@ class ImageView(tk.Frame):
     def mouse_image_coords(self):
         return self.viewport_controller.mouse_image_coords()
 
-    def request_update(self, source: DataSource = None):
-        if not isinstance(source, DataSource):
-            source = None
-        self._redraw_bus.on_next(source)
+    def set_source(self, source: DataSource = None):
+        self._source_change_bus.on_next(source)
 
     def _redraw(self, source: DataSource = None):
         if source is not None:
@@ -61,6 +59,6 @@ class ImageView(tk.Frame):
 if __name__ == '__main__':
     root = tk.Tk()
     editor = ImageView(root)
-    editor.request_update(ImageFactory.random)
+    editor.set_source(ImageFactory.random)
     editor.pack(fill='both', expand=True)
     root.mainloop()
