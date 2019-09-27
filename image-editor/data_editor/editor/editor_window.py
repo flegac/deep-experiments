@@ -41,6 +41,7 @@ class EditorWindow(tk.Tk):
                 'New data': lambda: self.notebook.request_update(TableSource()),
                 'Open data': lambda: self.notebook.request_update(TableSource().load(ask_open_dataset())),
 
+                'New project': lambda: self.project_browser.create_project(),
                 'Open project': lambda: self.project_browser.request_update(ask_open_project()),
 
                 'Exit': self._on_exit

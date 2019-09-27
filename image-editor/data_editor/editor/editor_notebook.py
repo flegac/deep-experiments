@@ -45,6 +45,10 @@ class EditorNotebook(tk.LabelFrame):
         else:
             raise ValueError('unsupported file format !')
 
+        selected = self.notebook.select()
+        if selected != '':
+            self.notebook.forget(selected)
+
         frame = ttk.Frame(self.notebook)
         self.notebook.add(frame, text=name, underline=0)
         self.notebook.select(frame)

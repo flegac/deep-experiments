@@ -13,5 +13,3 @@ opencv-python
 imutils
 pygments
 
-
-

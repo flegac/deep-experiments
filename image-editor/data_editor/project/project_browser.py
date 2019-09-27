@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 from idlelib.tree import ScrolledCanvas, FileTreeItem, TreeNode, TreeItem
+from tkinter import simpledialog
 from typing import List, Any, Callable
 
 from rx.subject import Subject
@@ -61,7 +62,20 @@ class ProjectBrowser(tk.LabelFrame):
         self.redraw_explorer()
         self.manager.save(self.project)
 
+    def create_project(self):
+        name = simpledialog.askstring("Input", "Project Name",
+                                      parent=self)
+        workspace = os.path.join(self.manager.config.root_path, name)
+        os.makedirs(workspace, exist_ok=True)
+        self.project = ProjectConfig(name=name, workspace=workspace)
+        self.manager.save(self.project)
+        self.manager.config.project = self.project.name
+        EditorManager.save(self.manager.config)
+        self.redraw_explorer()
+
     def open_project(self, path: str = None):
+        if path is None:
+            return
         self.project = self.manager.load(path)
         self.manager.save(self.project)
         self.manager.config.project = self.project.name
