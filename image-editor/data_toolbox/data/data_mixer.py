@@ -42,3 +42,6 @@ class _MixedBufferSource(BufferSource):
             for _ in self._sources
         ]
         return self._operator(buffers)
+
+    def __repr__(self):
+        return '[{}]'.format(['{:.4}'.format(str(_)) for _ in self._sources])

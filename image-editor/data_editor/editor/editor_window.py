@@ -4,7 +4,6 @@ from tkinter import messagebox
 from data_editor.editor.editor_panel import EditorPanel
 from data_editor.editor_config import EditorManager
 from data_editor.project.project_browser import ProjectBrowser
-from data_editor.project_config import ProjectManager
 from data_editor.utils.file_select import ask_open_project, ask_open_image, ask_open_dataset
 from data_editor.utils.ui_utils import build_menu
 from data_toolbox.buffer.buffer_factory import ImageFactory
@@ -24,9 +23,8 @@ class EditorWindow(tk.Tk):
         frame = tk.PanedWindow(orient=tk.HORIZONTAL)
         frame.pack(fill=tk.BOTH, expand=1)
 
-        self.project_browser = ProjectBrowser(
-            frame, ProjectManager(),
-            on_open=lambda path: self.editor.request_view_update(path))
+        self.project_browser = ProjectBrowser(frame)
+        self.project_browser.subscribe(lambda path: self.editor.request_view_update(path))
         frame.add(self.project_browser)
 
         self.editor = EditorPanel(frame, name='editor')

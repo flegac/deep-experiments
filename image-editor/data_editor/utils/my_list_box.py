@@ -1,11 +1,12 @@
 import tkinter as tk
-from typing import Callable, List
+from typing import Callable, List, Any
 
 
 class MyListBox(tk.Frame):
 
-    def __init__(self, master, list_model: Callable[[], List]):
+    def __init__(self, master, list_model: Callable[[], List[Any]]):
         tk.Frame.__init__(self, master)
+        self.list_model = None
 
         scrollbar = tk.Scrollbar(self, orient=tk.VERTICAL)
         self.list = tk.Listbox(self, yscrollcommand=scrollbar.set)
@@ -13,9 +14,10 @@ class MyListBox(tk.Frame):
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.list.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        self.list_model = list_model
+        self.set_model(list_model)
 
-        self.current = None
+    def set_model(self, list_model: Callable[[], List[Any]]):
+        self.list_model = list_model
         self._redraw()
 
     def selected(self):

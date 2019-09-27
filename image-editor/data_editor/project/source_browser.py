@@ -12,10 +12,9 @@ from data_toolbox.table.table_source import TableSource
 
 
 class SourceBrowser(tk.Frame):
-    def __init__(self, master: tk.Widget, on_open: Callable[[BufferSource], Any] = None):
+    def __init__(self, master: tk.Widget):
         tk.Frame.__init__(self, master)
-        self.update_bus = Subject()
-        self.update_bus.subscribe(on_next=self._redraw)
+        self._observer = Subject()
 
         self._sources: Set[DataSource] = set()
 
@@ -29,15 +28,16 @@ class SourceBrowser(tk.Frame):
 
         self._widgets: List[tk.Widget] = []
         self._checkboxes: Dict[DataSource, tk.IntVar] = dict()
+        self._redraw()
 
-        self.on_open = on_open
-        self.request_update()
+    def subscribe(self, on_next=Callable[[Any], None]):
+        self._observer.subscribe(on_next)
 
     def add_source(self, source: DataSource):
         if source is None:
             return
         self._sources.add(source)
-        self.request_update()
+        self._redraw()
 
     def get_selection(self):
         selected = []
@@ -51,7 +51,7 @@ class SourceBrowser(tk.Frame):
         for _ in selected:
             self._sources.remove(_)
         if len(selected) > 0:
-            self.request_update()
+            self._redraw()
 
     def merge_action(self):
         selected = self.get_selection()
@@ -65,10 +65,7 @@ class SourceBrowser(tk.Frame):
             source = CompareMixer().as_source(selected)
             self.add_source(source)
 
-    def request_update(self):
-        self.update_bus.on_next(None)
-
-    def _redraw(self, source=DataSource):
+    def _redraw(self):
         for _ in self._widgets:
             _.destroy()
         self._widgets.clear()
@@ -96,8 +93,7 @@ class SourceBrowser(tk.Frame):
 
         def open_source_callback(source: BufferSource):
             def run():
-                print('open : {}'.format(source))
-                self.on_open(source)
+                self._observer.on_next(source)
 
             return run
 

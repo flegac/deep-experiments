@@ -5,8 +5,6 @@ from idlelib.tree import ScrolledCanvas, FileTreeItem, TreeNode, TreeItem
 from tkinter import simpledialog
 from typing import List, Any, Callable
 
-from rx.subject import Subject
-
 from data_editor.editor_config import EditorManager
 from data_editor.project.source_browser import SourceBrowser
 from data_editor.project_config import ProjectConfig, ProjectManager
@@ -16,13 +14,8 @@ from data_toolbox.table.table_source import TableSource
 
 
 class ProjectBrowser(tk.LabelFrame):
-    def __init__(self, master: tk.Widget, manager: ProjectManager, on_open: Callable[[str], Any]):
+    def __init__(self, master: tk.Widget):
         super().__init__(master, text="project")
-        self.update_bus = Subject()
-        self.update_bus.subscribe(on_next=self.open_project)
-
-        self.manager = manager
-
         self.project: ProjectConfig = None
 
         button = tk.Button(self, text='open', command=lambda: self.open_project(ask_open_project()))
@@ -49,10 +42,14 @@ class ProjectBrowser(tk.LabelFrame):
 
         self.canvas.frame.pack(expand=False, fill=tk.X, side=tk.TOP)
 
-        self.source_browser = SourceBrowser(self, on_open)
+        self.source_browser = SourceBrowser(self)
         self.source_browser.pack(expand=False, fill=tk.X, side=tk.TOP)
 
-        self.request_update(manager.config.project)
+        self.manager = ProjectManager()
+        self.open_project(self.manager.config.project)
+
+    def subscribe(self, on_next=Callable[[Any], None]):
+        self.source_browser.subscribe(on_next)
 
     def add_path(self, target: List[str], path: str = None):
         if path is None:
@@ -91,9 +88,6 @@ class ProjectBrowser(tk.LabelFrame):
             ProjectTreeItem(self.project)
         )
         node.expand()
-
-    def request_update(self, project_name: str):
-        self.update_bus.on_next(project_name)
 
 
 class MyTreeNodeFactory(object):
@@ -209,6 +203,6 @@ def load_source(path: str):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    widget = ProjectBrowser(root, ProjectManager(), lambda _: print(_))
+    widget = ProjectBrowser(root)
     widget.pack(fill='both', expand=True)
     root.mainloop()
