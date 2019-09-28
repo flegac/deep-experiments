@@ -54,7 +54,8 @@ class EditorWindow(tk.Tk):
                 for _ in EditorManager.plugin.operators()
             },
             'Mixer': {
-                'Blend': {}
+                'Blend': {},
+                'Compare': {}
             },
 
             'Help': {

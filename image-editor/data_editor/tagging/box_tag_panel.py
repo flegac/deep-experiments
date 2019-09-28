@@ -10,15 +10,34 @@ from data_toolbox.tagging.box_tag_source import BoxTagSource
 
 class BoxTagPanel(tk.LabelFrame):
     def __init__(self, master: tk.Widget):
-        tk.LabelFrame.__init__(self, master, text='tags')
+        tk.LabelFrame.__init__(self, master, text='tagging')
         self._observer = Subject()
         self.subscribe(self._redraw)
 
         self.source = BoxTagSource()
-        self.brush_size = 8
+
+        self.brush_size = tk.IntVar(value=8)
+        self.brush_tag = tk.IntVar(value=0)
         self.text = tk.StringVar()
 
         tk.Label(self, textvariable=self.text).pack(fill='both', expand=True, side=tk.TOP)
+
+        brush = tk.LabelFrame(self, text='brush')
+        brush.pack(fill='both', expand=True, side=tk.TOP)
+        brush_size = tk.Frame(brush)
+        brush_size.pack(fill=tk.X, expand=False, side=tk.TOP)
+
+        tk.Label(brush_size, text='size').pack(fill=None, expand=False, side=tk.LEFT)
+        tk.Scale(brush_size, variable=self.brush_size, from_=1, to=1024, orient=tk.HORIZONTAL).pack(fill=None,
+                                                                                                    expand=False,
+                                                                                                    side=tk.RIGHT)
+        brush_tag = tk.Frame(brush)
+        brush_tag.pack(fill=tk.X, expand=False, side=tk.TOP)
+
+        tk.Label(brush_tag, text='tag').pack(fill=None, expand=False, side=tk.LEFT)
+        tk.Scale(brush_tag, variable=self.brush_tag, from_=0, to=128, orient=tk.HORIZONTAL).pack(fill=None,
+                                                                                                 expand=False,
+                                                                                                 side=tk.RIGHT)
 
         FileToolbox(
             self,
@@ -52,7 +71,7 @@ class BoxTagPanel(tk.LabelFrame):
         rgb_color, web_color = askcolor(parent=self, initialcolor=(255, 0, 0))
 
     def create_box(self, center: Tuple[int, int]):
-        self.source.add_box(center, self.brush_size, tag=-1)
+        self.source.add_box(center, radius=self.brush_size.get(), tag=self.brush_tag.get())
         self._request_update()
 
     def _request_update(self):

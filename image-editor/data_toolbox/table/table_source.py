@@ -1,3 +1,4 @@
+import os
 from typing import List, Any
 
 import pandas as pd
@@ -10,6 +11,7 @@ class TableSource(DataSource[Table]):
     def __init__(self, columns: List[str] = None):
         self.columns = columns
         self._source = Table(columns=columns)
+        self.path = None
 
     def get_data(self) -> Table:
         return self.get_table()
@@ -23,9 +25,11 @@ class TableSource(DataSource[Table]):
 
     def save(self, path: str):
         self._source.to_csv(path, index=False)
+        self.path = path
 
     def load(self, path: str):
         self.replace(pd.read_csv(path))
+        self.path = path
         return self
 
     def replace(self, source: Table):
@@ -40,3 +44,6 @@ class TableSource(DataSource[Table]):
     def add_row(self, row: List[Any]):
         self._source = self._source.append(dict(zip(self.columns, row)), ignore_index=True)
         return self
+
+    def __repr__(self):
+        return 'Table[{}]'.format(os.path.basename(self.path))
