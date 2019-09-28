@@ -34,9 +34,9 @@ class EditorPanel(tk.Frame):
 
         # events
         self.control_panel.subscribe(
-            on_next=lambda _: self.view.set_source(self.control_panel.get_full_source()))
-        self.views[DataType.BUFFER].canvas.bind_all('a', lambda _: self.control_panel.box.create_box(
-            self.view.mouse_image_coords()))
+            on_next=lambda _: (self.view.reset_viewport(),
+                               self.view.set_source(self.control_panel.get_full_source())))
+        self.view.canvas.bind_all('a', lambda _: self.control_panel.box.create_box(self.view.mouse_image_coords()))
 
         self.control_panel.source.set_source(source)
 
@@ -60,6 +60,7 @@ class EditorPanel(tk.Frame):
             self.view = self.views[DataType.BUFFER]
             # self.view.request_update(source)
             self.control_panel.source.set_source(source)
+
 
         if isinstance(source, str):
             self.view = self.views[DataType.TEXT]

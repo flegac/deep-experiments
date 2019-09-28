@@ -38,6 +38,11 @@ class ImageView(tk.Frame):
     def mouse_image_coords(self):
         return self.viewport_controller.mouse_image_coords()
 
+    def reset_viewport(self):
+        self.viewport_controller.viewport.zoom_factor = 0
+        self.viewport_controller.viewport.x = 0
+        self.viewport_controller.viewport.y = 0
+
     def set_source(self, source: DataSource = None):
         self._source_change_bus.on_next(source)
 
