@@ -13,7 +13,7 @@ class HistogramPanel(tk.LabelFrame):
         tk.LabelFrame.__init__(self, master, text='visu')
         self.fig = None
         self.canvas = None
-        self.fig = plt.Figure(figsize=(4, 3), dpi=100)
+        self.fig = plt.Figure(figsize=(3, 3), dpi=100)
         self.ax = [
             self.fig.add_subplot(311),
             self.fig.add_subplot(312),
@@ -33,9 +33,8 @@ class HistogramPanel(tk.LabelFrame):
         for ax in self.ax:
             ax.clear()
         for i, col in enumerate(color):
-            # histr = cv2.calcHist([data], [i], None, [256], [0, 256])
             hist, bins = np.histogram(data[:, :, i], bins=256, range=None)
-            # histr = (histr - histr.min()) / histr.max()
+            hist = (hist - hist.min()) / hist.max()
             self.ax[i].plot(bins[:-1], hist, color=col, label=col)
             self.ax[i].legend()
             # self.ax[i].axis('off')

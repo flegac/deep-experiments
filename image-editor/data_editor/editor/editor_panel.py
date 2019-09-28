@@ -2,7 +2,7 @@ import imghdr
 import tkinter as tk
 
 from data_editor.image.image_view import ImageView
-from data_editor.editor.control_panel import ImageControlPanel
+from data_editor.editor.control_panel import ControlPanel
 from data_editor.table.table_view import TableView
 from data_editor.text.text_view import TextView
 from data_toolbox.image.buffer_factory import ImageFactory
@@ -16,10 +16,8 @@ class EditorPanel(tk.Frame):
     ZOOM_SPEED = 0.75
     MAX_REDRAW_PER_SEC = 24
 
-    def __init__(self, master: tk.Widget,  source: BufferSource = None):
+    def __init__(self, master: tk.Widget, source: BufferSource = None):
         tk.Frame.__init__(self, master)
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
 
         # view
         self.views = {
@@ -29,13 +27,12 @@ class EditorPanel(tk.Frame):
         }
 
         self.view = self.views[DataType.BUFFER]
-        self.view.grid(row=0, column=0, sticky='nsew')
+        self.view.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
-        # editors
-        self.control_panel = ImageControlPanel(self)
-        self.control_panel.grid(row=0, column=1, sticky='nsew')
-        # self.control_panel.subscribe(on_next=self.request_view_update)
+        self.control_panel = ControlPanel(self, width=250)
+        self.control_panel.pack(fill=tk.BOTH, expand=False, side=tk.RIGHT)
 
+        # events
         self.control_panel.subscribe(
             on_next=lambda _: self.view.set_source(self.control_panel.get_full_source()))
         self.views[DataType.BUFFER].canvas.bind_all('a', lambda _: self.control_panel.box.create_box(
@@ -44,7 +41,7 @@ class EditorPanel(tk.Frame):
         self.control_panel.source.set_source(source)
 
     def request_view_update(self, source: DataSource):
-        self.view.grid_forget()
+        self.view.pack_forget()
         if isinstance(source, str):
             path = source
             if path.endswith('.csv'):
@@ -67,7 +64,7 @@ class EditorPanel(tk.Frame):
         if isinstance(source, str):
             self.view = self.views[DataType.TEXT]
             self.view.open_text(source)
-        self.view.grid(row=0, column=0, sticky='nsew')
+        self.view.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
 
 if __name__ == '__main__':

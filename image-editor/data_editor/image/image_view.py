@@ -4,15 +4,15 @@ import rx.operators as ops
 from PIL import ImageTk, Image
 from rx.subject import Subject
 
+from data_editor.image.view_controller import ViewController
 from data_toolbox.data.data_source import DataSource
 from data_toolbox.image.buffer_factory import ImageFactory
-from data_editor.image.view_controller import ViewController
 
 
 class ImageView(tk.Frame):
     MAX_REDRAW_PER_SEC = 1000
 
-    def __init__(self, master: tk.Widget):
+    def __init__(self, master: tk.Widget, width: int = 600, height: int = 400):
         tk.Frame.__init__(self, master)
         self._source_change_bus = Subject()
         self._source_change_bus.pipe(
@@ -21,7 +21,7 @@ class ImageView(tk.Frame):
         ).subscribe(on_next=lambda _: self._redraw(_))
 
         # canvas creation
-        self.canvas = tk.Canvas(self, width=600, height=400)
+        self.canvas = tk.Canvas(self, width=width, height=height)
         self.canvas.pack(expand=True, fill="both")
 
         # image

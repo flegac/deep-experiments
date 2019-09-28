@@ -5,12 +5,12 @@ import cv2
 from rx.subject import Subject
 
 from data_editor.utils.toolbox import FileToolbox
+from data_toolbox.data.data_source import DataSource
 from data_toolbox.image.buffer_factory import ImageFactory
 from data_toolbox.image.source.buffer_source import BufferSource
-from data_toolbox.data.data_source import DataSource
 
 
-class BufferSourcePanel(tk.LabelFrame):
+class ImageSourcePanel(tk.LabelFrame):
     def __init__(self, master: tk.Widget):
         tk.LabelFrame.__init__(self, master, text='buffer', width=100, height=50)
         self._observer = Subject()
@@ -61,5 +61,5 @@ class BufferSourcePanel(tk.LabelFrame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    BufferSourcePanel(root).pack(fill="both", expand=True, side=tk.BOTTOM)
+    ImageSourcePanel(root).pack(fill="both", expand=True, side=tk.BOTTOM)
     root.mainloop()

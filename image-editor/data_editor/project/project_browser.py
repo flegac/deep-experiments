@@ -14,7 +14,7 @@ from data_toolbox.table.table_source import TableSource
 
 
 class ProjectBrowser(tk.LabelFrame):
-    def __init__(self, master: tk.Widget):
+    def __init__(self, master: tk.Widget, width: int):
         super().__init__(master, text="project")
         self.project: ProjectConfig = None
 
@@ -27,7 +27,11 @@ class ProjectBrowser(tk.LabelFrame):
         button = tk.Button(self, text='add source', command=lambda: self.add_path(self.project.sources))
         button.pack(expand=False, fill=tk.X, side=tk.TOP)
 
-        self.canvas = ScrolledCanvas(self, bg="white", highlightthickness=0, takefocus=1, width=250)
+        self.canvas = ScrolledCanvas(self, bg="white", highlightthickness=0, takefocus=1, width=width)
+        self.canvas.frame.pack(expand=False, fill=tk.X, side=tk.TOP)
+
+        self.source_browser = SourceBrowser(self)
+        self.source_browser.pack(expand=False, fill=tk.X, side=tk.TOP)
 
         def zoom(event):
             # Respond to Linux (event.num) or Windows (event.delta) wheel event
@@ -39,11 +43,6 @@ class ProjectBrowser(tk.LabelFrame):
         self.canvas.canvas.bind('<Button-4>', zoom)
         self.canvas.canvas.bind('<Button-5>', zoom)
         self.canvas.canvas.bind('<MouseWheel>', zoom)
-
-        self.canvas.frame.pack(expand=False, fill=tk.X, side=tk.TOP)
-
-        self.source_browser = SourceBrowser(self)
-        self.source_browser.pack(expand=False, fill=tk.X, side=tk.TOP)
 
         self.manager = ProjectManager()
         self.open_project(self.manager.config.project)
@@ -203,6 +202,6 @@ def load_source(path: str):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    widget = ProjectBrowser(root)
+    widget = ProjectBrowser(root, width=200)
     widget.pack(fill='both', expand=True)
     root.mainloop()

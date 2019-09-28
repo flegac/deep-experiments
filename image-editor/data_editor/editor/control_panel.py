@@ -2,18 +2,18 @@ import tkinter as tk
 from typing import Callable, Any
 
 from data_editor.image.histogram_panel import HistogramPanel
-from data_editor.image.image_source_panel import BufferSourcePanel
+from data_editor.image.image_source_panel import ImageSourcePanel
 from data_editor.operator.operator_panel import OperatorPanel
 from data_editor.operator.operator_toolbox import OperatorToolbox
 from data_editor.tagging.box_tag_panel import BoxTagPanel
 from data_toolbox.image.source.buffer_source import BufferSource
 
 
-class ImageControlPanel(tk.Frame):
-    def __init__(self, master: tk.Widget):
-        tk.Frame.__init__(self, master)
+class ControlPanel(tk.Frame):
+    def __init__(self, master: tk.Widget, width: int):
+        tk.Frame.__init__(self, master, width=width)
 
-        self.source = BufferSourcePanel(self)
+        self.source = ImageSourcePanel(self)
         self.source.pack(fill=tk.X, expand=False, side=tk.TOP)
 
         self.operator = OperatorPanel(self)
@@ -26,7 +26,7 @@ class ImageControlPanel(tk.Frame):
         self.box.pack(fill=tk.X, expand=False, side=tk.TOP)
 
         self.visu_editor = HistogramPanel(self)
-        self.visu_editor.pack(fill='both', expand=False, side=tk.BOTTOM)
+        self.visu_editor.pack(fill=tk.BOTH, expand=False, side=tk.BOTTOM)
 
         # events
         self.operator_toolbox.subscribe(self.operator.push_operator)
@@ -50,6 +50,6 @@ class ImageControlPanel(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    editor = ImageControlPanel(root)
+    editor = ControlPanel(root, width=200)
     editor.pack()
     root.mainloop()

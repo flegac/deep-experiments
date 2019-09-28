@@ -18,9 +18,8 @@ class EditorWindow(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self._on_exit)
         self.init_menu()
 
-        self.project_browser = ProjectBrowser(self)
+        self.project_browser = ProjectBrowser(self, width=250)
         self.project_browser.pack(fill=tk.BOTH, expand=False, side=tk.LEFT)
-        self.project_browser.subscribe(lambda path: self.editor.request_view_update(path))
 
         self.editor = EditorPanel(self)
         self.editor.pack(fill=tk.BOTH, expand=True, side=tk.RIGHT)
@@ -28,6 +27,9 @@ class EditorWindow(tk.Tk):
         # self.update_idletasks()
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
         self.geometry('{}x{}+0+0'.format(w - 150, h - 150))
+
+        # events
+        self.project_browser.subscribe(lambda path: self.editor.request_view_update(path))
 
     def init_menu(self):
         menu = {
