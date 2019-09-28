@@ -8,12 +8,13 @@ from data_toolbox.data.data_operator import DataOperator
 
 
 class OperatorToolbox(tk.LabelFrame):
-    def __init__(self, master: tk.Widget, callback: Callable[[DataOperator], None]):
+    def __init__(self, master: tk.Widget):
         tk.LabelFrame.__init__(self, master, text='operator', width=100, height=50)
+        self._observer = Subject()
 
         def _callback(op: DataOperator):
             def run():
-                callback(op)
+                self._observer.on_next(op)
 
             return run
 
@@ -28,6 +29,9 @@ class OperatorToolbox(tk.LabelFrame):
             )
             button.pack(fill='both', expand=True, side=tk.TOP)
 
+    def subscribe(self, on_next: Callable[[DataOperator], None]):
+        self._observer.subscribe(on_next)
+
 
 def _test_class_loader(cls):
     try:
@@ -38,6 +42,6 @@ def _test_class_loader(cls):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    editor = OperatorToolbox(root, lambda _: None)
+    editor = OperatorToolbox(root)
     editor.pack(expand=True, fill=tk.BOTH)
     root.mainloop()

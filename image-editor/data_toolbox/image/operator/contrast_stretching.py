@@ -1,7 +1,7 @@
 import numpy as np
 from skimage import exposure
 
-from data_toolbox.buffer.buffer import Buffer
+from data_toolbox.image.buffer import Buffer
 from data_toolbox.data.data_operator import DataOperator
 
 

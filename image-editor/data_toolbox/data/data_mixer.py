@@ -1,8 +1,8 @@
 from abc import ABC
 from typing import Callable, List, Union
 
-from data_toolbox.buffer.buffer import Buffer
-from data_toolbox.buffer.source.buffer_source import BufferSource
+from data_toolbox.image.buffer import Buffer
+from data_toolbox.image.source.buffer_source import BufferSource
 from data_toolbox.data.data_source import DataSource
 from data_toolbox.table.table import Table
 

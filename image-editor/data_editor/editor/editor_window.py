@@ -6,7 +6,7 @@ from data_editor.editor_config import EditorManager
 from data_editor.project.project_browser import ProjectBrowser
 from data_editor.utils.file_select import ask_open_project, ask_open_image, ask_open_dataset
 from data_editor.utils.ui_utils import build_menu
-from data_toolbox.buffer.buffer_factory import ImageFactory
+from data_toolbox.image.buffer_factory import ImageFactory
 from data_toolbox.table.table_source import TableSource
 
 
@@ -15,20 +15,19 @@ class EditorWindow(tk.Tk):
         super().__init__()
         self.iconbitmap('')
 
-        w, h = self.winfo_screenwidth(), self.winfo_screenheight()
-        self.geometry('{}x{}+0+0'.format(w - 150, h - 150))
         self.protocol("WM_DELETE_WINDOW", self._on_exit)
         self.init_menu()
 
-        frame = tk.PanedWindow(orient=tk.HORIZONTAL)
-        frame.pack(fill=tk.BOTH, expand=1)
-
-        self.project_browser = ProjectBrowser(frame)
+        self.project_browser = ProjectBrowser(self)
+        self.project_browser.pack(fill=tk.BOTH, expand=False, side=tk.LEFT)
         self.project_browser.subscribe(lambda path: self.editor.request_view_update(path))
-        frame.add(self.project_browser)
 
-        self.editor = EditorPanel(frame, name='editor')
-        frame.add(self.editor)
+        self.editor = EditorPanel(self)
+        self.editor.pack(fill=tk.BOTH, expand=True, side=tk.RIGHT)
+
+        # self.update_idletasks()
+        w, h = self.winfo_screenwidth(), self.winfo_screenheight()
+        self.geometry('{}x{}+0+0'.format(w - 150, h - 150))
 
     def init_menu(self):
         menu = {

@@ -4,7 +4,7 @@ from typing import List, Dict, Callable, Any, Set
 from rx.subject import Subject
 
 from data_editor.utils.toolbox import Toolbox
-from data_toolbox.buffer.source.buffer_source import BufferSource
+from data_toolbox.image.source.buffer_source import BufferSource
 from data_toolbox.data.data_source import DataSource
 
 

@@ -1,10 +1,10 @@
 from typing import Union, List, Any, Tuple
 
-from data_toolbox.buffer.buffer import Buffer
+from data_toolbox.image.buffer import Buffer
 from data_toolbox.data.data_mixer import DataMixer
 from data_toolbox.data.data_operator import DataOperator
 from data_toolbox.data.data_source import DataSource
-from data_toolbox.buffer.buffer_factory import BufferSource
+from data_toolbox.image.buffer_factory import BufferSource
 
 Node = Union[DataSource, Tuple[DataOperator, Any], Tuple[DataMixer, Any]]
 

@@ -2,11 +2,11 @@ from typing import Union
 
 import numpy as np
 
-from data_toolbox.buffer.source.opencv_source import OpencvSource
-from data_toolbox.buffer.source.rasterio_source import RasterioSource
+from data_toolbox.image.source.opencv_source import OpencvSource
+from data_toolbox.image.source.rasterio_source import RasterioSource
 from data_toolbox.data.data_operator import DataOperator, PipeOperator
-from data_toolbox.buffer.buffer import Buffer
-from data_toolbox.buffer.source.buffer_source import BufferSource
+from data_toolbox.image.buffer import Buffer
+from data_toolbox.image.source.buffer_source import BufferSource
 
 
 class BufferVariableSource(BufferSource):

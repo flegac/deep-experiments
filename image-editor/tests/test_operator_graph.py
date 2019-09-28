@@ -5,7 +5,7 @@ import numpy as np
 from data_toolbox.data.data_mixer import Buffer, DataMixer
 from data_toolbox.data.data_operator import DataOperator
 from data_toolbox.data.data_graph import DataGraph
-from data_toolbox.buffer.buffer_factory import ImageFactory
+from data_toolbox.image.buffer_factory import ImageFactory
 
 
 class Op(DataOperator):

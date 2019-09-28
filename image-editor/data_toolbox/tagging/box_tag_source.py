@@ -2,7 +2,7 @@ from typing import Tuple
 
 import cv2
 
-from data_toolbox.buffer.buffer import Buffer
+from data_toolbox.image.buffer import Buffer
 from data_toolbox.data.data_operator import DataOperator
 from data_toolbox.table.table_source import TableSource
 

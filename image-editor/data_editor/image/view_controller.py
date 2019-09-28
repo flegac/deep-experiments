@@ -1,6 +1,6 @@
 from typing import Callable, Any
 
-from data_toolbox.buffer.viewport import ViewportOperator
+from data_toolbox.image.viewport import ViewportOperator
 
 
 class ViewController(object):

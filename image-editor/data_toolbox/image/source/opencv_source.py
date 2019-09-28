@@ -3,7 +3,7 @@ import os
 import cv2
 
 from data_toolbox.data.data_mixer import Buffer
-from data_toolbox.buffer.source.buffer_source import BufferSource
+from data_toolbox.image.source.buffer_source import BufferSource
 
 
 class OpencvSource(BufferSource):

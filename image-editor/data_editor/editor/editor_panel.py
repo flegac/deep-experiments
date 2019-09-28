@@ -1,12 +1,12 @@
 import imghdr
 import tkinter as tk
 
-from data_editor.buffer.image_view import ImageView
+from data_editor.image.image_view import ImageView
 from data_editor.editor.control_panel import ImageControlPanel
 from data_editor.table.table_view import TableView
 from data_editor.text.text_view import TextView
-from data_toolbox.buffer.buffer_factory import ImageFactory
-from data_toolbox.buffer.source.buffer_source import BufferSource
+from data_toolbox.image.buffer_factory import ImageFactory
+from data_toolbox.image.source.buffer_source import BufferSource
 from data_toolbox.data.data_source import DataSource
 from data_toolbox.data_types import DataType
 from data_toolbox.table.table_source import TableSource
@@ -16,7 +16,7 @@ class EditorPanel(tk.Frame):
     ZOOM_SPEED = 0.75
     MAX_REDRAW_PER_SEC = 24
 
-    def __init__(self, master: tk.Widget, name: str = None, source: BufferSource = None):
+    def __init__(self, master: tk.Widget,  source: BufferSource = None):
         tk.Frame.__init__(self, master)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)

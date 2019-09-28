@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from data_toolbox.buffer.buffer_factory import ImageFactory
-from data_toolbox.buffer.source.buffer_source import BufferSource
+from data_toolbox.image.buffer_factory import ImageFactory
+from data_toolbox.image.source.buffer_source import BufferSource
 
 
 class HistogramPanel(tk.LabelFrame):

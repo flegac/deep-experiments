@@ -1,12 +1,12 @@
 import tkinter as tk
 from typing import Callable, Any
 
-from data_editor.buffer.buffer_operator_panel import BufferOperatorPanel
-from data_editor.buffer.buffer_operator_toolbox import OperatorToolbox
-from data_editor.buffer.buffer_source_panel import BufferSourcePanel
-from data_editor.buffer.histogram_panel import HistogramPanel
+from data_editor.image.histogram_panel import HistogramPanel
+from data_editor.image.image_source_panel import BufferSourcePanel
+from data_editor.operator.operator_panel import OperatorPanel
+from data_editor.operator.operator_toolbox import OperatorToolbox
 from data_editor.tagging.box_tag_panel import BoxTagPanel
-from data_toolbox.buffer.source.buffer_source import BufferSource
+from data_toolbox.image.source.buffer_source import BufferSource
 
 
 class ImageControlPanel(tk.Frame):
@@ -15,9 +15,11 @@ class ImageControlPanel(tk.Frame):
 
         self.source = BufferSourcePanel(self)
         self.source.pack(fill=tk.X, expand=False, side=tk.TOP)
-        self.operator = BufferOperatorPanel(self)
+
+        self.operator = OperatorPanel(self)
         self.operator.pack(fill=tk.X, expand=False, side=tk.TOP)
-        self.operator_toolbox = OperatorToolbox(self, lambda _: self.operator.push_operator(_))
+
+        self.operator_toolbox = OperatorToolbox(self)
         self.operator_toolbox.pack(fill=tk.X, expand=False, side=tk.TOP)
 
         self.box = BoxTagPanel(self)
@@ -26,6 +28,8 @@ class ImageControlPanel(tk.Frame):
         self.visu_editor = HistogramPanel(self)
         self.visu_editor.pack(fill='both', expand=False, side=tk.BOTTOM)
 
+        # events
+        self.operator_toolbox.subscribe(self.operator.push_operator)
         self.subscribe(on_next=lambda _: self.visu_editor.update_data(self.get_processed_source()))
 
     def get_processed_source(self) -> BufferSource:

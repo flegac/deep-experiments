@@ -9,7 +9,7 @@ from data_editor.editor_config import EditorManager
 from data_editor.project.source_browser import SourceBrowser
 from data_editor.project_config import ProjectConfig, ProjectManager
 from data_editor.utils.file_select import ask_open_project, ask_dir_selection
-from data_toolbox.buffer.buffer_factory import ImageFactory
+from data_toolbox.image.buffer_factory import ImageFactory
 from data_toolbox.table.table_source import TableSource
 
 

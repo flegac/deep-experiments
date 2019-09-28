@@ -5,11 +5,11 @@ from rx.subject import Subject
 
 from data_editor.utils.list_selector_panel import ListSelectorPanel
 from data_editor.utils.toolbox import Toolbox
-from data_toolbox.buffer.operator.normalize import NormalizeOperator
+from data_toolbox.image.operator.normalize import NormalizeOperator
 from data_toolbox.data.data_operator import DataOperator, PipeOperator
 
 
-class BufferOperatorPanel(tk.Frame):
+class OperatorPanel(tk.Frame):
     def __init__(self, master: tk.Widget):
         tk.Frame.__init__(self, master, width=100, height=50)
         self._observer = Subject()
@@ -38,5 +38,5 @@ class BufferOperatorPanel(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    BufferOperatorPanel(root).pack(fill="both", expand=True, side=tk.BOTTOM)
+    OperatorPanel(root).pack(fill="both", expand=True, side=tk.BOTTOM)
     root.mainloop()

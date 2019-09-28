@@ -3,8 +3,8 @@ import os
 import numpy as np
 import rasterio
 
-from data_toolbox.buffer.buffer import Buffer
-from data_toolbox.buffer.source.buffer_source import BufferSource
+from data_toolbox.image.buffer import Buffer
+from data_toolbox.image.source.buffer_source import BufferSource
 
 
 class RasterioSource(BufferSource):

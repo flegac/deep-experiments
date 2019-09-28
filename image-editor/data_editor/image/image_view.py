@@ -5,8 +5,8 @@ from PIL import ImageTk, Image
 from rx.subject import Subject
 
 from data_toolbox.data.data_source import DataSource
-from data_toolbox.buffer.buffer_factory import ImageFactory
-from data_editor.buffer.view_controller import ViewController
+from data_toolbox.image.buffer_factory import ImageFactory
+from data_editor.image.view_controller import ViewController
 
 
 class ImageView(tk.Frame):

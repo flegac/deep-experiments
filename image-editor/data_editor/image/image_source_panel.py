@@ -5,8 +5,8 @@ import cv2
 from rx.subject import Subject
 
 from data_editor.utils.toolbox import FileToolbox
-from data_toolbox.buffer.buffer_factory import ImageFactory
-from data_toolbox.buffer.source.buffer_source import BufferSource
+from data_toolbox.image.buffer_factory import ImageFactory
+from data_toolbox.image.source.buffer_source import BufferSource
 from data_toolbox.data.data_source import DataSource
 
 
