@@ -50,6 +50,23 @@ def ask_dir_selection():
     return path
 
 
+def ask_open_file(title: str = 'Open', filetypes: List[Tuple[str, str]] = None):
+    if filetypes is None:
+        filetypes = [('all files', '.*')]
+    editor = EditorManager.load()
+
+    path: str = tkinter.filedialog.askopenfilename(
+        initialdir=editor.browser_path,
+        title=title,
+        filetypes=filetypes)
+
+    if path is not None and len(path) > 0:
+        editor.browser_path = os.path.dirname(path)
+        EditorManager.save(editor)
+
+    return path
+
+
 def ask_save_file(title: str = 'Save', filetypes: List[Tuple[str, str]] = None):
     if filetypes is None:
         filetypes = [('all files', '.*')]
@@ -60,23 +77,6 @@ def ask_save_file(title: str = 'Save', filetypes: List[Tuple[str, str]] = None):
         title=title,
         filetypes=filetypes
     )
-
-    if path is not None and len(path) > 0:
-        editor.browser_path = os.path.dirname(path)
-        EditorManager.save(editor)
-
-    return path
-
-
-def ask_open_file(title: str = 'Open', filetypes: List[Tuple[str, str]] = None):
-    if filetypes is None:
-        filetypes = [('all files', '.*')]
-    editor = EditorManager.load()
-
-    path: str = tkinter.filedialog.askopenfilename(
-        initialdir=editor.browser_path,
-        title=title,
-        filetypes=filetypes)
 
     if path is not None and len(path) > 0:
         editor.browser_path = os.path.dirname(path)

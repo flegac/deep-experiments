@@ -4,6 +4,7 @@ from typing import Callable, Any
 from data_editor.image.histogram_panel import HistogramPanel
 from data_editor.image.image_source_panel import ImageSourcePanel
 from data_editor.image.image_view import ImageView
+from data_editor.model.model_panel import ModelPanel
 from data_editor.operator.operator_panel import OperatorPanel
 from data_editor.operator.operator_toolbox import OperatorToolbox
 from data_editor.tagging.box_tag_panel import BoxTagPanel
@@ -28,6 +29,9 @@ class ControlPanel(tk.Frame):
 
         self.box = BoxTagPanel(self)
         self.box.pack(fill=tk.X, expand=False, side=tk.TOP)
+
+        self.model = ModelPanel(self)
+        self.model.pack(fill=tk.X, expand=False, side=tk.TOP)
 
         self.visu_editor = HistogramPanel(self)
         self.visu_editor.pack(fill=tk.BOTH, expand=False, side=tk.BOTTOM)
