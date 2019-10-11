@@ -3,13 +3,13 @@ from typing import Callable
 
 from rx.subject import Subject
 
-from data_editor.editor_config import EditorManager
+from data_editor.editor.editor_config import EditorManager
 from data_toolbox.data.data_operator import DataOperator
 
 
 class OperatorToolbox(tk.LabelFrame):
     def __init__(self, master: tk.Widget):
-        tk.LabelFrame.__init__(self, master, text='operator', width=100, height=50)
+        tk.LabelFrame.__init__(self, master, text='op', width=100, height=50)
         self._observer = Subject()
 
         def _callback(op: DataOperator):

@@ -5,8 +5,8 @@ from data_editor.image.histogram_panel import HistogramPanel
 from data_editor.image.image_source_panel import ImageSourcePanel
 from data_editor.image.image_view import ImageView
 from data_editor.model.model_panel import ModelPanel
-from data_editor.operator.operator_panel import OperatorPanel
-from data_editor.operator.operator_toolbox import OperatorToolbox
+from data_editor.op.operator_panel import OperatorPanel
+from data_editor.op.operator_toolbox import OperatorToolbox
 from data_editor.tagging.box_tag_panel import BoxTagPanel
 from data_toolbox.image.source.buffer_source import BufferSource
 

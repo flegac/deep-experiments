@@ -4,13 +4,14 @@ import cv2
 import keras
 import numpy as np
 
+from data_toolbox.model.model_source import ModelSource
 from data_toolbox.worker.worker import Worker
 
 
 class ModelDisplayWorker(Worker):
-    def __init__(self, model: keras.models.Model):
-        self.name = model.name
-        self.model = model
+    def __init__(self, model: ModelSource):
+        self.model = model.get_model().keras_model
+        self.name = self.model.name
 
     def work(self, workspace: str):
         convolutions = list(filter(lambda _: isinstance(_, keras.layers.Conv2D), self.model.layers))

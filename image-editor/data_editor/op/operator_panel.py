@@ -5,7 +5,7 @@ from rx.subject import Subject
 
 from data_editor.utils.list_selector_panel import ListSelectorPanel
 from data_editor.utils.toolbox import Toolbox
-from data_toolbox.image.operator.normalize import NormalizeOperator
+from data_toolbox.image.op.normalize import NormalizeOperator
 from data_toolbox.data.data_operator import DataOperator, PipeOperator
 
 

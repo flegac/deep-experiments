@@ -1,12 +1,17 @@
 import tkinter as tk
 from tkinter import messagebox
 
+from data_editor.editor.editor_config import EditorManager
 from data_editor.editor.editor_panel import EditorPanel
-from data_editor.editor_config import EditorManager
+from data_editor.image.image_files import ask_open_image
+from data_editor.model.model_files import ask_open_model
 from data_editor.project.project_browser import ProjectBrowser
-from data_editor.utils.file_select import ask_open_project, ask_open_image, ask_open_dataset
+from data_editor.project.project_files import ask_open_project
+from data_editor.table.table_files import ask_open_table
 from data_editor.utils.ui_utils import build_menu
 from data_toolbox.image.buffer_factory import ImageFactory
+from data_toolbox.model.model import Model
+from data_toolbox.model.model_source import ModelSource
 from data_toolbox.table.table_source import TableSource
 
 
@@ -33,21 +38,27 @@ class EditorWindow(tk.Tk):
 
     def init_menu(self):
         menu = {
-            'File': {
-                'New image': lambda: self.editor.request_view_update(ImageFactory.empty),
-                'Open image': lambda: self.editor.request_view_update(ImageFactory.from_rgb(ask_open_image())),
-
-                'New data': lambda: self.editor.request_view_update(TableSource()),
-                'Open data': lambda: self.editor.request_view_update(TableSource().load(ask_open_dataset())),
-
-                'New project': lambda: self.project_browser.create_project(),
-                'Open project': lambda: self.project_browser.request_view_update(ask_open_project()),
-
+            'Project': {
+                'New': lambda: self.project_browser.create_project(),
+                'Open': lambda: self.project_browser.open_project(ask_open_project()),
                 'Exit': self._on_exit
 
             },
-            'Edit': {},
-            'View': {},
+            'Image': {
+                'New': lambda: self.project_browser.source_browser.add_source(ImageFactory.empty),
+                'Open': lambda: self.project_browser.source_browser.add_source(ImageFactory.from_rgb(ask_open_image())),
+            },
+
+            'Table': {
+                'New': lambda: self.project_browser.source_browser.add_source(TableSource()),
+                'Open': lambda: self.project_browser.source_browser.add_source(TableSource().load(ask_open_table())),
+            },
+
+            'Model': {
+                'New': lambda: self.project_browser.source_browser.add_source(ModelSource(Model.from_scratch())),
+                'Open': lambda: self.project_browser.source_browser.add_source(
+                    ModelSource(Model.from_h5(ask_open_model()))),
+            },
 
             'Operator': {
                 str(_()): {}

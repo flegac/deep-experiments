@@ -8,6 +8,7 @@ from data_toolbox.image.mixer.blend_mixer import BlendMixer
 from data_toolbox.image.mixer.compare_mixer import CompareMixer
 from data_toolbox.image.source.buffer_source import BufferSource
 from data_toolbox.data.data_source import DataSource
+from data_toolbox.model.model_source import ModelSource
 from data_toolbox.table.table_source import TableSource
 
 
@@ -73,10 +74,13 @@ class SourceBrowser(tk.Frame):
 
         buffers = list(filter(lambda _: isinstance(_, BufferSource), self._sources))
         tables = list(filter(lambda _: isinstance(_, TableSource), self._sources))
-        undefined = list(filter(lambda _: _ not in buffers and _ not in tables, self._sources))
-        self._create_source_group('buffers', buffers)
+        models = list(filter(lambda _: isinstance(_, ModelSource), self._sources))
+
+        unknown = list(filter(lambda _: _ not in buffers and _ not in tables and _ not in models, self._sources))
+        self._create_source_group('images', buffers)
         self._create_source_group('tables', tables)
-        self._create_source_group('undefined', undefined)
+        self._create_source_group('models', models)
+        self._create_source_group('unknown', unknown)
 
     def _create_source_group(self, label: str, sources: List[DataSource]):
         frame = tk.LabelFrame(self, text=label, width=100, height=25)

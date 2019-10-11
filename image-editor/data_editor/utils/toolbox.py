@@ -1,7 +1,8 @@
 import tkinter as tk
 from typing import Callable, Any, Dict
 
-from data_editor.utils.file_select import ask_open_image, ask_save_file
+from data_editor.utils.file_select import ask_save_file
+from data_editor.image.image_files import ask_open_image
 
 Action = Callable[[], Any]
 

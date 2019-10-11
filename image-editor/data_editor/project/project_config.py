@@ -2,23 +2,23 @@ import json
 import os
 from dataclasses import field
 from pathlib import Path
-from typing import List
 
 from marshmallow import EXCLUDE
 from marshmallow_dataclass import dataclass
 
-from data_editor.editor_config import EditorManager
+from data_editor.editor.editor_config import EditorManager
 
 
 @dataclass
 class ProjectConfig:
     name: str
     workspace: str
-    datasets: List[str] = field(default_factory=list)
-    sources: List[str] = field(default_factory=list)
+    image_path: str = field(default='images')
+    table_path: str = field(default='tables')
+    model_path: str = field(default='models')
 
     class Meta:
-        fields = ("name", "workspace", "datasets", "sources")
+        fields = ('name', 'workspace', 'image_path')
         ordered = True
         unknown = EXCLUDE
 
@@ -43,7 +43,8 @@ class ProjectManager(object):
             path = self.config.root_path / name / 'project.json'
             with path.open() as _:
                 return ProjectConfig.Schema().load(json.load(_))
-        except:
+        except Exception as e:
+            print(e)
             path = Path(name)
             with path.open() as _:
                 return ProjectConfig.Schema().load(json.load(_))
@@ -61,5 +62,5 @@ class ProjectManager(object):
 if __name__ == '__main__':
     manager = ProjectManager()
     print(manager.list())
-    prj = manager.load('toto')
+    prj = manager.load('my_project1')
     print(prj)

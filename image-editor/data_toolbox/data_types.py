@@ -5,3 +5,4 @@ class DataType(Enum):
     BUFFER = 'Buffer'
     TABLE = 'Table'
     TEXT = 'Text'
+    MODEL = 'Model'

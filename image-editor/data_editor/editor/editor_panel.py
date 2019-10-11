@@ -9,6 +9,7 @@ from data_toolbox.image.buffer_factory import ImageFactory
 from data_toolbox.image.source.buffer_source import BufferSource
 from data_toolbox.data.data_source import DataSource
 from data_toolbox.data_types import DataType
+from data_toolbox.model.model_source import ModelSource
 from data_toolbox.table.table_source import TableSource
 
 
@@ -23,7 +24,8 @@ class EditorPanel(tk.Frame):
         self.views = {
             DataType.BUFFER: ImageView(self),
             DataType.TABLE: TableView(self),
-            DataType.TEXT: TextView(self)
+            DataType.TEXT: TextView(self),
+            # DataType.MODEL: ModelView(self)
         }
 
         self.view = self.views[DataType.BUFFER]
@@ -60,7 +62,10 @@ class EditorPanel(tk.Frame):
             self.view = self.views[DataType.BUFFER]
             # self.view.request_update(source)
             self.control_panel.source.set_source(source)
-
+        if isinstance(source, ModelSource):
+            # self.view = self.views[DataType.MODEL]
+            # self.view.request_update(source)
+            self.control_panel.model.set_source(source)
 
         if isinstance(source, str):
             self.view = self.views[DataType.TEXT]

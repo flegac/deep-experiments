@@ -2,38 +2,7 @@ import os
 import tkinter.filedialog
 from typing import List, Tuple
 
-from data_editor.editor_config import EditorManager
-
-
-def ask_open_project():
-    # TODO: only display project names ?
-    editor = EditorManager.load()
-
-    path = tkinter.filedialog.askopenfilename(
-        initialdir=editor.root_path,
-        title="Select project",
-        filetypes=[
-            ('project files', 'project.json'),
-            ('all files', '.*'),
-        ]
-    )
-    return os.path.basename(os.path.dirname(path))
-
-
-def ask_open_image():
-    return ask_open_file('Open image', [
-        ('all files', '.*'),
-        ('tiff files', '.tif'),
-        ('png files', '.png'),
-        ('Jpeg files', '.jpg'),
-    ])
-
-
-def ask_open_dataset():
-    return ask_open_file('Open image', [
-        ('all files', '.*'),
-        ('csv files', '.csv'),
-    ])
+from data_editor.editor.editor_config import EditorManager
 
 
 def ask_dir_selection():

@@ -6,19 +6,19 @@ from matplotlib import pyplot as plt
 
 from data_toolbox.data.data_operator import DataOperator
 from data_toolbox.image.buffer import Buffer
+from data_toolbox.model.model_source import ModelSource
 
 
 class ModelViewer(DataOperator):
-    def __init__(self, path: str = None):
-        self.path = path
-        model = keras.models.load_model(path)
-        model.summary()
-
+    def __init__(self, source: ModelSource, target_path:str):
+        model = source.get_model().keras_model
         inputs = model.input
         outputs = [_ for _ in model.layers if isinstance(_, keras.layers.Activation)]
         self.model = keras.models.Model(inputs=inputs, outputs=[_.output for _ in outputs])
         self.layer_names = [_.name for _ in outputs]
         self.model.summary()
+
+        self.target_path=target_path
 
     def apply(self, source: Buffer) -> Buffer:
         data = cv2.resize(source, tuple(self.model.input.shape[1:3]))
@@ -54,7 +54,7 @@ class ModelViewer(DataOperator):
             plt.yticks(np.array([]))
 
         fig.tight_layout()
-        fig.show()
+        plt.savefig(self.target_path, dpi=100)
 
         return source
 

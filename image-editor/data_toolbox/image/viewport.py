@@ -54,7 +54,7 @@ class ViewportOperator(DataOperator):
         self.y_crop = int((h_target - h_crop) / 2)
 
         crop_data = source[self.y:self.y + h, self.x:self.x + w]
-        crop_data = cv2.resize(crop_data, (w_crop, h_crop))
+        crop_data = cv2.resize(crop_data, (w_crop, h_crop), interpolation=cv2.INTER_NEAREST)
         self.target[self.y_crop:self.y_crop + h_crop, self.x_crop:self.x_crop + w_crop] = crop_data
         return self.target
 
